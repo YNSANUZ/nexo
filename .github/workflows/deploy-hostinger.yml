@@ -37,7 +37,7 @@ jobs:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
-          server-dir: public_html/
+          server-dir: /domains/primusdf.com.br/public_html/
           local-dir: ./card/
           state-name: .ftp-deploy-sync-state-card.json
           port: 21
