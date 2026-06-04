@@ -262,9 +262,10 @@ jobs:
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
-              ("versao nova do index do card", "card-20260604-profile-missions" in index),
+              ("versao nova do index do card", "card-20260604-profile-portrait" in index),
               ("perfil vitrine no app", "profileDashboardNavHtml" in app),
               ("simbolos de missoes no css", "Profile dashboard and mission symbols" in styles),
+              ("perfil 9:16 premium no css", "Profile portrait 9:16 premium card" in styles),
               ("feedback do tutorial no index", "card-20260604-tutorial-feedback" in index),
               ("premio do evento no index", "event-reward" in index),
               ("botao de desafios no index", "challenge-gift-open" in index),

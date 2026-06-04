@@ -6600,3 +6600,310 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
     width: fit-content;
   }
 }
+
+/* Profile portrait 9:16 premium card */
+.profile-dialog {
+  width: min(430px, calc(100vw - 22px));
+  max-height: min(740px, calc(100vh - 24px));
+}
+
+.profile-card {
+  width: min(390px, calc(100vw - 22px));
+  height: auto;
+  max-height: calc(100vh - 28px);
+  aspect-ratio: 9 / 16;
+}
+
+.profile-front,
+.profile-back {
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.9) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 72% 9%, rgba(255,226,118,.62) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 86% 34%, rgba(255,255,255,.55) 0 .8px, transparent 1.6px),
+    radial-gradient(circle at 22% 78%, rgba(19,200,163,.22), transparent 25%),
+    linear-gradient(122deg, rgba(255,255,255,.72) 0 9%, transparent 10% 42%, rgba(255,255,255,.28) 43% 47%, transparent 48%),
+    linear-gradient(154deg, transparent 0 56%, rgba(255,255,255,.24) 57% 59%, transparent 60%),
+    radial-gradient(ellipse at 80% 88%, color-mix(in srgb, var(--tier-accent), transparent 68%), transparent 36%),
+    linear-gradient(145deg,
+      #ffffff 0%,
+      #eefbf8 26%,
+      color-mix(in srgb, var(--card-a), #ffffff 64%) 56%,
+      color-mix(in srgb, var(--card-b), #ffffff 72%) 100%);
+  box-shadow:
+    inset 7px 8px 16px rgba(255,255,255,.52),
+    inset -10px -14px 24px rgba(7,16,22,.12),
+    0 24px 48px rgba(15,23,42,.24),
+    0 0 24px color-mix(in srgb, var(--tier-accent), transparent 72%);
+}
+
+.profile-back {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255,255,255,.36) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 62% 22%, rgba(255,246,184,.22) 0 .9px, transparent 1.6px),
+    linear-gradient(122deg, rgba(255,255,255,.24) 0 10%, transparent 11% 42%, rgba(255,255,255,.1) 43% 47%, transparent 48%),
+    radial-gradient(ellipse at 76% 82%, color-mix(in srgb, var(--tier-accent), transparent 78%), transparent 36%),
+    linear-gradient(145deg, color-mix(in srgb, var(--card-a), #071016 42%), color-mix(in srgb, var(--card-b), #071016 44%));
+}
+
+.profile-front::before,
+.profile-back::before {
+  opacity: .56;
+  background:
+    linear-gradient(115deg, transparent 18%, rgba(255,255,255,.58) 32%, transparent 44%),
+    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--tier-accent), transparent 18%), transparent 15%),
+    radial-gradient(circle at 17% 21%, rgba(255,255,255,.78) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 31% 42%, rgba(255,231,135,.5) 0 .9px, transparent 1.8px),
+    radial-gradient(circle at 71% 62%, rgba(255,226,100,.42) 0 .9px, transparent 1.8px);
+}
+
+.profile-dashboard-title {
+  min-height: 28px;
+}
+
+.profile-dashboard-title b {
+  gap: 8px;
+  font-size: 19px;
+}
+
+.profile-close-control {
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+}
+
+.profile-dashboard-hero,
+.profile-dashboard-body {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.profile-dashboard-hero {
+  min-height: 0;
+}
+
+.profile-identity {
+  grid-template-columns: 84px minmax(0, 1fr);
+  min-height: 94px;
+  gap: 10px;
+  padding: 9px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255,255,255,.8), transparent 34%),
+    rgba(255,255,255,.72);
+}
+
+.profile-identity .profile-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+}
+
+.profile-photo > img,
+.profile-photo > svg {
+  border-radius: 11px;
+}
+
+.profile-photo-badge {
+  width: 40px;
+  height: 40px;
+}
+
+.profile-identity strong {
+  font-size: 21px;
+}
+
+.profile-identity em {
+  font-size: 12px;
+}
+
+.profile-xp-card {
+  min-height: 96px;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.profile-xp-card::before {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  font-size: 17px;
+}
+
+.profile-xp-card b {
+  font-size: 22px;
+}
+
+.profile-xp-card small {
+  font-size: 12px;
+}
+
+.profile-xp-card strong {
+  padding: 7px 9px;
+  font-size: 14px;
+}
+
+.profile-xp-card i {
+  height: 12px;
+}
+
+.profile-dashboard-body {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.profile-dashboard-stats {
+  grid-template-rows: auto auto;
+  gap: 8px;
+}
+
+.profile-status-panel {
+  display: none;
+}
+
+.profile-complete-panel {
+  min-height: 66px;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  padding: 10px 11px;
+}
+
+.complete-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.profile-complete-panel b {
+  font-size: 14px;
+}
+
+.profile-complete-panel strong {
+  font-size: 30px;
+}
+
+.profile-reputation-panel {
+  min-height: 78px;
+  padding: 8px 9px;
+}
+
+.profile-reputation-head {
+  gap: 6px;
+}
+
+.profile-reputation-head b {
+  font-size: 11px;
+}
+
+.profile-reputation-head strong {
+  font-size: 20px;
+}
+
+.profile-reputation-metrics {
+  gap: 3px;
+}
+
+.profile-reputation-metrics span {
+  padding: 5px 2px;
+}
+
+.profile-reputation-metrics b {
+  font-size: 14px;
+}
+
+.profile-reputation-metrics small {
+  font-size: 8px;
+}
+
+.profile-emblems-showcase {
+  min-height: 150px;
+  gap: 8px;
+  padding: 10px;
+}
+
+.profile-emblems-head {
+  text-align: center;
+}
+
+.profile-emblems-head b {
+  font-size: 17px;
+  text-align: center;
+}
+
+.profile-emblems-head small {
+  font-size: 11px;
+  text-align: center;
+}
+
+.profile-emblems-showcase .profile-official-badges {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.profile-emblems-showcase .profile-official-badge,
+.profile-secret-badge {
+  min-height: 82px;
+  padding: 6px 4px;
+}
+
+.profile-emblems-showcase .profile-official-badge img {
+  width: 54px;
+  height: 48px;
+}
+
+.profile-emblems-showcase .profile-official-badge span,
+.profile-secret-badge b {
+  font-size: 10px;
+}
+
+.profile-secret-badge {
+  gap: 4px;
+}
+
+.profile-secret-badge i {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+}
+
+.profile-secret-badge i::before {
+  font-size: 23px;
+}
+
+.profile-dashboard-nav {
+  min-height: 56px;
+  gap: 4px;
+  padding: 6px;
+}
+
+.profile-dashboard-nav button {
+  grid-template-columns: 1fr;
+  gap: 2px;
+  font-size: 9px;
+}
+
+.profile-nav-ico {
+  justify-self: center;
+  width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 420px) {
+  .profile-dialog {
+    width: calc(100vw - 4px);
+  }
+
+  .profile-card {
+    width: min(390px, calc(100vw - 4px));
+  }
+}
+
+@media (min-width: 721px) and (max-height: 720px) {
+  .profile-card {
+    width: min(390px, calc(100vw - 22px));
+  }
+}
