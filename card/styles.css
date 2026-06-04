@@ -6625,15 +6625,17 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
     radial-gradient(circle at 18% 12%, rgba(255,255,255,.9) 0 1px, transparent 1.8px),
     radial-gradient(circle at 72% 9%, rgba(255,226,118,.62) 0 1px, transparent 1.8px),
     radial-gradient(circle at 86% 34%, rgba(255,255,255,.55) 0 .8px, transparent 1.6px),
-    radial-gradient(circle at 22% 78%, rgba(19,200,163,.22), transparent 25%),
-    linear-gradient(122deg, rgba(255,255,255,.72) 0 9%, transparent 10% 42%, rgba(255,255,255,.28) 43% 47%, transparent 48%),
-    linear-gradient(154deg, transparent 0 56%, rgba(255,255,255,.24) 57% 59%, transparent 60%),
-    radial-gradient(ellipse at 80% 88%, color-mix(in srgb, var(--tier-accent), transparent 68%), transparent 36%),
+    radial-gradient(circle at 20% 78%, color-mix(in srgb, var(--tier-accent), transparent 60%), transparent 28%),
+    radial-gradient(ellipse at 82% 88%, color-mix(in srgb, var(--card-b), transparent 48%), transparent 38%),
+    linear-gradient(122deg, rgba(255,255,255,.62) 0 8%, transparent 9% 38%, rgba(255,255,255,.24) 39% 43%, transparent 44%),
+    linear-gradient(154deg, transparent 0 54%, rgba(255,255,255,.22) 55% 58%, transparent 59%),
+    linear-gradient(28deg, transparent 0 31%, color-mix(in srgb, var(--tier-accent), transparent 78%) 32% 36%, transparent 37%),
     linear-gradient(145deg,
-      #ffffff 0%,
-      #eefbf8 26%,
-      color-mix(in srgb, var(--card-a), #ffffff 64%) 56%,
-      color-mix(in srgb, var(--card-b), #ffffff 72%) 100%);
+      color-mix(in srgb, #ffffff, var(--card-a) 34%) 0%,
+      color-mix(in srgb, var(--card-a), #ffffff 18%) 26%,
+      color-mix(in srgb, var(--card-b), #ffffff 18%) 58%,
+      color-mix(in srgb, var(--tier-accent), var(--card-b) 42%) 82%,
+      color-mix(in srgb, var(--card-b), #071016 18%) 100%);
   box-shadow:
     inset 7px 8px 16px rgba(255,255,255,.52),
     inset -10px -14px 24px rgba(7,16,22,.12),
@@ -6652,13 +6654,15 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 
 .profile-front::before,
 .profile-back::before {
-  opacity: .56;
+  opacity: .7;
   background:
-    linear-gradient(115deg, transparent 18%, rgba(255,255,255,.58) 32%, transparent 44%),
-    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--tier-accent), transparent 18%), transparent 15%),
+    linear-gradient(115deg, transparent 18%, rgba(255,255,255,.68) 31%, transparent 44%),
+    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--tier-accent), transparent 8%), transparent 16%),
     radial-gradient(circle at 17% 21%, rgba(255,255,255,.78) 0 1px, transparent 1.9px),
     radial-gradient(circle at 31% 42%, rgba(255,231,135,.5) 0 .9px, transparent 1.8px),
-    radial-gradient(circle at 71% 62%, rgba(255,226,100,.42) 0 .9px, transparent 1.8px);
+    radial-gradient(circle at 71% 62%, rgba(255,226,100,.42) 0 .9px, transparent 1.8px),
+    linear-gradient(62deg, transparent 0 24%, rgba(255,255,255,.16) 24.2% 24.8%, transparent 25%),
+    linear-gradient(118deg, transparent 0 48%, rgba(255,247,178,.18) 48.2% 48.8%, transparent 49%);
 }
 
 .profile-dashboard-title {
@@ -6694,8 +6698,10 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   padding: 9px;
   border-radius: 12px;
   background:
-    radial-gradient(circle at 10% 10%, rgba(255,255,255,.8), transparent 34%),
-    rgba(255,255,255,.72);
+    radial-gradient(circle at 10% 10%, rgba(255,255,255,.86), transparent 34%),
+    linear-gradient(145deg,
+      color-mix(in srgb, #ffffff, var(--card-a) 10%),
+      color-mix(in srgb, #ffffff, var(--card-b) 12%));
 }
 
 .profile-identity .profile-photo {
