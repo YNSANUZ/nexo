@@ -40,6 +40,7 @@ jobs:
           password: ${{ env.FTP_PASSWORD }}
           server-dir: ${{ env.FTP_SERVER_DIR }}
           local-dir: ./card/
+          state-name: .ftp-deploy-sync-state-card.json
           port: 21
           dangerous-clean-slate: false
           exclude: |
