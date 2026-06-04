@@ -67,6 +67,7 @@ jobs:
               Path("card/index.html"),
               Path("card/app.js"),
               Path("card/styles.css"),
+              Path("card/sw.js"),
               Path("card/nexo-tutorial-popup.js"),
               Path("card/nexo-tutorial-popup.css"),
           }
@@ -236,8 +237,9 @@ jobs:
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
-              ("versao nova do index do card", "card-20260604-xp-badges-event" in index),
+              ("versao nova do index do card", "card-20260604-event-summary-challenges" in index),
               ("premio do evento no index", "event-reward" in index),
+              ("botao de desafios no index", "challenge-gift-open" in index),
               ("sistema de XP no app", "profileXpSummary" in app),
               ("emblemas oficiais no app", "OFFICIAL_BADGES" in app),
               ("botao Meu Card no index", "nav-my-card" in index),

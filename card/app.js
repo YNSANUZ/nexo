@@ -271,7 +271,10 @@
       "admin-metrics-dialog", "admin-metrics-grid", "admin-metrics-chart",
       "admin-metrics-note", "admin-metrics-sections", "event-countdown",
       "event-status", "event-timer", "event-detail", "event-reward-status",
-      "badge-reveal-dialog", "badge-reveal-content"
+      "event-summary-open", "event-detail-dialog", "event-detail-title",
+      "event-detail-timer", "event-detail-place", "event-detail-schedule",
+      "event-detail-reward-status", "badge-reveal-dialog", "badge-reveal-content",
+      "challenge-gift-open", "challenge-dialog"
     ].forEach(id => { els[id] = document.getElementById(id); });
   }
 
@@ -311,7 +314,9 @@
     bindClick("nav-my-card", () => openProfile("me"));
     bindClick("map-center-location", centerOnDevice);
     bindClick("map-target-location", centerOnDevice);
-    bindClick("event-focus-point", focusStickerEventPoint);
+    bindClick("event-focus-point", focusEventDetailPoint);
+    bindClick("event-summary-open", openEventDetails);
+    bindClick("challenge-gift-open", openChallengeDialog);
     if (els["event-countdown"]) els["event-countdown"].addEventListener("click", onOfficialBadgeClick);
     bindClick("nearby-collectors-open", openNearbyCollectors);
     bindClick("admin-metrics-open", () => openAdminMetrics("hour"));
@@ -361,6 +366,14 @@
       button.addEventListener("click", () => els["badge-reveal-dialog"] && els["badge-reveal-dialog"].close());
     });
 
+    document.querySelectorAll("[data-close-event-detail]").forEach(button => {
+      button.addEventListener("click", () => els["event-detail-dialog"] && els["event-detail-dialog"].close());
+    });
+
+    document.querySelectorAll("[data-close-challenge]").forEach(button => {
+      button.addEventListener("click", () => els["challenge-dialog"] && els["challenge-dialog"].close());
+    });
+
     document.querySelectorAll("[data-close-admin-metrics]").forEach(button => {
       button.addEventListener("click", () => els["admin-metrics-dialog"] && els["admin-metrics-dialog"].close());
     });
@@ -378,6 +391,10 @@
         state.nearbyFilter = button.dataset.nearbyFilter || "trade";
         renderNearbyCollectors();
       });
+    });
+
+    document.querySelectorAll("[data-challenge-tab]").forEach(button => {
+      button.addEventListener("click", () => setChallengeTab(button.dataset.challengeTab || "daily"));
     });
 
     if (els["nearby-list"]) {
@@ -410,6 +427,20 @@
     if (els["badge-reveal-dialog"]) {
       els["badge-reveal-dialog"].addEventListener("click", event => {
         if (event.target === els["badge-reveal-dialog"]) els["badge-reveal-dialog"].close();
+        else onOfficialBadgeClick(event);
+      });
+    }
+
+    if (els["event-detail-dialog"]) {
+      els["event-detail-dialog"].addEventListener("click", event => {
+        if (event.target === els["event-detail-dialog"]) els["event-detail-dialog"].close();
+        else onOfficialBadgeClick(event);
+      });
+    }
+
+    if (els["challenge-dialog"]) {
+      els["challenge-dialog"].addEventListener("click", event => {
+        if (event.target === els["challenge-dialog"]) els["challenge-dialog"].close();
         else onOfficialBadgeClick(event);
       });
     }
@@ -3016,14 +3047,48 @@
     els["event-status"].textContent = active ? "Evento ativo" : "Proximo evento";
     els["event-timer"].textContent = label;
     els["event-detail"].textContent = STICKER_EVENT.place + " - " + STICKER_EVENT.schedule;
+    if (els["event-detail-title"]) els["event-detail-title"].textContent = active ? "Evento ativo" : "Proximo evento";
+    if (els["event-detail-timer"]) els["event-detail-timer"].textContent = label;
+    if (els["event-detail-place"]) els["event-detail-place"].textContent = STICKER_EVENT.place;
+    if (els["event-detail-schedule"]) els["event-detail-schedule"].textContent = STICKER_EVENT.schedule;
     if (els["event-reward-status"]) {
       const claimed = Boolean(state.officialBadges && state.officialBadges[EVENT_JUNE_6_BADGE_ID]);
-      els["event-reward-status"].textContent = claimed
+      const rewardStatus = claimed
         ? "Emblema garantido para sempre"
         : active
           ? "No local: emblema unico"
           : "Emblema unico ao comparecer";
+      els["event-reward-status"].textContent = rewardStatus;
+      if (els["event-detail-reward-status"]) els["event-detail-reward-status"].textContent = rewardStatus;
     }
+  }
+
+  function openEventDetails() {
+    updateEventCountdown();
+    if (els["event-detail-dialog"] && !els["event-detail-dialog"].open) els["event-detail-dialog"].showModal();
+  }
+
+  function focusEventDetailPoint(event) {
+    if (event && event.type) event.stopPropagation();
+    if (els["event-detail-dialog"] && els["event-detail-dialog"].open) els["event-detail-dialog"].close();
+    focusStickerEventPoint();
+  }
+
+  function openChallengeDialog() {
+    setChallengeTab("daily");
+    if (els["challenge-dialog"] && !els["challenge-dialog"].open) els["challenge-dialog"].showModal();
+  }
+
+  function setChallengeTab(tab) {
+    const selected = ["daily", "weekly", "event", "monthly"].includes(tab) ? tab : "daily";
+    document.querySelectorAll("[data-challenge-tab]").forEach(button => {
+      button.classList.toggle("active", button.dataset.challengeTab === selected);
+    });
+    document.querySelectorAll("[data-challenge-panel]").forEach(panel => {
+      const active = panel.dataset.challengePanel === selected;
+      panel.classList.toggle("active", active);
+      panel.hidden = !active;
+    });
   }
 
   function isCommunityMeetingVisible(now = Date.now()) {

@@ -14,7 +14,7 @@
   <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="apple-touch-icon" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=card-20260604-xp-badges-event">
+  <link rel="stylesheet" href="styles.css?v=card-20260604-event-summary-challenges">
   <link rel="stylesheet" href="nexo-tutorial-popup.css?v=card-20260603-rounded-play">
 </head>
 <body>
@@ -188,20 +188,23 @@
           </button>
         </div>
         <section class="event-countdown" id="event-countdown" aria-live="polite" hidden>
-          <div class="event-copy">
-            <span id="event-status">Encontro comunitario</span>
-            <strong id="event-timer">Carregando</strong>
-            <small id="event-detail">Estacionamento 10 do Parque da Cidade</small>
-          </div>
-          <button class="event-reward" type="button" data-official-badge="evento-6-junho" data-badge-user="me" aria-label="Ver emblema exclusivo do encontro">
-            <img src="https://i.ibb.co/ccnXTMpT/madsfasfd-2.png" alt="">
-            <span>
+          <button class="event-summary-card" type="button" id="event-summary-open" aria-label="Ver detalhes do proximo evento">
+            <span class="event-copy">
+              <span id="event-status">Proximo evento</span>
+              <strong id="event-timer">Carregando</strong>
+            </span>
+            <span class="event-summary-reward">
+              <img src="https://i.ibb.co/ccnXTMpT/madsfasfd-2.png" alt="">
               <b>+150 XP</b>
-              <small id="event-reward-status">Emblema exclusivo unico</small>
             </span>
           </button>
-          <button type="button" id="event-focus-point">Ver Estacionamento 10</button>
+          <small id="event-detail" hidden>Estacionamento 10 do Parque da Cidade</small>
+          <small id="event-reward-status" hidden>Emblema exclusivo unico</small>
         </section>
+        <button class="challenge-gift-fab" type="button" id="challenge-gift-open" aria-label="Abrir desafios">
+          <span class="challenge-gift-box" aria-hidden="true"><i></i></span>
+          <b>3</b>
+        </button>
         <div class="map-stage leaflet-stage" id="collector-map-shell" aria-label="Mapa local de colecionadores">
           <div class="leaflet-map" id="collector-map"></div>
           <div class="map-fallback" id="map-fallback" hidden>
@@ -254,6 +257,92 @@
 
   <dialog class="badge-reveal-dialog" id="badge-reveal-dialog" aria-label="Destaque de emblema">
     <div class="badge-reveal-shell" id="badge-reveal-content"></div>
+  </dialog>
+
+  <dialog class="event-detail-dialog" id="event-detail-dialog">
+    <button class="dialog-close" type="button" data-close-event-detail>Fechar</button>
+    <div class="event-detail-shell">
+      <header class="event-detail-head">
+        <div>
+          <strong id="event-detail-title">Proximo evento</strong>
+          <span id="event-detail-place">Estacionamento 10 do Parque da Cidade</span>
+        </div>
+      </header>
+      <div class="event-detail-timer">
+        <span>Tempo restante</span>
+        <strong id="event-detail-timer">Carregando</strong>
+      </div>
+      <button class="event-detail-reward" type="button" data-official-badge="evento-6-junho" data-badge-user="me" aria-label="Ver emblema exclusivo do evento">
+        <img src="https://i.ibb.co/ccnXTMpT/madsfasfd-2.png" alt="">
+        <span>
+          <b>+150 XP</b>
+          <small id="event-detail-reward-status">Emblema exclusivo unico</small>
+        </span>
+      </button>
+      <p id="event-detail-schedule">Sabado 06/06, das 08:00 as 17:00</p>
+      <button class="primary-btn" type="button" id="event-focus-point">Ver Estacionamento 10</button>
+    </div>
+  </dialog>
+
+  <dialog class="challenge-dialog" id="challenge-dialog">
+    <button class="dialog-close" type="button" data-close-challenge>Fechar</button>
+    <div class="challenge-shell">
+      <header class="challenge-head">
+        <div>
+          <strong>Desafios</strong>
+          <span>Ganhe XP, emblemas e recompensas</span>
+        </div>
+      </header>
+      <div class="challenge-tabs" aria-label="Tipos de desafios">
+        <button type="button" class="active" data-challenge-tab="daily">Diarios</button>
+        <button type="button" data-challenge-tab="weekly">Semanais</button>
+        <button type="button" data-challenge-tab="event">Eventuais</button>
+        <button type="button" data-challenge-tab="monthly">Mensais</button>
+      </div>
+      <div class="challenge-panel active" data-challenge-panel="daily">
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon cards"></span>
+          <span><b>Marque 10 figurinhas</b><small>Avance no album hoje</small><i><span style="width:30%"></span></i></span>
+          <strong>+80 XP</strong>
+        </button>
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon people"></span>
+          <span><b>Abra 5 albuns</b><small>Veja colecionadores diferentes</small><i><span style="width:40%"></span></i></span>
+          <strong>+100 XP</strong>
+        </button>
+      </div>
+      <div class="challenge-panel" data-challenge-panel="weekly" hidden>
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon trade"></span>
+          <span><b>Faca 3 trocas</b><small>Movimente sua colecao na semana</small><i><span style="width:0%"></span></i></span>
+          <strong>+200 XP</strong>
+        </button>
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon share"></span>
+          <span><b>Compartilhe seu album</b><small>Convide alguem para trocar</small><i><span style="width:0%"></span></i></span>
+          <strong>+120 XP</strong>
+        </button>
+      </div>
+      <div class="challenge-panel" data-challenge-panel="event" hidden>
+        <button class="challenge-card featured" type="button" data-official-badge="evento-6-junho" data-badge-user="me">
+          <span class="challenge-badge-thumb"><img src="https://i.ibb.co/ccnXTMpT/madsfasfd-2.png" alt=""></span>
+          <span><b>Eu fui - 6 de junho</b><small>Somente no Estacionamento 10, das 08h as 17h</small><i><span style="width:0%"></span></i></span>
+          <strong>+150 XP</strong>
+        </button>
+      </div>
+      <div class="challenge-panel" data-challenge-panel="monthly" hidden>
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon trophy"></span>
+          <span><b>Complete 20% do album</b><small>Meta mensal de colecionador</small><i><span style="width:0%"></span></i></span>
+          <strong>+500 XP</strong>
+        </button>
+        <button class="challenge-card" type="button">
+          <span class="challenge-icon check"></span>
+          <span><b>Complete 7 diarios</b><small>Consistencia na campanha</small><i><span style="width:0%"></span></i></span>
+          <strong>+300 XP</strong>
+        </button>
+      </div>
+    </div>
   </dialog>
 
   <dialog class="nearby-dialog" id="nearby-dialog">
@@ -383,7 +472,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="app.js?v=card-20260604-xp-badges-event"></script>
+  <script src="app.js?v=card-20260604-event-summary-challenges"></script>
   <script src="nexo-tutorial-popup.js?v=card-20260604-cloudinary-tutorial"></script>
   <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-card" data-site-name="NEXO Card" defer></script>
 </body>
