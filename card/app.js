@@ -3295,18 +3295,27 @@
           '<span class="profile-card-inner">' +
             '<span class="profile-front">' +
               '<span class="profile-shine"></span>' +
-              '<span class="profile-identity">' +
-                '<span class="profile-photo">' + profilePhotoHtml(user, tier) + '</span>' +
-                '<span class="profile-user-meta">' +
-                  '<strong>' + escapeHtml(user.name) + '</strong>' +
-                  '<em>' + escapeHtml(tradeRankLine(user, tier)) + '</em>' +
-                  profileXpHtml(user, userStats) +
-                  profileOfficialBadgesHtml(user) +
-                  instagramButtonHtml(user) +
+              '<button class="profile-close-control" type="button" data-close-profile aria-label="Fechar perfil">x</button>' +
+              '<span class="profile-dashboard-title" aria-label="Perfil NEXO Card"><b>Perfil <strong>NEXO Card</strong></b></span>' +
+              '<span class="profile-dashboard-hero">' +
+                '<span class="profile-identity">' +
+                  '<span class="profile-photo">' + profilePhotoHtml(user, tier) + '</span>' +
+                  '<span class="profile-user-meta">' +
+                    '<strong>' + escapeHtml(user.name) + '</strong>' +
+                    '<em>' + escapeHtml(tradeRankLine(user, tier)) + '</em>' +
+                    instagramButtonHtml(user) +
+                  '</span>' +
                 '</span>' +
+                profileXpHtml(user, userStats) +
               '</span>' +
-              profileReputationHtml(user) +
-              profileStatusHtml(userStats) +
+              '<span class="profile-dashboard-body">' +
+                '<span class="profile-dashboard-stats">' +
+                  profileStatusHtml(userStats) +
+                  profileReputationHtml(user) +
+                '</span>' +
+                profileOfficialBadgesPanelHtml(user) +
+              '</span>' +
+              profileDashboardNavHtml(user) +
             '</span>' +
             '<span class="profile-back">' +
               '<span class="profile-back-scroll" data-profile-back>' +
@@ -3340,6 +3349,25 @@
     );
   }
 
+  function profileDashboardNavHtml(user) {
+    const target = escapeHtml(user.id);
+    const tradeButton = user.id === "me"
+      ? '<button type="button" data-profile-emblems data-profile-user="' + target + '"><i class="profile-nav-ico trades"></i><span>Trocas</span></button>'
+      : '<button type="button" data-message-menu data-message-user="' + target + '"><i class="profile-nav-ico trades"></i><span>Trocas</span></button>';
+    const settingsButton = user.id === "me"
+      ? '<button type="button" data-open-profile-settings><i class="profile-nav-ico settings"></i><span>Ajustes</span></button>'
+      : '<button type="button" data-preset-message="like" data-message-user="' + target + '"><i class="profile-nav-ico settings"></i><span>Curtir</span></button>';
+    return (
+      '<span class="profile-dashboard-nav" aria-label="Acoes do perfil">' +
+        '<button type="button" data-profile-action="album" data-profile-user="' + target + '"><i class="profile-nav-ico album"></i><span>Album</span></button>' +
+        tradeButton +
+        '<button type="button" data-open-profile-challenges><i class="profile-nav-ico events"></i><span>Eventos</span></button>' +
+        '<button type="button" data-profile-emblems data-profile-user="' + target + '"><i class="profile-nav-ico ranking"></i><span>Ranking</span></button>' +
+        settingsButton +
+      '</span>'
+    );
+  }
+
   function profileOfficialBadgesHtml(user) {
     const badges = officialBadgesForUser(user);
     if (!badges.length) return "";
@@ -3351,6 +3379,29 @@
             '<span>' + escapeHtml(badge.shortTitle) + '</span>' +
           '</button>'
         )).join("") +
+      '</span>'
+    );
+  }
+
+  function profileOfficialBadgesPanelHtml(user) {
+    const badges = officialBadgesForUser(user);
+    const secretSlots = Math.max(0, Math.min(3, 4 - badges.length));
+    const earnedBadges = badges.map(badge => (
+      '<button class="profile-official-badge" type="button" data-official-badge="' + escapeHtml(badge.id) + '" data-badge-user="' + escapeHtml(user.id) + '" aria-label="Ver emblema ' + escapeHtml(badge.title) + '">' +
+        '<img src="' + escapeHtml(badge.image) + '" alt="" loading="lazy">' +
+        '<span>' + escapeHtml(badge.shortTitle) + '</span>' +
+      '</button>'
+    )).join("");
+    const secretBadges = Array.from({ length: secretSlots }, () => (
+      '<span class="profile-secret-badge" aria-label="Emblema secreto">' +
+        '<i></i>' +
+        '<b>Segredo</b>' +
+      '</span>'
+    )).join("");
+    return (
+      '<span class="profile-emblems-showcase">' +
+        '<span class="profile-emblems-head"><b>Seus emblemas</b><small>Conquistas oficiais ficam na frente do card</small></span>' +
+        '<span class="profile-official-badges" aria-label="Emblemas oficiais">' + earnedBadges + secretBadges + '</span>' +
       '</span>'
     );
   }
@@ -3644,6 +3695,8 @@
     if (!user || !back) return;
     const tier = tradeRankTier(user);
     back.innerHTML = profileAlbumHtml(user, tier, mode, selected);
+    const card = els["profile-content"].querySelector("[data-flip-profile]");
+    if (card) card.classList.add("flipped");
     requestAnimationFrame(() => {
       const active = back.querySelector(".profile-album-strip button.active");
       if (active && active.scrollIntoView) active.scrollIntoView({ block: "nearest", inline: "center" });
@@ -3889,6 +3942,8 @@
     const officialBadge = event.target.closest("[data-official-badge]");
     const instagram = event.target.closest(".profile-instagram");
     const albumAction = event.target.closest("[data-profile-action='album']");
+    const profileChallenges = event.target.closest("[data-open-profile-challenges]");
+    const profileSettings = event.target.closest("[data-open-profile-settings]");
     const albumMode = event.target.closest("[data-album-mode]");
     const albumCountry = event.target.closest("[data-album-country]");
     const albumGroup = event.target.closest("[data-album-group]");
@@ -3924,6 +3979,18 @@
     }
     if (albumAction) {
       renderProfileAlbum(albumAction.dataset.profileUser || state.selectedUserId, "countries", "BRA");
+      event.stopPropagation();
+      return;
+    }
+    if (profileChallenges) {
+      if (els["profile-dialog"].open) els["profile-dialog"].close();
+      openChallengeDialog();
+      event.stopPropagation();
+      return;
+    }
+    if (profileSettings) {
+      if (els["profile-dialog"].open) els["profile-dialog"].close();
+      openAccountSettings();
       event.stopPropagation();
       return;
     }
