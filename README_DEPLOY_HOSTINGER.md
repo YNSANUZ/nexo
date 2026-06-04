@@ -31,7 +31,9 @@ FTP_USERNAME
 FTP_PASSWORD
 ```
 
-O destino da Hostinger ja esta fixado no workflow como `/domains/primusdf.com.br/public_html/`, para publicar o NEXO Card direto na raiz do dominio.
+O destino da Hostinger esta fixado no workflow como `public_html/`.
+
+Nao precisa mover a pasta no PC: o repositorio fica em `publicar`, mas o workflow envia somente `publicar/card`.
 
 ## Primeiro envio
 
