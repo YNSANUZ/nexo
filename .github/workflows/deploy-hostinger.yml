@@ -14,7 +14,7 @@ jobs:
   deploy:
     name: Enviar publicar para Hostinger
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -42,26 +42,132 @@ jobs:
 
       - name: Enviar publicar para Hostinger via FTP
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ env.FTP_SERVER }}
-          username: ${{ env.FTP_USERNAME }}
-          password: ${{ env.FTP_PASSWORD }}
-          server-dir: /domains/primusdf.com.br/public_html/
-          local-dir: ./
-          state-name: .ftp-deploy-sync-state-publicar-live-domain.json
-          port: 21
-          protocol: ftp
-          timeout: 120000
-          log-level: verbose
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/.github*/**
-            **/node_modules/**
-            **/.env
-            **/.env.*
-            **/*.md
-            README*
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from ftplib import FTP, error_perm
+          from pathlib import Path
+          import os
+          import posixpath
+
+          server = (os.environ["FTP_SERVER"] or "").replace("ftp://", "").replace("ftps://", "").strip().strip("/")
+          username = os.environ["FTP_USERNAME"]
+          password = os.environ["FTP_PASSWORD"]
+          remote_root = "/domains/primusdf.com.br/public_html"
+          local_root = Path(".").resolve()
+          skip_dirs = {".git", ".github", "node_modules"}
+          text_suffixes = {".css", ".html", ".js", ".json", ".txt", ".webmanifest", ".xml"}
+
+          def should_skip(path: Path) -> bool:
+              parts = set(path.parts)
+              if parts & skip_dirs:
+                  return True
+              name = path.name
+              lower = name.lower()
+              if lower == ".ds_store" or lower.startswith(".env"):
+                  return True
+              if lower.endswith(".md") or lower.startswith("readme"):
+                  return True
+              return False
+
+          def ensure_remote_dir(ftp: FTP, rel_dir: str) -> None:
+              ftp.cwd(remote_root)
+              if rel_dir in ("", "."):
+                  return
+              for part in rel_dir.split("/"):
+                  if not part:
+                      continue
+                  try:
+                      ftp.cwd(part)
+                  except error_perm:
+                      ftp.mkd(part)
+                      ftp.cwd(part)
+
+          def remote_size(ftp: FTP, filename: str):
+              try:
+                  ftp.voidcmd("TYPE I")
+                  return ftp.size(filename)
+              except Exception:
+                  return None
+
+          ftp = FTP()
+          ftp.connect(server, 21, timeout=120)
+          ftp.login(username, password)
+          ftp.set_pasv(True)
+          ftp.cwd(remote_root)
+
+          uploaded = 0
+          skipped = 0
+          for file_path in sorted(p for p in local_root.rglob("*") if p.is_file()):
+              rel_path = file_path.relative_to(local_root)
+              if should_skip(rel_path):
+                  continue
+
+              rel_posix = rel_path.as_posix()
+              rel_dir = posixpath.dirname(rel_posix)
+              filename = posixpath.basename(rel_posix)
+              ensure_remote_dir(ftp, rel_dir)
+
+              local_size = file_path.stat().st_size
+              existing_size = remote_size(ftp, filename)
+              force_upload = file_path.suffix.lower() in text_suffixes or filename == ".htaccess"
+              if existing_size == local_size and not force_upload:
+                  skipped += 1
+                  continue
+
+              with file_path.open("rb") as handle:
+                  ftp.storbinary(f"STOR {filename}", handle)
+              uploaded += 1
+              print(f"upload {rel_posix} ({local_size} bytes)")
+
+          ftp.cwd(remote_root)
+          for name in list(ftp.nlst()):
+              if name.startswith("deploy-probe-"):
+                  try:
+                      ftp.delete(name)
+                      print(f"remove {name}")
+                  except Exception:
+                      pass
+
+          ftp.quit()
+          print(f"Deploy FTP concluido. Enviados: {uploaded}. Pulados por tamanho igual: {skipped}.")
+          PY
+
+      - name: Conferir dominio publicado
+        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from urllib.request import Request, urlopen
+          import sys
+          import time
+
+          stamp = str(int(time.time()))
+
+          def get(url):
+              req = Request(url + "?v=" + stamp, headers={"Cache-Control": "no-cache", "Pragma": "no-cache"})
+              with urlopen(req, timeout=30) as res:
+                  return res.read().decode("utf-8", "replace")
+
+          marker = get("https://primusdf.com.br/deploy-check.txt")
+          index = get("https://primusdf.com.br/card/index.html")
+          app = get("https://primusdf.com.br/card/app.js")
+
+          checks = [
+              ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
+              ("versao nova do index do card", "card-20260603-admin-real-album" in index),
+              ("botao Meu Card no index", "nav-my-card" in index),
+              ("busca de usuarios no index", "user-search-results" in index),
+              ("busca de usuarios no app", "renderUserSearchResults" in app),
+              ("remove album admin congelado", "completeAlbumMap" not in app),
+          ]
+
+          failed = [name for name, ok in checks if not ok]
+          if failed:
+              print("Falhou na conferencia do dominio:")
+              for name in failed:
+                  print("- " + name)
+              sys.exit(1)
+
+          print("Dominio conferido com a versao nova do NEXO Card.")
+          PY
