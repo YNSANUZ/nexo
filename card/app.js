@@ -2766,13 +2766,14 @@
       panel.classList.toggle("active", panel.id === "view-" + view);
     });
     const titles = {
-      map: ["Colecionadores perto de voce", "NEXO Card"],
+      map: ["", "NEXO Card"],
       album: ["Colecao local", "Figurinhas"],
       missing: ["Controle rapido", "Faltantes"],
       duplicates: ["Trocas locais", "Repetidas"]
     };
     const [eyebrow, title] = titles[view] || titles.album;
     els["view-eyebrow"].textContent = eyebrow;
+    els["view-eyebrow"].hidden = !eyebrow;
     els["view-title"].textContent = title;
     document.getElementById("overview-panel").style.display = "none";
     document.querySelector(".stats-grid").style.display = "none";
