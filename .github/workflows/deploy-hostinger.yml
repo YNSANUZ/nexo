@@ -15,19 +15,32 @@ jobs:
     name: Enviar publicar para Hostinger
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR }}
 
     steps:
       - name: Baixar arquivos do repositorio
         uses: actions/checkout@v4
 
+      - name: Aguardar configuracao dos secrets FTP
+        if: ${{ env.FTP_SERVER == '' || env.FTP_USERNAME == '' || env.FTP_PASSWORD == '' || env.FTP_SERVER_DIR == '' }}
+        run: |
+          echo "Secrets FTP ainda nao configurados."
+          echo "Crie FTP_SERVER, FTP_USERNAME, FTP_PASSWORD e FTP_SERVER_DIR em Settings > Secrets and variables > Actions."
+
       - name: Enviar para Hostinger via FTP
+        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' && env.FTP_SERVER_DIR != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          server-dir: ${{ env.FTP_SERVER_DIR }}
           local-dir: ./
+          port: 21
           dangerous-clean-slate: false
           exclude: |
             **/.git*
@@ -39,4 +52,3 @@ jobs:
             **/.env.*
             **/*.md
             README*
-
