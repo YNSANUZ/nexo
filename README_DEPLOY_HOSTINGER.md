@@ -41,7 +41,7 @@ FTP_USERNAME
 FTP_PASSWORD
 ```
 
-O destino da Hostinger vem do secret `FTP_SERVER_DIR`.
+O destino da Hostinger esta fixado no workflow como `domains/primusdf.com.br/public_html/`.
 
 ## Primeiro envio
 

@@ -38,7 +38,7 @@ jobs:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
-          server-dir: ${{ env.FTP_SERVER_DIR }}
+          server-dir: domains/primusdf.com.br/public_html/
           local-dir: ./
           port: 21
           dangerous-clean-slate: false
