@@ -956,6 +956,55 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   cursor: pointer;
 }
 
+.event-countdown .event-reward {
+  grid-column: 1 / -1;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid rgba(240, 200, 75, .54);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 16% 28%, rgba(255,255,255,.95), rgba(255,255,255,0) 26%),
+    linear-gradient(135deg, rgba(255,244,194,.96), rgba(211,247,235,.94));
+  color: #13212a;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.76);
+}
+
+.event-reward img {
+  width: 44px;
+  height: 44px;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 10px rgba(132, 85, 0, .22));
+}
+
+.event-reward span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.event-reward b {
+  color: #0f7a4e;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.event-reward small {
+  overflow: hidden;
+  color: #5c4a15;
+  font-size: 10px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .leaflet-map {
   position: absolute;
   inset: 0;
@@ -2672,7 +2721,8 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 .message-dialog,
 .settings-dialog,
 .admin-event-dialog,
-.admin-metrics-dialog {
+.admin-metrics-dialog,
+.badge-reveal-dialog {
   width: min(420px, calc(100vw - 28px));
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -2703,6 +2753,178 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 
 .profile-dialog::backdrop {
   background: transparent;
+}
+
+.badge-reveal-dialog {
+  width: min(560px, calc(100vw - 26px));
+  max-height: min(720px, calc(100vh - 28px));
+  border: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+
+.badge-reveal-dialog::backdrop {
+  background: rgba(4, 9, 18, .78);
+  backdrop-filter: blur(6px);
+}
+
+.badge-reveal-shell {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.badge-reveal-card {
+  position: relative;
+  width: 100%;
+  min-height: min(660px, calc(100vh - 34px));
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 18px;
+  overflow: hidden;
+  padding: 34px 22px 26px;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(255,226,112,.62), transparent 28%),
+    radial-gradient(circle at 35% 62%, rgba(19,200,163,.34), transparent 24%),
+    linear-gradient(160deg, #071016, #102335 58%, #071016);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.14),
+    0 28px 80px rgba(0,0,0,.46);
+  animation: badgeRevealPop .34s ease both;
+}
+
+.badge-reveal-card::before,
+.badge-reveal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,.88) 0 1px, transparent 2px),
+    radial-gradient(circle at 76% 18%, rgba(255,240,150,.94) 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 62%, rgba(255,255,255,.78) 0 1px, transparent 2px),
+    radial-gradient(circle at 27% 74%, rgba(240,200,75,.9) 0 2px, transparent 3px);
+  opacity: .9;
+  animation: badgeSpark 1.45s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.badge-reveal-card::after {
+  transform: rotate(18deg) scale(1.08);
+  opacity: .55;
+  animation-delay: .28s;
+}
+
+.badge-reveal-close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.badge-reveal-glow {
+  position: absolute;
+  width: 330px;
+  height: 330px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,240,167,.78), rgba(19,200,163,.2) 44%, transparent 68%);
+  filter: blur(8px);
+  animation: badgeGlowPulse 1.65s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.badge-reveal-image {
+  position: relative;
+  z-index: 2;
+  width: min(300px, 78vw);
+  max-height: 330px;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 34px rgba(0,0,0,.42));
+}
+
+.badge-reveal-copy {
+  position: relative;
+  z-index: 2;
+  width: min(430px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.badge-reveal-copy small {
+  color: #f0c84b;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.badge-reveal-copy strong {
+  color: #fff;
+  font-size: clamp(28px, 7vw, 42px);
+  line-height: .96;
+}
+
+.badge-reveal-copy p {
+  max-width: 36ch;
+  margin: 0;
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.badge-reveal-copy span {
+  display: grid;
+  gap: 3px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  background: rgba(255,255,255,.11);
+}
+
+.badge-reveal-copy b {
+  color: #18e8ad;
+  font-size: 20px;
+}
+
+.badge-reveal-copy em {
+  max-width: 38ch;
+  color: rgba(255,255,255,.78);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+@keyframes badgeRevealPop {
+  0% { opacity: 0; transform: translateY(18px) scale(.94); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes badgeSpark {
+  0% { transform: translateY(0) scale(1); opacity: .55; }
+  100% { transform: translateY(-12px) scale(1.03); opacity: 1; }
+}
+
+@keyframes badgeGlowPulse {
+  0% { transform: scale(.94); opacity: .7; }
+  100% { transform: scale(1.06); opacity: 1; }
 }
 
 .settings-dialog::backdrop {
@@ -3383,7 +3605,7 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 
 .profile-card {
   width: min(360px, calc(100vw - 28px));
-  aspect-ratio: 9 / 14;
+  aspect-ratio: 9 / 16;
   justify-self: center;
   border: 0;
   padding: 0;
@@ -3449,7 +3671,7 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .profile-shine {
@@ -3767,6 +3989,7 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   display: grid;
   justify-items: center;
   gap: 4px;
+  width: 100%;
 }
 
 .profile-identity strong {
@@ -3782,6 +4005,109 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   font-style: normal;
   line-height: 1.22;
   text-align: center;
+}
+
+.profile-xp-card {
+  width: min(252px, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 10px;
+  background: rgba(2, 15, 29, .42);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.profile-xp-card > span {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+  text-align: left;
+}
+
+.profile-xp-card b,
+.profile-xp-card small,
+.profile-xp-card strong {
+  line-height: 1;
+  text-align: left;
+}
+
+.profile-xp-card b {
+  color: #fff;
+  font-size: 13px;
+}
+
+.profile-xp-card small {
+  color: rgba(255,255,255,.72);
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.profile-xp-card strong {
+  color: var(--tier-accent);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.profile-xp-card i {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(2,15,29,.7);
+}
+
+.profile-xp-card i span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #13c8a3, #f0c84b);
+  box-shadow: 0 0 14px rgba(240,200,75,.36);
+}
+
+.profile-official-badges {
+  width: min(252px, 100%);
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.profile-official-badge {
+  width: 58px;
+  min-height: 52px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1px;
+  padding: 4px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 8px;
+  background: rgba(255,255,255,.13);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.profile-official-badge img {
+  width: 38px;
+  height: 34px;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 9px rgba(2, 15, 29, .28));
+}
+
+.profile-official-badge span {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255,255,255,.88);
+  font-size: 9px;
+  font-weight: 950;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-instagram {

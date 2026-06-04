@@ -21,14 +21,22 @@
   const GUEST_ADD_LOGIN_THRESHOLD = 5;
   const COMMUNITY_MEETING_STORAGE_KEY = "albumCopa2026CommunityMeetingPoint10";
   const COMMUNITY_MEETING_DOC_ID = "cardCommunityMeetingPoint10";
-  const COMMUNITY_MEETING_DURATION_MS = 8 * 60 * 60 * 1000;
+  const COMMUNITY_MEETING_DURATION_MS = 9 * 60 * 60 * 1000;
+  const OFFICIAL_BADGES_STORAGE_KEY = "albumCopa2026OfficialBadges";
+  const CHEGUEI_BRASIL_BADGE_ID = "cheguei-brasil";
+  const EVENT_JUNE_6_BADGE_ID = "evento-6-junho";
+  const CHEGUEI_BRASIL_BADGE_IMAGE_URL = "https://i.ibb.co/HTdqKBr4/11-layout-primus-2.png";
+  const EVENT_JUNE_6_BADGE_IMAGE_URL = "https://i.ibb.co/ccnXTMpT/madsfasfd-2.png";
+  const CHEGUEI_BRASIL_END_AT = new Date("2026-07-31T23:59:59-03:00").getTime();
+  const EVENT_JUNE_6_START_AT = new Date("2026-06-06T08:00:00-03:00").getTime();
+  const EVENT_JUNE_6_END_AT = new Date("2026-06-06T17:00:00-03:00").getTime();
   const DEFAULT_COMMUNITY_MEETING_EVENT = {
     pointId: "ponto-10",
     title: "Proximo evento",
     place: "Estacionamento 10 do Parque da Cidade",
-    schedule: "Sabado 06/06, das 09:00 as 17:00",
-    startAt: new Date("2026-06-06T09:00:00-03:00").getTime(),
-    endAt: new Date("2026-06-06T17:00:00-03:00").getTime(),
+    schedule: "Sabado 06/06, das 08:00 as 17:00",
+    startAt: EVENT_JUNE_6_START_AT,
+    endAt: EVENT_JUNE_6_END_AT,
     enabled: true,
     updatedAt: 0
   };
@@ -55,6 +63,28 @@
     { id: "gold", label: "Ouro", min: 50, text: "50 pessoas com troca" },
     { id: "platinum", label: "Platina", min: 100, text: "100 pessoas com troca" },
     { id: "diamond", label: "Diamante", min: 200, text: "200 pessoas com troca" }
+  ];
+  const OFFICIAL_BADGES = [
+    {
+      id: CHEGUEI_BRASIL_BADGE_ID,
+      title: "Cheguei Brasil",
+      shortTitle: "Cheguei",
+      image: CHEGUEI_BRASIL_BADGE_IMAGE_URL,
+      xp: 100,
+      availability: "Valido para novos jogadores ate 31/07/2026.",
+      description: "Emblema de boas-vindas para quem entrou na jornada NEXO Card rumo ao Brasil.",
+      revealText: "Esse emblema marca a chegada do jogador ao NEXO Card. Quem pegar durante a campanha fica com ele para sempre."
+    },
+    {
+      id: EVENT_JUNE_6_BADGE_ID,
+      title: "Eu fui - 6 de junho",
+      shortTitle: "6 Jun",
+      image: EVENT_JUNE_6_BADGE_IMAGE_URL,
+      xp: 150,
+      availability: "Disponivel somente em 06/06/2026, das 08:00 as 17:00.",
+      description: "Emblema unico para quem comparecer ao encontro no Parque da Cidade.",
+      revealText: "Esse emblema e exclusivo do encontro no Estacionamento 10. Quem garantir no horario do evento guarda para sempre."
+    }
   ];
   const RESET_ALBUM_USER_IDS = new Set(["qSX1blk7tpbFxQe1naVJiyFKj5J3"]);
   const ADMIN_EMAIL = "ynsanuz@gmail.com";
@@ -179,6 +209,7 @@
     album: readAlbum(),
     albumUpdatedAt: readAlbumUpdatedAt(),
     albumCardUpdatedAt: readAlbumCardUpdatedAt(),
+    officialBadges: readOfficialBadges(),
     myLocation: readApproxLocation(),
     tradeCode: "",
     friend: null,
@@ -205,6 +236,7 @@
     initLeafletMap();
     bindEvents();
     applyCommunityMeetingEvent(readCommunityMeetingEvent() || DEFAULT_COMMUNITY_MEETING_EVENT, { render: false, persist: false });
+    syncOfficialRewardState({ render: false });
     renderGroups();
     renderQr("Album Copa 2026");
     renderRosterAudit();
@@ -238,7 +270,8 @@
       "message-dialog", "message-options", "message-target-name",
       "admin-metrics-dialog", "admin-metrics-grid", "admin-metrics-chart",
       "admin-metrics-note", "admin-metrics-sections", "event-countdown",
-      "event-status", "event-timer", "event-detail"
+      "event-status", "event-timer", "event-detail", "event-reward-status",
+      "badge-reveal-dialog", "badge-reveal-content"
     ].forEach(id => { els[id] = document.getElementById(id); });
   }
 
@@ -279,6 +312,7 @@
     bindClick("map-center-location", centerOnDevice);
     bindClick("map-target-location", centerOnDevice);
     bindClick("event-focus-point", focusStickerEventPoint);
+    if (els["event-countdown"]) els["event-countdown"].addEventListener("click", onOfficialBadgeClick);
     bindClick("nearby-collectors-open", openNearbyCollectors);
     bindClick("admin-metrics-open", () => openAdminMetrics("hour"));
     bindClick("admin-metrics-account-open", () => openAdminMetrics("hour"));
@@ -321,6 +355,10 @@
 
     document.querySelectorAll("[data-close-message]").forEach(button => {
       button.addEventListener("click", () => els["message-dialog"] && els["message-dialog"].close());
+    });
+
+    document.querySelectorAll("[data-close-badge-reveal]").forEach(button => {
+      button.addEventListener("click", () => els["badge-reveal-dialog"] && els["badge-reveal-dialog"].close());
     });
 
     document.querySelectorAll("[data-close-admin-metrics]").forEach(button => {
@@ -368,6 +406,13 @@
     els["profile-dialog"].addEventListener("click", event => {
       if (event.target === els["profile-dialog"]) els["profile-dialog"].close();
     });
+
+    if (els["badge-reveal-dialog"]) {
+      els["badge-reveal-dialog"].addEventListener("click", event => {
+        if (event.target === els["badge-reveal-dialog"]) els["badge-reveal-dialog"].close();
+        else onOfficialBadgeClick(event);
+      });
+    }
 
     document.addEventListener("pointerdown", event => {
       if (!els["profile-dialog"].open) return;
@@ -967,6 +1012,107 @@
     else localStorage.removeItem(PROFILE_KEY);
   }
 
+  function readOfficialBadges() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(OFFICIAL_BADGES_STORAGE_KEY) || "[]");
+      return officialBadgeMapFromValue(parsed);
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function saveOfficialBadges(map) {
+    const entries = Object.keys(map || {}).map(id => ({
+      id,
+      acquiredAt: Math.max(0, Number(map[id] && map[id].acquiredAt || 0))
+    }));
+    localStorage.setItem(OFFICIAL_BADGES_STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  function officialBadgeMapFromValue(value) {
+    const map = {};
+    const list = Array.isArray(value)
+      ? value
+      : value && typeof value === "object"
+        ? Object.keys(value).map(id => Object.assign({ id }, value[id] && typeof value[id] === "object" ? value[id] : {}))
+        : [];
+    list.forEach(item => {
+      const id = typeof item === "string" ? item : item && item.id;
+      if (!officialBadgeById(id)) return;
+      map[id] = {
+        id,
+        acquiredAt: Math.max(0, Number(item && item.acquiredAt || Date.now()))
+      };
+    });
+    return map;
+  }
+
+  function normalizeOfficialBadgeIds(value) {
+    return Object.keys(officialBadgeMapFromValue(value));
+  }
+
+  function officialBadgeById(id) {
+    return OFFICIAL_BADGES.find(badge => badge.id === id) || null;
+  }
+
+  function officialBadgeIdsForCurrentUser() {
+    return Object.keys(state.officialBadges || {}).filter(id => officialBadgeById(id));
+  }
+
+  function mergeOfficialBadges(ids) {
+    const incoming = normalizeOfficialBadgeIds(ids);
+    if (!incoming.length) return false;
+    let changed = false;
+    const next = Object.assign({}, state.officialBadges || {});
+    incoming.forEach(id => {
+      if (next[id]) return;
+      next[id] = { id, acquiredAt: Date.now() };
+      changed = true;
+    });
+    if (!changed) return false;
+    state.officialBadges = next;
+    saveOfficialBadges(next);
+    return true;
+  }
+
+  function claimOfficialBadge(id, options = {}) {
+    const badge = officialBadgeById(id);
+    if (!badge) return false;
+    const next = Object.assign({}, state.officialBadges || {});
+    if (next[id]) return false;
+    next[id] = { id, acquiredAt: Date.now() };
+    state.officialBadges = next;
+    saveOfficialBadges(next);
+    if (currentUser && currentUser.uid) {
+      currentUser.officialBadges = officialBadgeIdsForCurrentUser();
+      saveProfile(currentUser);
+      schedulePublicProfileSync();
+    }
+    if (!options.silent) showOfficialBadgeReveal(id, "me");
+    return true;
+  }
+
+  function syncOfficialRewardState(options = {}) {
+    let changed = false;
+    const now = Date.now();
+    if (now <= CHEGUEI_BRASIL_END_AT) {
+      changed = claimOfficialBadge(CHEGUEI_BRASIL_BADGE_ID, { silent: true }) || changed;
+    }
+    if (canClaimEventBadge(now)) {
+      changed = claimOfficialBadge(EVENT_JUNE_6_BADGE_ID, { silent: true }) || changed;
+    }
+    if (changed && options.render !== false) render();
+    return changed;
+  }
+
+  function canClaimEventBadge(now = Date.now()) {
+    if (now < EVENT_JUNE_6_START_AT || now > EVENT_JUNE_6_END_AT) return false;
+    if (!validLocation(state.myLocation)) return false;
+    const point = tradePoints.find(item => item.id === STICKER_EVENT.pointId);
+    if (!point) return false;
+    return distanceMeters(point.lat, point.lng, state.myLocation.lat, state.myLocation.lng) <= POINT_PLAYER_RADIUS_M;
+  }
+
   function readCommunityMeetingEvent() {
     try {
       return normalizeCommunityMeetingEvent(JSON.parse(localStorage.getItem(COMMUNITY_MEETING_STORAGE_KEY) || "null"));
@@ -983,14 +1129,20 @@
 
   function normalizeCommunityMeetingEvent(data) {
     if (!data || data.enabled === false) return null;
-    const startAt = Math.max(0, Number(timestampToMillis(data.startAt) || data.startAt || 0));
+    let startAt = Math.max(0, Number(timestampToMillis(data.startAt) || data.startAt || 0));
     if (!startAt) return null;
-    const endAt = Math.max(startAt + COMMUNITY_MEETING_DURATION_MS, Number(timestampToMillis(data.endAt) || data.endAt || 0));
+    let endAt = Math.max(startAt + COMMUNITY_MEETING_DURATION_MS, Number(timestampToMillis(data.endAt) || data.endAt || 0));
+    const pointId = data.pointId || STICKER_EVENT.pointId;
+    const isJune6Event = pointId === STICKER_EVENT.pointId && sameLocalDate(startAt, EVENT_JUNE_6_START_AT);
+    if (isJune6Event) {
+      startAt = EVENT_JUNE_6_START_AT;
+      endAt = EVENT_JUNE_6_END_AT;
+    }
     return {
-      pointId: data.pointId || STICKER_EVENT.pointId,
+      pointId,
       title: data.title || STICKER_EVENT.title,
       place: data.place || STICKER_EVENT.place,
-      schedule: data.schedule || formatMeetingSchedule(startAt),
+      schedule: isJune6Event ? DEFAULT_COMMUNITY_MEETING_EVENT.schedule : data.schedule || formatMeetingSchedule(startAt),
       startAt,
       endAt,
       enabled: true,
@@ -1046,6 +1198,7 @@
       currentUser.location = location;
       saveProfile(currentUser);
     }
+    syncOfficialRewardState();
   }
 
   function validLocation(location) {
@@ -1098,9 +1251,13 @@
       email: user.email || "",
       photo: user.photoURL || savedProfile.photo || "",
       location: validLocation(savedProfile.location) ? savedProfile.location : state.myLocation,
-      tradeReputation: normalizeReputation(savedProfile.tradeReputation || savedProfile.reputation)
+      tradeReputation: normalizeReputation(savedProfile.tradeReputation || savedProfile.reputation),
+      officialBadges: normalizeOfficialBadgeIds(savedProfile.officialBadges || officialBadgeIdsForCurrentUser())
     };
     guestAddClicks = 0;
+    mergeOfficialBadges(currentUser.officialBadges);
+    currentUser.officialBadges = officialBadgeIdsForCurrentUser();
+    syncOfficialRewardState({ render: false });
     saveProfile(currentUser);
     updateAccountUi();
     recordAnalyticsEvent("google_login");
@@ -1971,6 +2128,9 @@
       currentUser.usernameLower = usernameFromProfile(data) || currentUser.usernameLower || "";
       currentUser.instagram = data.instagram || currentUser.instagram || "";
       currentUser.tradeReputation = normalizeReputation(data.reputacaoTroca || data.tradeReputation || data.reputation || currentUser.tradeReputation);
+      currentUser.officialBadges = normalizeOfficialBadgeIds(data.officialBadges || data.badges || currentUser.officialBadges);
+      mergeOfficialBadges(currentUser.officialBadges);
+      currentUser.officialBadges = officialBadgeIdsForCurrentUser();
       if (validLocation(data.location) && !state.myLocation) {
         saveApproxLocation(locationFromData(data.location));
       }
@@ -1998,6 +2158,14 @@
       : normalizeAlbumCardUpdatedAt(publishAlbum, albumUpdatedAt, state.albumCardUpdatedAt);
     const summary = albumStats(publishAlbum);
     const location = validLocation(state.myLocation) ? locationFromData(state.myLocation) : null;
+    const reputation = normalizeReputation(currentUser.tradeReputation || currentUser.reputation);
+    const officialBadgeIds = officialBadgeIdsForCurrentUser();
+    const reward = profileXpSummary({
+      id: "me",
+      album: publishAlbum,
+      tradeReputation: reputation,
+      officialBadges: officialBadgeIds
+    }, summary);
     const payload = {
       uid: currentUser.uid,
       nome: currentUser.name || "Colecionador",
@@ -2006,6 +2174,10 @@
       usernameLower: usernameFromProfile(currentUser),
       instagram: profileInstagram(currentUser),
       foto: currentUser.photo || "",
+      officialBadges: officialBadgeIds,
+      badges: officialBadgeIds,
+      xp: reward.totalXp,
+      level: reward.level,
       lastOnlineAt: firebase.firestore.FieldValue.serverTimestamp(),
       atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -2022,7 +2194,6 @@
       progress: summary.progress,
       albumUpdatedAt
     };
-    const reputation = normalizeReputation(currentUser.tradeReputation || currentUser.reputation);
     if (hasReputation(reputation)) payload.reputacaoTroca = reputation;
     try {
       const publicRef = db.collection(FIREBASE_COLLECTIONS.publicUsers).doc(currentUser.uid);
@@ -2180,6 +2351,14 @@
     return pad2(date.getDate()) + "/" + pad2(date.getMonth() + 1) + "/" + date.getFullYear() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
   }
 
+  function sameLocalDate(a, b) {
+    const first = new Date(a);
+    const second = new Date(b);
+    return first.getFullYear() === second.getFullYear()
+      && first.getMonth() === second.getMonth()
+      && first.getDate() === second.getDate();
+  }
+
   function publicUserFromDoc(doc) {
     const data = doc.data() || {};
     const location = validLocation(data.location) ? locationFromData(data.location) : null;
@@ -2206,6 +2385,9 @@
       album: resetAlbum ? {} : sanitizeAlbumMap(data.album || {}),
       tradeReputation: normalizeReputation(data.reputacaoTroca || data.tradeReputation || data.reputation),
       profileViewsTotal: normalizeProfileViews(data.profileViews || data.profileViewsPublic || data.views).total,
+      officialBadges: normalizeOfficialBadgeIds(data.officialBadges || data.badges),
+      xp: Math.max(0, Math.round(Number(data.xp || data.rewardXp || 0))),
+      level: Math.max(0, Math.round(Number(data.level || 0))),
       lastOnlineMs: timestampToMillis(data.lastOnlineAt || data.atualizadoEm)
     };
   }
@@ -2820,6 +3002,7 @@
     const wasVisible = document.body.classList.contains("community-meeting-active");
     const active = visible && now >= STICKER_EVENT.startAt && now <= STICKER_EVENT.endAt;
     const label = eventCountdownLabel(now);
+    syncOfficialRewardState({ render: false });
     document.querySelectorAll("[data-event-timer-inline]").forEach(node => {
       node.textContent = label;
     });
@@ -2833,6 +3016,14 @@
     els["event-status"].textContent = active ? "Evento ativo" : "Proximo evento";
     els["event-timer"].textContent = label;
     els["event-detail"].textContent = STICKER_EVENT.place + " - " + STICKER_EVENT.schedule;
+    if (els["event-reward-status"]) {
+      const claimed = Boolean(state.officialBadges && state.officialBadges[EVENT_JUNE_6_BADGE_ID]);
+      els["event-reward-status"].textContent = claimed
+        ? "Emblema garantido para sempre"
+        : active
+          ? "No local: emblema unico"
+          : "Emblema unico ao comparecer";
+    }
   }
 
   function isCommunityMeetingVisible(now = Date.now()) {
@@ -2898,7 +3089,8 @@
       photo: currentUser && currentUser.photo ? currentUser.photo : "",
       colors: ["#13c8a3", "#087f63"],
       album: state.album,
-      tradeReputation: normalizeReputation(currentUser && (currentUser.tradeReputation || currentUser.reputation))
+      tradeReputation: normalizeReputation(currentUser && (currentUser.tradeReputation || currentUser.reputation)),
+      officialBadges: officialBadgeIdsForCurrentUser()
     };
   }
 
@@ -3043,6 +3235,8 @@
                 '<span class="profile-user-meta">' +
                   '<strong>' + escapeHtml(user.name) + '</strong>' +
                   '<em>' + escapeHtml(tradeRankLine(user, tier)) + '</em>' +
+                  profileXpHtml(user, userStats) +
+                  profileOfficialBadgesHtml(user) +
                   instagramButtonHtml(user) +
                 '</span>' +
               '</span>' +
@@ -3065,6 +3259,69 @@
       ? '<img src="' + escapeHtml(user.photo) + '" alt="" referrerpolicy="no-referrer" onerror="this.hidden=true">'
       : '<svg class="profile-default-photo" viewBox="0 0 96 96" aria-hidden="true"><rect width="96" height="96" rx="48" fill="#e5e7eb"/><circle cx="48" cy="35" r="15" fill="#9ca3af"/><path d="M24 78c6-20 18-30 24-30s18 10 24 30" fill="#aeb6c2"/><path d="M20 86c7-20 20-32 28-32s21 12 28 32" fill="#cbd5e1"/></svg>';
     return photo + '<button class="profile-photo-badge" type="button" data-profile-emblems data-profile-user="' + escapeHtml(user.id) + '" aria-label="Ver ranking de trocas">' + tierEmblemHtml(tier, "photo") + '</button>';
+  }
+
+  function profileXpHtml(user, userStats) {
+    const reward = profileXpSummary(user, userStats);
+    return (
+      '<span class="profile-xp-card" aria-label="Nivel ' + reward.level + ', ' + reward.totalXp + ' XP">' +
+        '<span>' +
+          '<b>Nivel ' + reward.level + '</b>' +
+          '<small>' + escapeHtml(reward.title) + '</small>' +
+        '</span>' +
+        '<strong>' + formatNumberPt(reward.totalXp) + ' XP</strong>' +
+        '<i><span style="width:' + reward.percent + '%"></span></i>' +
+      '</span>'
+    );
+  }
+
+  function profileOfficialBadgesHtml(user) {
+    const badges = officialBadgesForUser(user);
+    if (!badges.length) return "";
+    return (
+      '<span class="profile-official-badges" aria-label="Emblemas oficiais">' +
+        badges.map(badge => (
+          '<button class="profile-official-badge" type="button" data-official-badge="' + escapeHtml(badge.id) + '" data-badge-user="' + escapeHtml(user.id) + '" aria-label="Ver emblema ' + escapeHtml(badge.title) + '">' +
+            '<img src="' + escapeHtml(badge.image) + '" alt="" loading="lazy">' +
+            '<span>' + escapeHtml(badge.shortTitle) + '</span>' +
+          '</button>'
+        )).join("") +
+      '</span>'
+    );
+  }
+
+  function officialBadgesForUser(user) {
+    const ids = new Set(normalizeOfficialBadgeIds(user && (user.officialBadges || user.badges)));
+    if (user && user.id === "me") officialBadgeIdsForCurrentUser().forEach(id => ids.add(id));
+    if (user && user.demo) ids.add(CHEGUEI_BRASIL_BADGE_ID);
+    if (Date.now() <= CHEGUEI_BRASIL_END_AT) ids.add(CHEGUEI_BRASIL_BADGE_ID);
+    return OFFICIAL_BADGES.filter(badge => ids.has(badge.id));
+  }
+
+  function profileXpSummary(user, userStats) {
+    const summary = userStats || albumStats(user && user.album || {});
+    const reputation = normalizeReputation(user && (user.tradeReputation || user.reputation || user.reputacaoTroca));
+    const badgeXp = officialBadgesForUser(user).reduce((total, badge) => total + Number(badge.xp || 0), 0);
+    const computedXp =
+      summary.owned * 5 +
+      summary.duplicates * 2 +
+      reputation.tradeUsers * 25 +
+      reputation.tradeStickers * 2 +
+      reputation.likes * 3 +
+      Math.min(500, Math.max(0, Number(user && user.profileViewsTotal || 0))) +
+      badgeXp;
+    const savedXp = Math.max(0, Math.round(Number(user && (user.xp || user.rewardXp) || 0)));
+    const totalXp = Math.max(savedXp, Math.round(computedXp));
+    const levelSize = 240;
+    const level = Math.max(1, Math.min(99, Math.floor(totalXp / levelSize) + 1));
+    const currentLevelStart = (level - 1) * levelSize;
+    const percent = Math.max(0, Math.min(100, Math.round(((totalXp - currentLevelStart) / levelSize) * 100)));
+    return {
+      totalXp,
+      level,
+      percent,
+      title: level >= 20 ? "Especialista" : level >= 10 ? "Colecionador ativo" : "Colecionador"
+    };
   }
 
   function instagramButtonHtml(user) {
@@ -3470,6 +3727,66 @@
     renderProfileAlbum(user.id, mode, sequence[nextIndex]);
   }
 
+  function onOfficialBadgeClick(event) {
+    const close = event.target.closest("[data-close-badge-reveal]");
+    if (close) {
+      if (els["badge-reveal-dialog"]) els["badge-reveal-dialog"].close();
+      event.stopPropagation();
+      return;
+    }
+    const badgeButton = event.target.closest("[data-official-badge]");
+    if (!badgeButton) return;
+    showOfficialBadgeReveal(badgeButton.dataset.officialBadge, badgeButton.dataset.badgeUser || state.selectedUserId);
+    event.stopPropagation();
+  }
+
+  function showOfficialBadgeReveal(badgeId, userId) {
+    const badge = officialBadgeById(badgeId);
+    if (!badge || !els["badge-reveal-dialog"] || !els["badge-reveal-content"]) return;
+    const user = getMapUser(userId || state.selectedUserId) || myMapUser();
+    const owned = officialBadgesForUser(user).some(item => item.id === badge.id);
+    const title = owned ? "Emblema conquistado" : "Emblema exclusivo";
+    els["badge-reveal-content"].innerHTML = (
+      '<section class="badge-reveal-card">' +
+        '<button class="badge-reveal-close" type="button" data-close-badge-reveal aria-label="Fechar">x</button>' +
+        '<span class="badge-reveal-glow"></span>' +
+        '<img class="badge-reveal-image" src="' + escapeHtml(badge.image) + '" alt="">' +
+        '<div class="badge-reveal-copy">' +
+          '<small>' + escapeHtml(title) + '</small>' +
+          '<strong>' + escapeHtml(badge.title) + '</strong>' +
+          '<p>' + escapeHtml(badge.revealText) + '</p>' +
+          '<span><b>+' + formatNumberPt(badge.xp) + ' XP</b><em>' + escapeHtml(badge.availability) + '</em></span>' +
+        '</div>' +
+      '</section>'
+    );
+    if (!els["badge-reveal-dialog"].open) els["badge-reveal-dialog"].showModal();
+    playRewardChime();
+  }
+
+  function playRewardChime() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const context = new AudioContext();
+      const gain = context.createGain();
+      gain.connect(context.destination);
+      gain.gain.setValueAtTime(0.001, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 1.15);
+      [523.25, 659.25, 783.99].forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(frequency, context.currentTime + index * 0.13);
+        oscillator.connect(gain);
+        oscillator.start(context.currentTime + index * 0.13);
+        oscillator.stop(context.currentTime + 0.9 + index * 0.08);
+      });
+      setTimeout(() => context.close(), 1300);
+    } catch (error) {
+      // Som decorativo; se o navegador bloquear, a revelacao continua normal.
+    }
+  }
+
   function profileAlbumCards(albumMap, mode, selection) {
     let list = mode === "groups"
       ? cards.filter(card => card.group === selection)
@@ -3504,6 +3821,7 @@
 
   function onProfileClick(event) {
     const emblemGuide = event.target.closest("[data-profile-emblems]");
+    const officialBadge = event.target.closest("[data-official-badge]");
     const instagram = event.target.closest(".profile-instagram");
     const albumAction = event.target.closest("[data-profile-action='album']");
     const albumMode = event.target.closest("[data-album-mode]");
@@ -3515,6 +3833,11 @@
     const messageMenu = event.target.closest("[data-message-menu]");
     const message = event.target.closest("[data-message-user]");
     const close = event.target.closest("[data-close-profile]");
+    if (officialBadge) {
+      showOfficialBadgeReveal(officialBadge.dataset.officialBadge, officialBadge.dataset.badgeUser || state.selectedUserId);
+      event.stopPropagation();
+      return;
+    }
     if (emblemGuide) {
       renderProfileEmblemGuide(emblemGuide.dataset.profileUser || state.selectedUserId);
       event.stopPropagation();

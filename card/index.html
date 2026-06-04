@@ -14,7 +14,7 @@
   <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="apple-touch-icon" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=card-20260604-search-dropdown-groups-scroll">
+  <link rel="stylesheet" href="styles.css?v=card-20260604-xp-badges-event">
   <link rel="stylesheet" href="nexo-tutorial-popup.css?v=card-20260603-rounded-play">
 </head>
 <body>
@@ -193,6 +193,13 @@
             <strong id="event-timer">Carregando</strong>
             <small id="event-detail">Estacionamento 10 do Parque da Cidade</small>
           </div>
+          <button class="event-reward" type="button" data-official-badge="evento-6-junho" data-badge-user="me" aria-label="Ver emblema exclusivo do encontro">
+            <img src="https://i.ibb.co/ccnXTMpT/madsfasfd-2.png" alt="">
+            <span>
+              <b>+150 XP</b>
+              <small id="event-reward-status">Emblema exclusivo unico</small>
+            </span>
+          </button>
           <button type="button" id="event-focus-point">Ver Estacionamento 10</button>
         </section>
         <div class="map-stage leaflet-stage" id="collector-map-shell" aria-label="Mapa local de colecionadores">
@@ -243,6 +250,10 @@
 
   <dialog class="profile-dialog" id="profile-dialog">
     <div id="profile-content"></div>
+  </dialog>
+
+  <dialog class="badge-reveal-dialog" id="badge-reveal-dialog" aria-label="Destaque de emblema">
+    <div class="badge-reveal-shell" id="badge-reveal-content"></div>
   </dialog>
 
   <dialog class="nearby-dialog" id="nearby-dialog">
@@ -372,7 +383,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="app.js?v=card-20260603-admin-real-album"></script>
+  <script src="app.js?v=card-20260604-xp-badges-event"></script>
   <script src="nexo-tutorial-popup.js?v=card-20260604-cloudinary-tutorial"></script>
   <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-card" data-site-name="NEXO Card" defer></script>
 </body>
