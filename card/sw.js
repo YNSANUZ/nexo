@@ -1,4 +1,4 @@
-const PWA_VERSION = "nexo-card-pwa-20260604-profile-portrait";
+const PWA_VERSION = "nexo-card-pwa-20260604-profile-map-clean";
 
 self.addEventListener("install", event => {
   event.waitUntil(self.skipWaiting());
