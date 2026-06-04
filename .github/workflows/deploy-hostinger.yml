@@ -49,6 +49,7 @@ jobs:
           password: ${{ env.FTP_PASSWORD }}
           server-dir: public_html/
           local-dir: ./
+          state-name: .ftp-deploy-sync-state-publicar.json
           port: 21
           protocol: ftp
           timeout: 120000
