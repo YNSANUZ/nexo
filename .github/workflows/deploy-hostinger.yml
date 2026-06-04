@@ -47,9 +47,9 @@ jobs:
           server: ${{ env.FTP_SERVER }}
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
-          server-dir: ./
+          server-dir: /domains/primusdf.com.br/public_html/
           local-dir: ./
-          state-name: .ftp-deploy-sync-state-publicar-ftp-root.json
+          state-name: .ftp-deploy-sync-state-publicar-live-domain.json
           port: 21
           protocol: ftp
           timeout: 120000
