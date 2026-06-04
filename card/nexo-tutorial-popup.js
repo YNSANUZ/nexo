@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var VIDEO_SRC = "assets/nexo-card-tutorial.mp4";
+  var VIDEO_SRC = "https://res.cloudinary.com/dzcjew9ns/video/upload/v1780541095/NEXO_card_xyqefp.mp4?_s=public-apps";
   var STORAGE_KEY = "nexoTutorialClosed";
   var AUTO_OPEN_DELAY_MS = 1600;
   var DIALOG_RETRY_DELAY_MS = 3000;

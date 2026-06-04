@@ -129,6 +129,14 @@ jobs:
                   except Exception:
                       pass
 
+          for obsolete_file in ["card/assets/nexo-card-tutorial.mp4"]:
+              try:
+                  ftp.cwd(remote_root)
+                  ftp.delete(obsolete_file)
+                  print(f"remove obsolete {obsolete_file}")
+              except Exception:
+                  pass
+
           ftp.quit()
           print(f"Deploy FTP concluido. Enviados: {uploaded}. Pulados por tamanho igual: {skipped}.")
           PY
@@ -152,6 +160,7 @@ jobs:
           marker = get("https://primusdf.com.br/deploy-check.txt")
           index = get("https://primusdf.com.br/card/index.html")
           app = get("https://primusdf.com.br/card/app.js")
+          tutorial = get("https://primusdf.com.br/card/nexo-tutorial-popup.js")
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
@@ -160,6 +169,8 @@ jobs:
               ("busca de usuarios no index", "user-search-results" in index),
               ("busca de usuarios no app", "renderUserSearchResults" in app),
               ("remove album admin congelado", "completeAlbumMap" not in app),
+              ("tutorial usa Cloudinary", "https://res.cloudinary.com/dzcjew9ns/video/upload/v1780541095/NEXO_card_xyqefp.mp4?_s=public-apps" in tutorial),
+              ("tutorial nao usa MP4 local", "assets/nexo-card-tutorial.mp4" not in tutorial),
           ]
 
           failed = [name for name, ok in checks if not ok]

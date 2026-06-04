@@ -22,3 +22,5 @@ build/
 # Estado local de deploy
 .ftp-deploy-sync-state.json
 
+# Tutorial hospedado externamente no Cloudinary
+card/assets/nexo-card-tutorial.mp4
