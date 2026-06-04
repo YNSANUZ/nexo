@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Central de Metricas Primus</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1118;
+      --panel: #121b26;
+      --panel-2: #192332;
+      --line: #2e3c4f;
+      --text: #eef6ff;
+      --muted: #94a7bd;
+      --brand: #25c2a0;
+      --warn: #f2b84b;
+      --danger: #f26d6d;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    a.button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #202c3d;
+      color: var(--text);
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button.primary {
+      border-color: transparent;
+      background: var(--brand);
+      color: #06130f;
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0e1620;
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(11, 17, 24, .94);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar,
+    main {
+      width: min(1800px, 100%);
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .panel-head {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .panel-body {
+      padding: 12px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .kpi,
+    .site-card {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0e1620;
+      padding: 11px;
+      min-width: 0;
+    }
+
+    .kpi span,
+    .site-card span,
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .kpi strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .status {
+      min-height: 38px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0e1620;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 12px;
+    }
+
+    #map {
+      height: 470px;
+      border-radius: 7px;
+      overflow: hidden;
+      background: #eef2f4;
+    }
+
+    .chart {
+      min-height: 170px;
+      display: flex;
+      align-items: end;
+      gap: 5px;
+      padding: 18px 8px 30px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0e1620;
+      overflow-x: auto;
+    }
+
+    .bar {
+      position: relative;
+      min-width: 28px;
+      flex: 1 0 28px;
+      max-width: 54px;
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(180deg, var(--brand), #3d8cff);
+    }
+
+    .bar b,
+    .bar span {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .bar b {
+      top: -17px;
+      color: var(--text);
+    }
+
+    .bar span {
+      bottom: -21px;
+      color: var(--muted);
+    }
+
+    .sites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .partner-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .site-card {
+      display: grid;
+      gap: 10px;
+    }
+
+    .site-card h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .site-meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .site-meta div {
+      border: 1px solid #2c3a4c;
+      border-radius: 7px;
+      padding: 7px;
+      background: #111b27;
+    }
+
+    .site-meta strong,
+    .site-meta span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .site-meta strong {
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    .site-rank-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      border: 1px solid rgba(37, 194, 160, .45);
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: #92ffe7;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .boom-badge {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: #25c2a0;
+      color: #06130f;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .share-block {
+      display: grid;
+      gap: 5px;
+    }
+
+    .share-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .share-label strong {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .share-bar {
+      height: 8px;
+      overflow: hidden;
+      border: 1px solid #2c3a4c;
+      border-radius: 999px;
+      background: #0a121c;
+    }
+
+    .share-fill {
+      width: var(--share);
+      height: 100%;
+      border-radius: inherit;
+      background: #25c2a0;
+    }
+
+    .site-status {
+      display: inline-flex;
+      width: fit-content;
+      min-height: 24px;
+      align-items: center;
+      border: 1px solid #3b4b60;
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .site-status.ok {
+      border-color: rgba(37, 194, 160, .65);
+      color: #92ffe7;
+    }
+
+    .site-status.warn {
+      border-color: rgba(242, 184, 75, .7);
+      color: #ffd889;
+    }
+
+    .partner-card {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0e1620;
+      padding: 11px;
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .partner-card h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .partner-link {
+      color: #92ffe7;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .partner-series,
+    .partner-month-grid {
+      display: grid;
+      gap: 5px;
+    }
+
+    .partner-series {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .partner-month-grid {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      margin-top: 8px;
+    }
+
+    .partner-day {
+      border: 1px solid #2c3a4c;
+      border-radius: 6px;
+      background: #111b27;
+      padding: 6px 4px;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .partner-day span,
+    .partner-day strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .partner-day span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .partner-day strong {
+      margin-top: 3px;
+      font-size: 13px;
+    }
+
+    details.partner-month summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 9px 10px;
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      text-align: left;
+      color: var(--muted);
+    }
+
+    th {
+      color: var(--text);
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .login {
+      max-width: 520px;
+      margin: 14vh auto;
+      padding: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .filters,
+      .map-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: stretch;
+      }
+
+      .toolbar > *,
+      .filters > * {
+        width: 100%;
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #map {
+        height: 390px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Central de Metricas Primus</h1>
+        <div class="subtitle">Todos os sites juntos, com mapa, acessos e status para acompanhar pelo celular.</div>
+      </div>
+      <div class="toolbar">
+        <button id="refreshBtn" type="button">Atualizar</button>
+        <button id="nexoLoginBtn" type="button">Google NEXO</button>
+        <button id="logoutBtn" type="button">Trocar chave</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" hidden>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Visao geral</h2>
+      </div>
+      <div class="panel-body">
+        <div class="filters">
+          <select id="period">
+            <option value="1">Dia</option>
+            <option value="7" selected>Semana</option>
+            <option value="30">Mes</option>
+            <option value="365">Ano</option>
+          </select>
+          <select id="siteFilter"></select>
+          <button class="primary" id="openSitesBtn" type="button">Sites</button>
+        </div>
+        <div id="status" class="status">Carregando...</div>
+        <div id="kpis" class="kpis"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Mapa e grafico</h2>
+      </div>
+      <div class="panel-body">
+        <div class="map-grid">
+          <div id="map"></div>
+          <div id="chart" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="sitesPanel">
+      <div class="panel-head">
+        <h2>Sites</h2>
+        <span class="muted" id="siteCount"></span>
+      </div>
+      <div class="panel-body">
+        <div id="sitesGrid" class="sites-grid"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="partnerLinksPanel">
+      <div class="panel-head">
+        <h2>Links de parceiros NEXO Vagas</h2>
+        <span class="muted">/a ate /j</span>
+      </div>
+      <div class="panel-body">
+        <div id="partnerLinksGrid" class="partner-links-grid"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Ultimos acessos</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Site</th>
+              <th>Evento</th>
+              <th>Local</th>
+              <th>Pagina</th>
+              <th>Dispositivo</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <section id="login" class="panel login">
+    <div class="panel-head">
+      <h2>Entrar na central</h2>
+    </div>
+    <div class="panel-body">
+      <p class="muted">Cole a chave privada uma vez. Ela fica salva somente neste aparelho.</p>
+      <div class="filters">
+        <input id="keyInput" type="password" placeholder="Chave da central">
+        <button class="primary" id="saveKeyBtn" type="button">Entrar</button>
+      </div>
+      <div class="status">Dica: abra no celular com <strong>?key=SUA_CHAVE</strong> uma vez para salvar.</div>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script>
+    const app = document.querySelector("#app");
+    const login = document.querySelector("#login");
+    const keyInput = document.querySelector("#keyInput");
+    const saveKeyBtn = document.querySelector("#saveKeyBtn");
+    const refreshBtn = document.querySelector("#refreshBtn");
+    const nexoLoginBtn = document.querySelector("#nexoLoginBtn");
+    const logoutBtn = document.querySelector("#logoutBtn");
+    const period = document.querySelector("#period");
+    const siteFilter = document.querySelector("#siteFilter");
+    const statusEl = document.querySelector("#status");
+    const kpis = document.querySelector("#kpis");
+    const chart = document.querySelector("#chart");
+    const sitesGrid = document.querySelector("#sitesGrid");
+    const siteCount = document.querySelector("#siteCount");
+    const partnerLinksGrid = document.querySelector("#partnerLinksGrid");
+    const recentBody = document.querySelector("#recentBody");
+    const openSitesBtn = document.querySelector("#openSitesBtn");
+    let map;
+    let layer;
+    let currentData = { sites: {}, events: [] };
+    let nexoFirebaseStarted = false;
+    let sourceNote = "";
+
+    const nexoFirebaseConfig = {
+      apiKey: "AIzaSyBx4qRCsPU8O2dl8SoAfnyHSPkp1blZcu0",
+      authDomain: "gameshopping-d86fb.firebaseapp.com",
+      projectId: "gameshopping-d86fb",
+      storageBucket: "gameshopping-d86fb.firebasestorage.app",
+      messagingSenderId: "318560101898",
+      appId: "1:318560101898:web:8731f7c0c902ad0429a1f3",
+      measurementId: "G-4DXJWWY965"
+    };
+    const nexoAdminEmails = new Set(["ynsanuz@gmail.com", "primus.df@gmail.com"]);
+    const nexoPartnerCodes = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+
+    function getKey() {
+      const url = new URL(location.href);
+      const urlKey = url.searchParams.get("key");
+      if (urlKey) {
+        localStorage.setItem("primusAnalyticsKey", urlKey);
+        url.searchParams.delete("key");
+        history.replaceState(null, "", url.toString());
+        return urlKey;
+      }
+      return localStorage.getItem("primusAnalyticsKey") || "";
+    }
+
+    function showApp() {
+      const key = getKey();
+      setupNexoFirebase();
+      app.hidden = !key;
+      login.hidden = Boolean(key);
+      if (key) loadData();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function ms(event) {
+      return Number(event.createdAtMs || event.receivedAtMs || 0);
+    }
+
+    function isView(event) {
+      return event.event === "page_view";
+    }
+
+    function cutoff(days) {
+      return Date.now() - Number(days) * 86400000;
+    }
+
+    function locationLabel(event) {
+      return [event.city, event.region, event.countryName || event.countryCode].filter(Boolean).join(", ") || "Nao identificado";
+    }
+
+    function formatTime(value) {
+      return value ? new Date(value).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "--";
+    }
+
+    function countEvents(events, days, siteId) {
+      const start = cutoff(days);
+      return events.filter((event) => isView(event) && ms(event) >= start && (!siteId || event.siteId === siteId)).length;
+    }
+
+    function getNexoFirebaseApp() {
+      if (!window.firebase || !firebase.apps) return null;
+      return firebase.apps.find((item) => item.name === "nexoVagasMetricsBridge")
+        || firebase.initializeApp(nexoFirebaseConfig, "nexoVagasMetricsBridge");
+    }
+
+    function getNexoAuth() {
+      const nexoApp = getNexoFirebaseApp();
+      return nexoApp && typeof nexoApp.auth === "function" ? nexoApp.auth() : null;
+    }
+
+    function getNexoDb() {
+      const nexoApp = getNexoFirebaseApp();
+      return nexoApp && typeof nexoApp.firestore === "function" ? nexoApp.firestore() : null;
+    }
+
+    function isNexoAdminEmail(email) {
+      return nexoAdminEmails.has(String(email || "").trim().toLowerCase());
+    }
+
+    function updateNexoButton(user) {
+      if (!nexoLoginBtn) return;
+      const email = user && user.email ? String(user.email).toLowerCase() : "";
+      const connected = Boolean(user);
+      nexoLoginBtn.textContent = connected ? "NEXO OK" : "Google NEXO";
+      nexoLoginBtn.title = connected
+        ? "Firebase NEXO Vagas conectado: " + email
+        : "Entrar no Firebase do NEXO Vagas para puxar as metricas antigas";
+      nexoLoginBtn.classList.toggle("primary", connected);
+    }
+
+    function setupNexoFirebase() {
+      if (nexoFirebaseStarted) return;
+      if (!window.firebase || !firebase.auth || !firebase.firestore) {
+        updateNexoButton(null);
+        return;
+      }
+      const auth = getNexoAuth();
+      if (!auth) return;
+      nexoFirebaseStarted = true;
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+      auth.onAuthStateChanged((user) => {
+        updateNexoButton(user);
+        if (getKey()) loadData();
+      });
+    }
+
+    async function signInNexoFirebase() {
+      setupNexoFirebase();
+      const auth = getNexoAuth();
+      if (!auth || !window.firebase) {
+        statusEl.textContent = "Firebase do NEXO Vagas nao carregou neste navegador.";
+        return;
+      }
+      try {
+        nexoLoginBtn.disabled = true;
+        nexoLoginBtn.textContent = "Entrando...";
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        await auth.signInWithPopup(provider);
+        await loadData();
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "Nao consegui entrar no Google NEXO. Se der erro de dominio, autorize primusdf.com.br no Firebase Auth do NEXO Vagas.";
+      } finally {
+        nexoLoginBtn.disabled = false;
+        updateNexoButton(auth.currentUser);
+      }
+    }
+
+    function timestampMs(value) {
+      if (!value) return 0;
+      if (typeof value.toMillis === "function") return value.toMillis();
+      if (typeof value.seconds === "number") return value.seconds * 1000 + Math.round(Number(value.nanoseconds || 0) / 1000000);
+      if (typeof value === "number") return value;
+      const parsed = Date.parse(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function normalizeNexoMetric(data, id) {
+      const email = String(data.userEmail || "").toLowerCase();
+      if (isNexoAdminEmail(email)) return null;
+      const createdAtMs = timestampMs(data.createdAt);
+      const type = String(data.type || "event");
+      const action = String(data.action || "");
+      const title = String(data.itemTitle || action || type || "NEXO Vagas");
+      return {
+        id: "nexo-metric-" + id,
+        siteId: "nexo-vagas",
+        siteName: "NEXO Vagas",
+        siteUrl: "https://nexovagas.com.br/",
+        event: type === "visit" ? "page_view" : type,
+        page: type === "visit" ? "/" : title,
+        title,
+        target: title,
+        sessionId: String(data.sessionId || ""),
+        visitorId: String(data.userId || ""),
+        referrer: String(data.referrer || ""),
+        createdAtMs,
+        receivedAtMs: createdAtMs,
+        durationSeconds: Number(data.durationSeconds || 0),
+        city: String(data.city || ""),
+        region: String(data.region || ""),
+        countryCode: String(data.countryCode || ""),
+        countryName: String(data.countryName || ""),
+        timezone: String(data.timezone || ""),
+        language: String(data.language || ""),
+        browser: String(data.browser || ""),
+        os: String(data.os || ""),
+        device: String(data.os || ""),
+        inviteCode: String(data.inviteCode || ""),
+        invitePath: String(data.invitePath || ""),
+        landingPath: String(data.landingPath || ""),
+        source: "firebase-nexo-vagas"
+      };
+    }
+
+    function normalizeNexoLocation(data, id) {
+      const email = String(data.userEmail || "").toLowerCase();
+      if (isNexoAdminEmail(email)) return null;
+      const lat = Number(data.latitude);
+      const lng = Number(data.longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      const createdAtMs = timestampMs(data.updatedAt);
+      return {
+        id: "nexo-location-" + id,
+        siteId: "nexo-vagas",
+        siteName: "NEXO Vagas",
+        siteUrl: "https://nexovagas.com.br/",
+        event: "location",
+        page: "mapa de acesso",
+        title: "Local de acesso",
+        sessionId: String(data.sessionId || ""),
+        visitorId: String(data.userId || ""),
+        createdAtMs,
+        receivedAtMs: createdAtMs,
+        city: String(data.city || ""),
+        region: String(data.region || data.uf || ""),
+        countryCode: String(data.countryCode || ""),
+        countryName: String(data.countryName || ""),
+        lat,
+        lng,
+        source: "firebase-nexo-vagas-location"
+      };
+    }
+
+    async function loadNexoVagasFirebase(days, selectedSite) {
+      if (selectedSite && selectedSite !== "nexo-vagas") {
+        return { events: [], note: "Firebase NEXO Vagas pausado neste filtro." };
+      }
+      if (!window.firebase || !firebase.firestore) {
+        return { events: [], note: "Firebase NEXO Vagas ainda nao carregou." };
+      }
+      setupNexoFirebase();
+      const auth = getNexoAuth();
+      const db = getNexoDb();
+      const user = auth && auth.currentUser;
+      if (!auth || !db) return { events: [], note: "Firebase NEXO Vagas indisponivel." };
+      if (!user) return { events: [], note: "Firebase NEXO Vagas: clique em Google NEXO para somar os dados antigos." };
+      if (!isNexoAdminEmail(user.email)) return { events: [], note: "Firebase NEXO Vagas: Google conectado sem permissao de admin." };
+
+      const startMs = Date.now() - Number(days || 7) * 86400000;
+      const startAt = firebase.firestore.Timestamp.fromMillis(startMs);
+      try {
+        const metricSnap = await db.collection("metricsEvents")
+          .where("createdAt", ">=", startAt)
+          .orderBy("createdAt", "desc")
+          .limit(5000)
+          .get();
+        const locationSnap = await db.collection("userLocations")
+          .where("updatedAt", ">=", startAt)
+          .orderBy("updatedAt", "desc")
+          .limit(1500)
+          .get();
+        const metricEvents = metricSnap.docs
+          .map((doc) => normalizeNexoMetric(doc.data() || {}, doc.id))
+          .filter(Boolean);
+        const locationEvents = locationSnap.docs
+          .map((doc) => normalizeNexoLocation(doc.data() || {}, doc.id))
+          .filter(Boolean);
+        return {
+          events: metricEvents.concat(locationEvents),
+          note: "Firebase NEXO Vagas: " + metricEvents.length + " eventos e " + locationEvents.length + " pontos."
+        };
+      } catch (error) {
+        console.error(error);
+        return { events: [], note: "Firebase NEXO Vagas: sem permissao ou indice pendente no Firestore." };
+      }
+    }
+
+    async function loadData() {
+      const key = getKey();
+      const days = period.value;
+      const site = siteFilter.value || "";
+      statusEl.textContent = "Carregando dados...";
+      try {
+        const response = await fetch("api.php?days=" + encodeURIComponent(days) + "&site=" + encodeURIComponent(site) + "&key=" + encodeURIComponent(key), { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.error || "api_error");
+        const nexoBridge = await loadNexoVagasFirebase(Math.max(Number(days), 365), site);
+        data.events = (Array.isArray(data.events) ? data.events : []).concat(nexoBridge.events);
+        data.events.sort((a, b) => ms(b) - ms(a));
+        sourceNote = nexoBridge.note || "";
+        currentData = data;
+        renderAll();
+      } catch (error) {
+        statusEl.textContent = "Nao consegui carregar. Confira a chave e se o arquivo api.php foi publicado.";
+        console.error(error);
+      }
+    }
+
+    function renderAll() {
+      renderSiteOptions();
+      const events = currentData.events || [];
+      const views = events.filter(isView);
+      const periodViews = views.filter((event) => ms(event) >= cutoff(Number(period.value)));
+      const onlineSessions = new Set(events.filter((event) => Date.now() - ms(event) < 5 * 60000).map((event) => event.sessionId).filter(Boolean)).size;
+      const sitesWithData = new Set(events.map((event) => event.siteId)).size;
+      const last = events[0];
+      kpis.innerHTML = [
+        ["Hoje", countEvents(events, 1)],
+        ["Semana", countEvents(events, 7)],
+        ["Mes", countEvents(events, 30)],
+        ["Ano", countEvents(events, 365)],
+        ["Online", onlineSessions],
+        ["Sites com dados", sitesWithData]
+      ].map(([label, value]) => '<div class="kpi"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong></div>').join("");
+      statusEl.textContent = periodViews.length + " acessos no periodo. Ultimo: " + (last ? formatTime(ms(last)) + " em " + last.siteName : "sem dados ainda") + (sourceNote ? " | " + sourceNote : "");
+      renderMap(events);
+      renderChart(views);
+      renderSites(events);
+      renderPartnerLinks(events);
+      renderRecent(events);
+    }
+
+    function renderSiteOptions() {
+      const selected = siteFilter.value;
+      const sites = currentData.sites || {};
+      siteFilter.innerHTML = '<option value="">Todos os sites</option>' + Object.entries(sites).map(([id, site]) =>
+        '<option value="' + escapeHtml(id) + '">' + escapeHtml(site.name) + '</option>'
+      ).join("");
+      if ([...siteFilter.options].some((option) => option.value === selected)) siteFilter.value = selected;
+    }
+
+    function setupMap() {
+      if (map) return;
+      map = L.map("map").setView([12, 0], 2);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap &copy; CARTO"
+      }).addTo(map);
+      layer = L.layerGroup().addTo(map);
+    }
+
+    function renderMap(events) {
+      setupMap();
+      layer.clearLayers();
+      const points = events.filter((event) => Number.isFinite(Number(event.lat)) && Number.isFinite(Number(event.lng))).slice(0, 1000);
+      if (!points.length) {
+        map.setView([12, 0], 2);
+        setTimeout(() => map.invalidateSize(), 50);
+        return;
+      }
+      const bounds = [];
+      points.forEach((event) => {
+        const latLng = [Number(event.lat), Number(event.lng)];
+        bounds.push(latLng);
+        L.circleMarker(latLng, {
+          radius: 7,
+          weight: 2,
+          color: "#25c2a0",
+          fillColor: "#25c2a0",
+          fillOpacity: .72
+        }).bindPopup('<strong>' + escapeHtml(event.siteName) + '</strong><br>' + escapeHtml(locationLabel(event)) + '<br>' + escapeHtml(formatTime(ms(event)))).addTo(layer);
+      });
+      map.fitBounds(bounds, { padding: [24, 24], maxZoom: 8 });
+      setTimeout(() => map.invalidateSize(), 50);
+    }
+
+    function renderChart(events) {
+      const days = Number(period.value);
+      const buckets = days === 1 ? hourBuckets() : (days > 31 ? monthBuckets(days >= 365 ? 12 : 3) : dayBuckets(days));
+      const counts = buckets.map((bucket) => events.filter((event) => ms(event) >= bucket.start && ms(event) < bucket.end).length);
+      const max = Math.max(1, ...counts);
+      chart.innerHTML = buckets.map((bucket, index) => {
+        const count = counts[index];
+        const height = Math.max(6, Math.round((count / max) * 118));
+        return '<div class="bar" style="height:' + height + 'px" title="' + escapeHtml(bucket.title) + ': ' + count + '"><b>' + count + '</b><span>' + escapeHtml(bucket.label) + '</span></div>';
+      }).join("") || '<span class="muted">Sem grafico.</span>';
+    }
+
+    function hourBuckets() {
+      const now = new Date();
+      const items = [];
+      for (let index = 23; index >= 0; index--) {
+        const date = new Date(now);
+        date.setMinutes(0, 0, 0);
+        date.setHours(now.getHours() - index);
+        items.push({ start: date.getTime(), end: date.getTime() + 3600000, label: String(date.getHours()).padStart(2, "0") + "h", title: date.toLocaleString("pt-BR") });
+      }
+      return items;
+    }
+
+    function dayBuckets(days) {
+      const now = Date.now();
+      const start = now - days * 86400000;
+      return Array.from({ length: days }, (_, index) => {
+        const a = start + index * 86400000;
+        const b = index === days - 1 ? now + 1 : a + 86400000;
+        const date = new Date(b - 1);
+        return { start: a, end: b, label: date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }), title: date.toLocaleDateString("pt-BR") };
+      });
+    }
+
+    function monthBuckets(total) {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth() - total + 1, 1);
+      return Array.from({ length: total }, (_, index) => {
+        const startDate = new Date(first.getFullYear(), first.getMonth() + index, 1);
+        const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+        return {
+          start: startDate.getTime(),
+          end: index === total - 1 ? Date.now() + 1 : endDate.getTime(),
+          label: startDate.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+          title: startDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+        };
+      });
+    }
+
+    function renderSites(events) {
+      const sites = currentData.sites || {};
+      const now = Date.now();
+      const selectedDays = Number(period.value);
+      const totalSelected = countEvents(events, selectedDays);
+      siteCount.textContent = Object.keys(sites).length + " cadastrados | ranking por " + periodName(selectedDays).toLowerCase();
+      const rankedSites = Object.entries(sites).map(([id, site], index) => {
+        const siteEvents = events.filter((event) => event.siteId === id);
+        const last = siteEvents[0];
+        const lastMs = last ? ms(last) : 0;
+        const selectedCount = countEvents(events, selectedDays, id);
+        const dayCount = countEvents(events, 1, id);
+        const weekCount = countEvents(events, 7, id);
+        const monthCount = countEvents(events, 30, id);
+        const yearCount = countEvents(events, 365, id);
+        return { id, site, index, siteEvents, last, lastMs, selectedCount, dayCount, weekCount, monthCount, yearCount };
+      }).sort((a, b) =>
+        b.selectedCount - a.selectedCount
+        || b.weekCount - a.weekCount
+        || b.dayCount - a.dayCount
+        || a.index - b.index
+      );
+      sitesGrid.innerHTML = rankedSites.map((item, index) => {
+        const { id, site, siteEvents, last, lastMs, selectedCount, dayCount, weekCount, monthCount, yearCount } = item;
+        const isOk = lastMs && now - lastMs < 24 * 3600000;
+        const hasData = siteEvents.length > 0;
+        const share = totalSelected > 0 ? selectedCount / totalSelected : 0;
+        const shareWidth = Math.max(0, Math.min(100, share * 100));
+        const shareText = formatPercent(share);
+        const isBooming = index === 0 && selectedCount > 0;
+        return '<article class="site-card">' +
+          '<div class="site-rank-row"><span class="rank-badge">#' + escapeHtml(index + 1) + '</span>' + (isBooming ? '<span class="boom-badge">Bombando</span>' : '') + '</div>' +
+          '<div><h3>' + escapeHtml(site.name) + '</h3><span>' + escapeHtml(site.url || "local") + '</span></div>' +
+          '<div class="share-block">' +
+            '<div class="share-label"><span>' + escapeHtml(periodName(selectedDays)) + ' no total</span><strong>' + escapeHtml(shareText) + '</strong></div>' +
+            '<div class="share-bar"><div class="share-fill" style="--share:' + escapeHtml(shareWidth.toFixed(1)) + '%"></div></div>' +
+          '</div>' +
+          '<span class="site-status ' + (isOk ? "ok" : hasData ? "warn" : "") + '">' + (isOk ? "ativo hoje" : hasData ? "sem acesso hoje" : "sem dados") + '</span>' +
+          '<div class="site-meta">' +
+            metricCell("Dia", dayCount) +
+            metricCell("Semana", weekCount) +
+            metricCell("Mes", monthCount) +
+            metricCell("Ano", yearCount) +
+          '</div>' +
+          '<span>Ultimo: ' + escapeHtml(last ? formatTime(lastMs) + " - " + locationLabel(last) : "nenhum acesso recebido") + '</span>' +
+          (site.url ? '<a class="button" href="' + escapeHtml(site.url) + '" target="_blank" rel="noopener">Abrir site</a>' : '') +
+        '</article>';
+      }).join("");
+    }
+
+    function metricCell(label, value) {
+      return '<div><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong></div>';
+    }
+
+    function isNexoPartnerView(event, code) {
+      return isView(event)
+        && event.siteId === "nexo-vagas"
+        && String(event.inviteCode || "").toLowerCase() === code;
+    }
+
+    function countPartnerViews(events, code, days) {
+      const start = cutoff(days);
+      return events.filter((event) => isNexoPartnerView(event, code) && ms(event) >= start).length;
+    }
+
+    function partnerDayCell(bucket, count) {
+      return '<div class="partner-day" title="' + escapeHtml(bucket.title) + ': ' + count + '">' +
+        '<span>' + escapeHtml(bucket.label) + '</span>' +
+        '<strong>' + escapeHtml(count) + '</strong>' +
+      '</div>';
+    }
+
+    function renderPartnerLinks(events) {
+      if (!partnerLinksGrid) return;
+      const weekBuckets = dayBuckets(7);
+      const monthBucketsList = dayBuckets(30);
+      partnerLinksGrid.innerHTML = nexoPartnerCodes.map((code) => {
+        const link = "https://nexovagas.com.br/" + code;
+        const today = countPartnerViews(events, code, 1);
+        const year = countPartnerViews(events, code, 365);
+        const weekHtml = weekBuckets.map((bucket) => {
+          const count = events.filter((event) => isNexoPartnerView(event, code) && ms(event) >= bucket.start && ms(event) < bucket.end).length;
+          return partnerDayCell(bucket, count);
+        }).join("");
+        const monthHtml = monthBucketsList.map((bucket) => {
+          const count = events.filter((event) => isNexoPartnerView(event, code) && ms(event) >= bucket.start && ms(event) < bucket.end).length;
+          return partnerDayCell(bucket, count);
+        }).join("");
+        return '<article class="partner-card">' +
+          '<div class="site-rank-row"><h3>/' + escapeHtml(code) + '</h3><span class="rank-badge">' + escapeHtml(today) + ' hoje</span></div>' +
+          '<a class="partner-link" href="' + escapeHtml(link) + '" target="_blank" rel="noopener">' + escapeHtml(link) + '</a>' +
+          '<div class="site-meta">' +
+            metricCell("Hoje", today) +
+            metricCell("Semana", countPartnerViews(events, code, 7)) +
+            metricCell("Mes", countPartnerViews(events, code, 30)) +
+            metricCell("Ano", year) +
+          '</div>' +
+          '<div><span class="muted">Ultima semana</span><div class="partner-series">' + weekHtml + '</div></div>' +
+          '<details class="partner-month"><summary>Ver ultimo mes por dia</summary><div class="partner-month-grid">' + monthHtml + '</div></details>' +
+        '</article>';
+      }).join("");
+    }
+
+    function periodName(days) {
+      if (Number(days) === 1) return "Dia";
+      if (Number(days) === 7) return "Semana";
+      if (Number(days) === 30) return "Mes";
+      if (Number(days) === 365) return "Ano";
+      return days + " dias";
+    }
+
+    function formatPercent(value) {
+      if (!Number.isFinite(value) || value <= 0) return "0%";
+      const percent = value * 100;
+      if (percent < 1) return "<1%";
+      if (percent < 10) return percent.toFixed(1).replace(".", ",") + "%";
+      return Math.round(percent) + "%";
+    }
+
+    function renderRecent(events) {
+      recentBody.innerHTML = events.slice(0, 80).map((event) =>
+        '<tr><td>' + escapeHtml(formatTime(ms(event))) + '</td><td>' + escapeHtml(event.siteName) + '</td><td>' + escapeHtml(event.event) + '</td><td>' + escapeHtml(locationLabel(event)) + '</td><td>' + escapeHtml(event.page || "/") + '</td><td>' + escapeHtml([event.device, event.browser].filter(Boolean).join(" / ")) + '</td></tr>'
+      ).join("") || '<tr><td colspan="6">Sem acessos ainda.</td></tr>';
+    }
+
+    saveKeyBtn.addEventListener("click", () => {
+      if (!keyInput.value.trim()) return;
+      localStorage.setItem("primusAnalyticsKey", keyInput.value.trim());
+      showApp();
+    });
+    refreshBtn.addEventListener("click", loadData);
+    nexoLoginBtn.addEventListener("click", signInNexoFirebase);
+    period.addEventListener("change", loadData);
+    siteFilter.addEventListener("change", loadData);
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("primusAnalyticsKey");
+      location.reload();
+    });
+    openSitesBtn.addEventListener("click", () => document.querySelector("#sitesPanel").scrollIntoView({ behavior: "smooth" }));
+    showApp();
+  </script>
+</body>
+</html>

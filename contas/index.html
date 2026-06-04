@@ -1,0 +1,4997 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXO Contas</title>
+  <meta name="description" content="Melhor site para organizar suas contas">
+  <meta property="og:title" content="NEXO Contas">
+  <meta property="og:description" content="Melhor site para organizar suas contas">
+  <meta property="og:image" content="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+  <meta name="theme-color" content="#151b62">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NEXO Contas">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+  <style>
+    :root {
+      --aqua: #40e0d0;
+      --aqua-2: #72ffe8;
+      --blue-950: #151b62;
+      --blue-900: #1d2879;
+      --blue-800: #2360a9;
+      --blue-700: #2f78c1;
+      --blue-600: #3489d3;
+      --panel: rgba(47, 120, 193, 0.82);
+      --panel-soft: rgba(84, 170, 224, 0.25);
+      --ink: #ffffff;
+      --muted: #c9e7ff;
+      --danger: #ff8d7a;
+      --ok: #7effd7;
+      --shadow: 0 18px 40px rgba(5, 9, 52, 0.36);
+      --glow: 0 0 0 1px rgba(64, 224, 208, 0.28), 0 8px 24px rgba(64, 224, 208, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 14%, rgba(64, 224, 208, 0.28), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(55, 135, 220, 0.34), transparent 32%),
+        linear-gradient(135deg, #10134f 0%, #17216c 44%, #10144d 100%);
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .workspace {
+      width: min(1180px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 24px 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .phone {
+      width: min(430px, 100%);
+      min-height: min(860px, calc(100vh - 48px));
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      border-radius: 34px;
+      padding: 18px 16px 86px;
+      background:
+        radial-gradient(circle at 25% 5%, rgba(114, 255, 232, 0.34), transparent 26%),
+        linear-gradient(180deg, #3378c3 0%, #2f86cf 45%, #2675bd 100%);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(114, 255, 232, 0.34);
+      scrollbar-width: none;
+    }
+
+    .phone::-webkit-scrollbar {
+      display: none;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(64, 224, 208, 0.18), transparent 22%);
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.28;
+      background-image:
+        linear-gradient(115deg, transparent 0 42%, rgba(126, 255, 215, 0.34) 42.4%, transparent 43.2%),
+        linear-gradient(115deg, transparent 0 58%, rgba(255, 255, 255, 0.18) 58.3%, transparent 59%),
+        repeating-linear-gradient(90deg, transparent 0 34px, rgba(126, 255, 215, 0.12) 35px, transparent 36px);
+      background-size: 240px 160px, 300px 210px, 180px 100%;
+      animation: financeFlow 18s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes financeFlow {
+      from { background-position: 0 0, 0 0, 0 0; }
+      to { background-position: 240px 160px, -300px 210px, 180px 0; }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .icon-btn,
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(28, 78, 148, 0.65);
+      box-shadow: var(--glow);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 1.25rem;
+    }
+
+    #installAppButton {
+      display: none;
+    }
+
+    .user {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+      flex: 1;
+      padding: 4px 0;
+      border: 0;
+      color: #fff;
+      text-align: left;
+      background: transparent;
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #153a87, var(--aqua));
+      box-shadow: var(--glow);
+      overflow: hidden;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .user h1 {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.1;
+    }
+
+    .user p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .nexo-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      padding: 9px 12px;
+      border-radius: 12px;
+      background: rgba(15, 40, 113, 0.34);
+      box-shadow: var(--glow);
+      font-weight: 1000;
+      letter-spacing: 0;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nexo-logo span {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--aqua);
+      color: var(--blue-950);
+      font-size: 0.78rem;
+    }
+
+    .nexo-logo img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 10px rgba(5, 9, 52, 0.24));
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(21, 56, 130, 0.48);
+      color: var(--muted);
+      font-weight: 900;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .tab.active {
+      color: var(--blue-950);
+      background: var(--aqua);
+      box-shadow: 0 8px 20px rgba(64, 224, 208, 0.28);
+    }
+
+    .screen {
+      display: none;
+      gap: 14px;
+    }
+
+    .screen.active {
+      display: grid;
+    }
+
+    .balance-card,
+    .card,
+    .mini-card,
+    .chart-card {
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(42, 105, 181, 0.9), rgba(44, 133, 205, 0.72));
+      box-shadow: var(--glow);
+      border: 1px solid rgba(160, 238, 255, 0.18);
+    }
+
+    .balance-card {
+      padding: 18px;
+    }
+
+    .balance-card.due-card {
+      background: linear-gradient(145deg, rgba(111, 38, 71, 0.96), rgba(184, 56, 54, 0.84));
+      border-color: rgba(255, 141, 122, 0.62);
+      box-shadow: 0 0 0 1px rgba(255, 141, 122, 0.24), 0 14px 30px rgba(123, 26, 52, 0.28);
+    }
+
+    .balance-card.due-card strong {
+      color: #ffe2dc;
+      text-shadow: 0 2px 12px rgba(80, 10, 24, 0.32);
+    }
+
+    .due-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .due-main strong {
+      min-width: 0;
+    }
+
+    .sync-cube-wrap {
+      width: 76px;
+      min-width: 76px;
+      display: none;
+      justify-items: center;
+      gap: 2px;
+      color: #ffe2dc;
+      font-size: 0.68rem;
+      font-weight: 900;
+      text-transform: lowercase;
+      text-align: center;
+      line-height: 1;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .due-card.syncing .sync-cube-wrap {
+      display: grid;
+    }
+
+    .home-sync-cube {
+      width: 68px;
+      height: 60px;
+      display: block;
+      filter: drop-shadow(0 10px 14px rgba(5, 9, 52, 0.2));
+    }
+
+    .balance-card.due-card.settled {
+      background: linear-gradient(145deg, rgba(64, 224, 208, 0.96), rgba(48, 207, 184, 0.84));
+      border-color: rgba(126, 255, 215, 0.72);
+      box-shadow: 0 0 0 1px rgba(126, 255, 215, 0.28), 0 14px 30px rgba(64, 224, 208, 0.24);
+    }
+
+    .balance-card.due-card.settled .label,
+    .balance-card.due-card.settled span,
+    .balance-card.due-card.settled .sync-cube-wrap,
+    .balance-card.due-card.settled strong {
+      color: var(--blue-950);
+      text-shadow: none;
+    }
+
+    .label {
+      margin: 0;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .balance-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(2.1rem, 10vw, 3.3rem);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .balance-card span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .category-card {
+      display: grid;
+      grid-template-columns: 138px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(42, 105, 181, 0.92), rgba(44, 133, 205, 0.74));
+      border: 1px solid rgba(160, 238, 255, 0.18);
+      box-shadow: var(--glow);
+    }
+
+    .donut {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(var(--aqua) 0 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 12px 22px rgba(5, 9, 52, 0.24);
+    }
+
+    .donut::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(49, 124, 196, 0.98), rgba(31, 89, 165, 0.98));
+    }
+
+    .donut-center {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      gap: 2px;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .donut-center span {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .category-list {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .category-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .category-row span:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .quick-action {
+      min-height: 72px;
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(29, 74, 150, 0.72);
+      box-shadow: var(--glow);
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      font-weight: 900;
+      font-size: 0.78rem;
+    }
+
+    .quick-action b {
+      font-size: 1.42rem;
+      color: var(--aqua);
+    }
+
+    .ring-card {
+      display: grid;
+      place-items: center;
+      padding: 12px 0 6px;
+    }
+
+    .ring {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background:
+        radial-gradient(circle, rgba(47, 120, 193, 1) 49%, transparent 50%),
+        conic-gradient(var(--aqua) 0 72%, rgba(255, 255, 255, 0.18) 72% 100%);
+      filter: drop-shadow(0 12px 22px rgba(10, 28, 88, 0.3));
+    }
+
+    .ring::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      border: 10px solid rgba(64, 224, 208, 0.26);
+    }
+
+    .ring-inner {
+      width: 138px;
+      height: 138px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: rgba(43, 117, 194, 0.95);
+      box-shadow: inset 0 0 16px rgba(15, 40, 113, 0.2);
+      z-index: 1;
+    }
+
+    .ring-inner span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .ring-inner strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.5rem;
+    }
+
+    .form-card {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .add-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      place-items: center;
+      padding: 26px 14px 86px;
+      background: rgba(10, 19, 74, 0.42);
+      backdrop-filter: blur(12px);
+    }
+
+    .add-modal.open {
+      display: grid;
+    }
+
+    .add-panel {
+      width: min(430px, 100%);
+      max-height: min(760px, calc(100vh - 118px));
+      overflow: auto;
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(51, 137, 211, 0.9), rgba(28, 78, 148, 0.88));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(114, 255, 232, 0.36);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .modal-close {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.46);
+      font-weight: 1000;
+    }
+
+    .modal-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .modal-tabs button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--muted);
+      background: rgba(16, 44, 124, 0.38);
+      font-weight: 1000;
+    }
+
+    .modal-tabs button.active {
+      color: var(--blue-950);
+      background: var(--aqua);
+    }
+
+    .modal-pane {
+      display: none;
+      gap: 10px;
+    }
+
+    .modal-pane.active {
+      display: grid;
+    }
+
+    .modal-pane.status-form:not(.active) {
+      display: none;
+    }
+
+    .bulk-input {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      border: 1px solid rgba(160, 238, 255, 0.22);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      outline-color: var(--aqua);
+      background: rgba(16, 44, 124, 0.38);
+      font: inherit;
+    }
+
+    .bulk-input::placeholder {
+      color: #b7d6f1;
+    }
+
+    .paste-card {
+      display: grid;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(160, 238, 255, 0.18);
+    }
+
+    .entry-form {
+      border: 1px solid rgba(255, 207, 106, 0.38);
+      background: linear-gradient(145deg, rgba(78, 92, 171, 0.82), rgba(37, 112, 174, 0.72));
+    }
+
+    .entry-form .save {
+      background: #ffcf6a;
+      color: #2d2250;
+    }
+
+    .bulk-edit {
+      display: none;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .bulk-edit.open {
+      display: grid;
+    }
+
+    .bulk-edit .sheet-scroll {
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 260px;
+    }
+
+    .bulk-edit .sheet-table {
+      min-width: 390px;
+    }
+
+    .secondary-save {
+      min-height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.38);
+      font-weight: 1000;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid rgba(160, 238, 255, 0.22);
+      border-radius: 10px;
+      padding: 0 12px;
+      color: #fff;
+      outline-color: var(--aqua);
+      background: rgba(16, 44, 124, 0.38);
+    }
+
+    .field input::placeholder {
+      color: #b7d6f1;
+    }
+
+    .save {
+      min-height: 46px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--aqua);
+      color: var(--blue-950);
+      font-weight: 1000;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.1;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(30, 84, 165, 0.45);
+      border-bottom: 1px solid rgba(114, 255, 232, 0.22);
+    }
+
+    .item-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-weight: 1000;
+    }
+
+    .item h3 {
+      margin: 0;
+      font-size: 0.92rem;
+      overflow-wrap: anywhere;
+    }
+
+    .item p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .amount {
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .amount.expense {
+      color: #fff;
+    }
+
+    .amount.high {
+      color: var(--danger);
+    }
+
+    .amount.receive {
+      color: var(--ok);
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .monthly-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .monthly-tools {
+      flex: 1 1 230px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .filter-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .filter-button,
+    .mass-edit-button {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(160, 238, 255, 0.34);
+      color: #fff;
+      background: rgba(21, 56, 130, 0.54);
+      box-shadow: var(--glow);
+      font-size: 0.86rem;
+      font-weight: 1000;
+    }
+
+    .mass-edit-button {
+      color: var(--blue-950);
+      background: linear-gradient(135deg, var(--aqua), #7effd7);
+    }
+
+    .filter-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 8;
+      display: none;
+      gap: 6px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(16, 44, 124, 0.96);
+      border: 1px solid rgba(160, 238, 255, 0.28);
+      box-shadow: 0 18px 28px rgba(5, 9, 52, 0.28);
+    }
+
+    .filter-menu.open {
+      display: grid;
+    }
+
+    .filter-menu button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 9px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-align: left;
+      padding: 0 10px;
+    }
+
+    .filter-menu button.active {
+      color: var(--blue-950);
+      background: var(--aqua);
+    }
+
+    .view-switch {
+      display: inline-grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      padding: 3px;
+      border-radius: 10px;
+      background: rgba(16, 44, 124, 0.42);
+      box-shadow: var(--glow);
+    }
+
+    .view-switch button {
+      min-height: 32px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #fff;
+      background: transparent;
+      font-size: 0.78rem;
+      font-weight: 1000;
+    }
+
+    .view-switch button.active {
+      color: var(--blue-950);
+      background: var(--aqua);
+    }
+
+    .bill-sheet {
+      display: none;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(28, 78, 148, 0.58);
+      box-shadow: var(--glow);
+      overflow: hidden;
+    }
+
+    .bill-sheet.active {
+      display: grid;
+    }
+
+    .sheet-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sheet-hint {
+      flex: 1 1 100%;
+      margin: -2px 0 0;
+      color: #d9f4ff;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .sheet-actions button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 10px;
+      padding: 0 12px;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-weight: 1000;
+    }
+
+    .sheet-scroll {
+      overflow-x: hidden;
+      padding-bottom: 4px;
+    }
+
+    .sheet-table {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+      border-collapse: collapse;
+      color: #10204d;
+      background: #e9f6ff;
+      font-size: 0.74rem;
+    }
+
+    .sheet-table th,
+    .sheet-table td {
+      border: 1px solid rgba(88, 59, 27, 0.38);
+      padding: 4px;
+      text-align: center;
+    }
+
+    .sheet-table th {
+      color: #fff;
+      background: #174f9b;
+      font-weight: 1000;
+    }
+
+    .sheet-table td {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .sheet-table td.open-month {
+      background: #ffe3df;
+      box-shadow: inset 0 0 0 1px rgba(215, 67, 63, 0.22);
+    }
+
+    .sheet-table td.current-month {
+      box-shadow: inset 0 0 0 2px rgba(64, 224, 208, 0.55);
+    }
+
+    .sheet-table .sheet-name {
+      text-align: left;
+    }
+
+    .sheet-table .sheet-day {
+      width: 42px;
+    }
+
+    .sheet-table .sheet-delete {
+      width: 34px;
+    }
+
+    .sheet-table .sheet-value {
+      width: 78px;
+    }
+
+    .sheet-table .sheet-paid-through {
+      width: 82px;
+    }
+
+    .sheet-table input[type="text"],
+    .sheet-table input[type="number"],
+    .sheet-table select {
+      width: 100%;
+      min-height: 28px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0 5px;
+      color: #10144d;
+      background: rgba(255, 255, 255, 0.76);
+      font-size: 0.76rem;
+    }
+
+    .sheet-table select {
+      padding-right: 2px;
+      text-transform: uppercase;
+    }
+
+    .sheet-delete button {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: #c94f42;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .sheet-reset {
+      width: 100%;
+      min-height: 28px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: #c94f42;
+      font-size: 0.64rem;
+      font-weight: 1000;
+    }
+
+    .sheet-table input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: #00df18;
+    }
+
+    .view-cards-hidden {
+      display: none;
+    }
+
+    .mini-card {
+      padding: 14px;
+      min-height: 96px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .mini-card strong {
+      font-size: 1.35rem;
+      white-space: nowrap;
+    }
+
+    .bill {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) 68px;
+      grid-template-rows: auto auto;
+      gap: 6px 10px;
+      align-items: center;
+      min-height: 82px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(238, 247, 255, 0.94));
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      color: var(--blue-950);
+      box-shadow: 0 12px 22px rgba(5, 9, 52, 0.16);
+      touch-action: pan-y;
+      transition: transform 0.18s ease;
+    }
+
+    .bill strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 1.02rem;
+      line-height: 1.1;
+    }
+
+    .bill small {
+      display: block;
+      margin-top: 3px;
+      color: #1f5ca5;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .bill.pending {
+      background: linear-gradient(145deg, #fff, #f2f7ff);
+      border-color: rgba(255, 141, 122, 0.44);
+    }
+
+    .bill.paid {
+      border-color: rgba(126, 255, 215, 0.7);
+    }
+
+    .bill.due-today {
+      background: linear-gradient(145deg, #fff8e6, #eef7ff);
+      border-color: rgba(255, 207, 106, 0.92);
+      box-shadow: 0 0 0 1px rgba(255, 207, 106, 0.22), 0 12px 24px rgba(204, 118, 38, 0.18);
+    }
+
+    .bill.overdue {
+      background: linear-gradient(145deg, #fff, #fff0ef);
+      border-color: rgba(255, 141, 122, 0.9);
+      box-shadow: 0 0 0 1px rgba(255, 141, 122, 0.22), 0 12px 24px rgba(202, 82, 65, 0.16);
+    }
+
+    .bill-status {
+      position: relative;
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      display: grid;
+      grid-template-columns: 16px 1fr 16px;
+      align-items: center;
+      width: 70px;
+      height: 32px;
+      margin: 0;
+      padding: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(64, 224, 208, 0.72), rgba(126, 255, 215, 0.62));
+      color: var(--blue-950);
+      font-size: 0.82rem;
+      font-weight: 1000;
+      border: 0;
+      box-shadow: inset 0 0 0 1px rgba(3, 70, 165, 0.08);
+      touch-action: pan-y;
+      overflow: hidden;
+    }
+
+    .bill-status button {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      font-weight: 1000;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .bill-status strong {
+      text-align: center;
+      line-height: 1;
+    }
+
+    .bill-meta {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+    }
+
+    .bill-name {
+      width: 100%;
+      height: auto;
+      min-height: 25px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--blue-950);
+      text-transform: none;
+      font-size: 0.98rem;
+      font-weight: 1000;
+      line-height: 1.18;
+      text-align: left;
+    }
+
+    .bill-name span {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow-wrap: anywhere;
+    }
+
+    .bill-value {
+      display: block;
+      margin-top: 3px;
+      color: #c94f42;
+      font-size: 0.76rem;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .bill.paid .bill-value {
+      color: #1f5ca5;
+    }
+
+    .bill-side {
+      grid-column: 2;
+      grid-row: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #0346a5;
+      font-size: 0.72rem;
+      font-weight: 900;
+      min-width: 0;
+    }
+
+    .bill-side strong {
+      margin: 0;
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .bill-actions {
+      display: none;
+    }
+
+    .bill button {
+      width: auto;
+      height: auto;
+      border: 0;
+      background: var(--aqua);
+      color: var(--blue-950);
+      font-size: 0.84rem;
+      font-weight: 1000;
+    }
+
+    .bill .bill-toggle-paid {
+      background: linear-gradient(135deg, var(--aqua), #7effd7);
+      color: var(--blue-950);
+    }
+
+    .bill .bill-toggle-unpaid {
+      background: rgba(255, 141, 122, 0.2);
+      color: #8c2519;
+    }
+
+    .bill .bill-edit {
+      background: transparent;
+      color: #0346a5;
+      font-size: 1.35rem;
+      box-shadow: none;
+    }
+
+    .bill-day {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      display: grid;
+      place-items: center;
+      min-height: 58px;
+      border-radius: 14px;
+      color: #0346a5;
+      background: rgba(64, 224, 208, 0.16);
+      border: 1px solid rgba(3, 70, 165, 0.16);
+      font-size: 1.08rem;
+      font-weight: 1000;
+    }
+
+    .bill-debt-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #0346a5;
+    }
+
+    .bill-state-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #1f5ca5;
+    }
+
+    .bill-swipe {
+      position: relative;
+      overflow: hidden;
+      border-radius: 13px;
+    }
+
+    .bill-delete-reveal {
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 96px;
+      border: 0;
+      border-radius: 0 13px 13px 0;
+      color: #fff;
+      background: #d94f43;
+      font-size: 0.82rem;
+      font-weight: 1000;
+      display: grid;
+      place-items: center;
+    }
+
+    .bill-list-hint,
+    .empty-filter {
+      color: #d9f4ff;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .bill-list-hint {
+      margin: -2px 0 0;
+    }
+
+    .empty-filter {
+      margin: 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(16, 44, 124, 0.28);
+      border: 1px solid rgba(160, 238, 255, 0.18);
+    }
+
+    .chart-card {
+      padding: 16px;
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .chart-head strong {
+      font-size: 1.22rem;
+    }
+
+    .bars {
+      height: 176px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+      align-items: end;
+      padding-top: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .bar {
+      border-radius: 999px 999px 0 0;
+      min-height: 18px;
+      background: linear-gradient(180deg, var(--aqua), rgba(64, 224, 208, 0.22));
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      width: min(430px, 100%);
+      height: 68px;
+      z-index: 2;
+      display: flex;
+      transform: translateX(-50%);
+      justify-content: center;
+      align-items: center;
+      padding: 8px 18px;
+      background: linear-gradient(180deg, rgba(36, 108, 185, 0.7), rgba(20, 62, 139, 0.94));
+      border-top: 1px solid rgba(160, 238, 255, 0.2);
+    }
+
+    .bottom-nav button {
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 900;
+    }
+
+    .bottom-nav button.active {
+      color: var(--aqua);
+    }
+
+    .bottom-nav .main-add {
+      width: 66px;
+      height: 66px;
+      justify-self: center;
+      align-self: start;
+      margin-top: -26px;
+      border-radius: 50%;
+      color: var(--blue-950);
+      background: var(--aqua);
+      box-shadow: 0 16px 28px rgba(64, 224, 208, 0.34);
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .bottom-nav .voice-add {
+      width: 58px;
+      height: 58px;
+      margin-top: -22px;
+      margin-left: 16px;
+      border-radius: 50%;
+      color: var(--blue-950);
+      background: #ffcf6a;
+      border: 3px solid #fff;
+      box-shadow: 0 16px 28px rgba(255, 207, 106, 0.28);
+      font-size: 0.78rem;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .bottom-nav .voice-add::before {
+      content: "MIC";
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 1000;
+    }
+
+    .bottom-nav .voice-add.listening,
+    .quick-action.listening {
+      color: var(--blue-950);
+      background: var(--aqua);
+      box-shadow: 0 0 0 4px rgba(255, 207, 106, 0.18), 0 14px 28px rgba(255, 207, 106, 0.22);
+    }
+
+    .quick-actions {
+      display: none;
+    }
+
+    .entry-collapsed .form-card {
+      display: none;
+    }
+
+    .value-hidden .privacy-value {
+      color: transparent !important;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.82);
+      user-select: none;
+    }
+
+    .score-link {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 2px 8px;
+      align-items: center;
+      margin-left: auto;
+      min-width: 92px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      background: rgba(15, 40, 113, 0.34);
+      box-shadow: var(--glow);
+      font-weight: 1000;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .score-link .score-badge-icon {
+      grid-row: 1 / span 2;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: rgba(64, 224, 208, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(126, 255, 215, 0.24);
+      font-size: 1rem;
+    }
+
+    .score-link .score-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .score-link.good {
+      color: var(--ok);
+    }
+
+    .score-link.warn {
+      color: #ffcf6a;
+    }
+
+    .score-link.bad {
+      color: #ff8d7a;
+    }
+
+    .score-link small {
+      font-size: 0.72rem;
+      color: currentColor;
+    }
+
+    .score-link .score-note {
+      grid-column: 1 / -1;
+      display: none;
+      margin-top: 5px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(160, 238, 255, 0.22);
+      color: #dffcff;
+      font-size: 0.62rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .score-link.good .score-note {
+      display: block;
+    }
+
+    .status-form {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(28, 78, 148, 0.58);
+      box-shadow: var(--glow);
+    }
+
+    .status-form .compact-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.7fr;
+      gap: 8px;
+    }
+
+    .debt-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .debt-actions {
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+    }
+
+    .debt-actions button {
+      min-width: 64px;
+      min-height: 30px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-weight: 1000;
+    }
+
+    .debt-edit-actions {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .debt-edit-actions button {
+      min-height: 32px;
+      border-radius: 10px;
+      border: 1px solid rgba(160, 238, 255, 0.24);
+      color: #fff;
+      background: rgba(16, 44, 124, 0.34);
+      font-size: 0.76rem;
+      font-weight: 1000;
+    }
+
+    .admin-panel {
+      display: none;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .admin-panel.visible {
+      display: grid;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .admin-metric {
+      min-height: 76px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(16, 44, 124, 0.32);
+      border: 1px solid rgba(160, 238, 255, 0.16);
+    }
+
+    .admin-metric span {
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+
+    .admin-metric strong {
+      font-size: 1.22rem;
+    }
+
+    .admin-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .admin-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: rgba(30, 84, 165, 0.38);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .admin-row small {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .status-paid {
+      border-color: rgba(126, 255, 215, 0.7);
+      background: linear-gradient(145deg, rgba(34, 154, 132, 0.92), rgba(38, 113, 190, 0.72));
+    }
+
+    .status-unpaid {
+      border-color: rgba(255, 141, 122, 0.9);
+      background: linear-gradient(145deg, rgba(128, 54, 116, 0.92), rgba(202, 82, 65, 0.78));
+    }
+
+    .status-today {
+      border-color: rgba(255, 207, 106, 0.96);
+      background: linear-gradient(145deg, rgba(204, 118, 38, 0.92), rgba(47, 120, 193, 0.78));
+      box-shadow: 0 0 0 1px rgba(255, 207, 106, 0.28), 0 12px 26px rgba(204, 118, 38, 0.24);
+    }
+
+    .status-standby {
+      border-color: rgba(255, 207, 106, 0.9);
+      background: linear-gradient(145deg, rgba(139, 112, 43, 0.9), rgba(50, 112, 178, 0.78));
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 82px;
+      z-index: 50;
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+      pointer-events: none;
+      max-width: min(92vw, 420px);
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-weight: 900;
+      text-align: center;
+      transition: 0.2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .confirm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(5, 9, 52, 0.46);
+      backdrop-filter: blur(10px);
+    }
+
+    .confirm-modal.open {
+      display: grid;
+    }
+
+    .confirm-box {
+      width: min(330px, 100%);
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 16px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.96);
+      border: 1px solid rgba(160, 238, 255, 0.32);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .confirm-box h2 {
+      margin: 0;
+      font-size: 1.18rem;
+    }
+
+    .confirm-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .confirm-actions button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 1000;
+    }
+
+    .confirm-no {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .confirm-yes {
+      color: var(--blue-950);
+      background: var(--aqua);
+    }
+
+    .install-notice {
+      position: fixed;
+      left: 50%;
+      top: max(18px, env(safe-area-inset-top));
+      z-index: 49;
+      width: min(92vw, 390px);
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid rgba(160, 238, 255, 0.28);
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.9);
+      box-shadow: 0 18px 34px rgba(5, 9, 52, 0.28), var(--glow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-16px);
+      transition: 0.22s ease;
+    }
+
+    .install-notice.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .install-notice span {
+      min-width: 0;
+      font-size: 0.82rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .install-notice button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 12px;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-size: 0.78rem;
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .splash-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      min-height: 100%;
+      padding: 64px 28px 28px;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(31, 121, 196, 0.26) 0%, rgba(20, 80, 178, 0.32) 54%, rgba(13, 52, 146, 0.4) 100%),
+        rgba(18, 55, 145, 0.24);
+      backdrop-filter: blur(16px) saturate(1.2);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .splash-screen::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      pointer-events: none;
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+        radial-gradient(circle at 24% 12%, rgba(114, 255, 232, 0.14), transparent 34%);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 24px 52px rgba(5, 9, 52, 0.22);
+    }
+
+    .splash-screen > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-signed-out .splash-screen {
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .auth-signed-out .app {
+      display: grid;
+      filter: blur(10px);
+      opacity: 0.62;
+      transform: scale(1.02);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .auth-signed-out .bottom-nav {
+      display: none;
+    }
+
+    .splash-brand {
+      display: grid;
+      justify-items: center;
+      gap: 22px;
+    }
+
+    .splash-brand p {
+      margin: 0;
+      font-size: 1.28rem;
+      letter-spacing: 0;
+    }
+
+    .splash-brand strong {
+      font-weight: 1000;
+    }
+
+    .splash-brand a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .splash-title-link {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(10, 33, 102, 0.22);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .splash-logo-cube {
+      width: 210px;
+      height: 188px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 36px;
+      animation: floatLogo 3.8s ease-in-out infinite;
+      filter: drop-shadow(0 22px 24px rgba(5, 9, 52, 0.28));
+    }
+
+    .primus-cube-canvas {
+      width: 210px;
+      height: 188px;
+      display: block;
+      pointer-events: none;
+    }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+
+    .google-login {
+      justify-self: center;
+      min-height: 48px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 24px 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: #fff;
+      color: #444;
+      font-size: 1.08rem;
+      font-weight: 900;
+      box-shadow: 0 14px 28px rgba(5, 9, 52, 0.18);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .google-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 34px rgba(5, 9, 52, 0.24);
+    }
+
+    .google-g {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: conic-gradient(#4285f4, #34a853, #fbbc05, #ea4335, #4285f4);
+      font-weight: 1000;
+    }
+
+    .app-menu-panel {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      display: none;
+      padding: 14px;
+      background: rgba(8, 20, 72, 0.46);
+      backdrop-filter: blur(8px);
+    }
+
+    .app-menu-panel.open {
+      display: block;
+    }
+
+    .app-menu-card {
+      width: min(292px, 100%);
+      min-height: calc(100% - 4px);
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--blue-950);
+      box-shadow: var(--shadow);
+    }
+
+    .app-menu-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .app-menu-head p,
+    .app-menu-head strong,
+    .app-menu-group p {
+      margin: 0;
+    }
+
+    .app-menu-head p {
+      color: #2473bd;
+      font-size: 0.75rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+
+    .app-menu-head strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 1rem;
+    }
+
+    .app-menu-close {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--blue-950);
+      font-weight: 1000;
+    }
+
+    .app-menu-action,
+    .app-menu-link {
+      width: 100%;
+      min-height: 42px;
+      border: 0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding: 0 13px;
+      color: #fff;
+      background: var(--blue-800);
+      font-weight: 1000;
+      text-align: left;
+      text-decoration: none;
+    }
+
+    .app-menu-action.secondary {
+      color: var(--blue-950);
+      background: rgba(64, 224, 208, 0.2);
+    }
+
+    .app-menu-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(21, 27, 98, 0.14);
+    }
+
+    .app-menu-group p {
+      font-size: 0.78rem;
+      font-weight: 1000;
+    }
+
+    .app-menu-link {
+      width: max-content;
+      min-height: 34px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+    }
+
+    .app-menu-link.vagas,
+    .app-menu-link.credenciamento {
+      background: #0ea79f;
+    }
+
+    .app-menu-link.eventos {
+      background: #2188ff;
+    }
+
+    .app-menu-link.corridas {
+      background: #ff7d1b;
+    }
+
+    .app-menu-link.copa {
+      background: #19a84b;
+    }
+
+    .splash-footer {
+      margin: 0;
+      color: #fff;
+      font-size: 0.82rem;
+    }
+
+    .splash-footer a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .onboarding {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(10, 19, 74, 0.62);
+      backdrop-filter: blur(10px);
+    }
+
+    .show-onboarding .onboarding {
+      display: grid;
+    }
+
+    .onboarding-card {
+      width: min(380px, 100%);
+      display: grid;
+      gap: 12px;
+      padding: 20px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #3389d3, #2467b5);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(114, 255, 232, 0.34);
+    }
+
+    .onboarding-logo {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      justify-self: center;
+      animation: floatLogo 3.4s ease-in-out infinite;
+    }
+
+    .onboarding-card h2 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .setup-guide {
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: #eaffff;
+      background: rgba(16, 44, 124, 0.32);
+      font-size: 0.84rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .setup-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .skip-setup {
+      min-height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      padding: 0 16px;
+      color: #fff;
+      background: rgba(20, 54, 130, 0.38);
+      font-weight: 900;
+    }
+
+    .phone.secondary {
+      display: none;
+    }
+
+    @media (min-width: 980px) {
+      .workspace {
+        width: min(760px, 100%);
+        grid-template-columns: minmax(360px, 430px);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .phone.secondary {
+        display: none;
+      }
+
+      .add-modal {
+        padding: 28px;
+      }
+
+      .add-panel {
+        width: min(760px, calc(100vw - 56px));
+      }
+
+      .bulk-edit .sheet-scroll {
+        max-height: min(58vh, 520px);
+      }
+
+      .bulk-edit .sheet-table {
+        min-width: 680px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .workspace {
+        padding: 0;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: 0;
+      }
+
+      .balance-card strong {
+        font-size: 2.45rem;
+      }
+
+      .category-card {
+        grid-template-columns: 120px minmax(0, 1fr);
+      }
+
+      .donut {
+        width: 116px;
+        height: 116px;
+      }
+
+      .add-modal {
+        padding: 10px 0 76px;
+      }
+
+      .add-panel {
+        width: 100%;
+        max-height: calc(100vh - 86px);
+        border-radius: 18px 18px 0 0;
+      }
+    }
+  </style>
+</head>
+<body class="auth-signed-out entry-collapsed">
+  <main class="workspace">
+    <section class="phone" aria-label="NEXO Contas">
+      <section class="splash-screen" aria-label="Entrada NEXO Contas">
+        <div class="splash-brand">
+          <p><a class="splash-title-link" href="./"><strong>NEXO</strong> Contas</a></p>
+          <div class="splash-logo-cube" aria-hidden="true">
+            <canvas class="primus-cube-canvas" id="splashCube" width="336" height="300" aria-hidden="true"></canvas>
+          </div>
+        </div>
+        <button class="google-login" id="splashLoginButton" type="button">
+          <span class="google-g">G</span>
+          Entrar com Google
+        </button>
+        <p class="splash-footer">
+          by <a href="https://primusdf.com.br" target="_blank" rel="noopener">PrimusDF</a> © 2027
+        </p>
+      </section>
+
+      <aside class="app-menu-panel" id="appMenuPanel" aria-label="Menu NEXO Contas">
+        <div class="app-menu-card">
+          <div class="app-menu-head">
+            <div>
+              <p>NEXO Contas</p>
+              <strong id="menuSessionLabel">Acesse sua conta</strong>
+            </div>
+            <button class="app-menu-close" id="closeAppMenuButton" type="button" aria-label="Fechar menu">x</button>
+          </div>
+          <button class="app-menu-action" id="menuGoogleButton" type="button">Entrar com Google</button>
+          <button class="app-menu-action secondary" id="menuLogoutButton" type="button" hidden>Sair</button>
+          <div class="app-menu-group" aria-label="Outros Apps NEXO">
+            <p>Outros Apps</p>
+            <a class="app-menu-link vagas" href="https://nexovagas.com.br" target="_blank" rel="noopener">Vagas</a>
+            <a class="app-menu-link eventos" href="https://nexovagas.com.br/eventos" target="_blank" rel="noopener">Eventos</a>
+            <a class="app-menu-link corridas" href="https://nexovagas.com.br/corridas" target="_blank" rel="noopener">Corridas</a>
+            <a class="app-menu-link copa" href="https://nexovagas.com.br/copa" target="_blank" rel="noopener">Copa</a>
+            <a class="app-menu-link credenciamento" href="../credencial/">Credencial</a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="app">
+        <header class="topbar">
+          <button class="user" id="loginButton" type="button" aria-label="Entrar com Google">
+            <div class="avatar" id="avatar"><span>B</span><img id="avatarImg" alt=""></div>
+            <div>
+              <h1 id="userName">Entrar</h1>
+              <p id="userStatus">Toque para usar Google</p>
+            </div>
+          </button>
+          <button class="icon-btn" id="privacyToggle" type="button" aria-label="Ocultar valores">👁</button>
+          <button class="icon-btn" id="installAppButton" type="button" aria-label="Instalar aplicativo">↧</button>
+          <a class="score-link warn" id="scoreLink" href="./" aria-label="Status financeiro">
+            <span class="score-badge-icon" id="scoreIcon">🌱</span>
+            <span class="score-title" id="scoreStars">Iniciante</span>
+            <small id="scoreText">Score 5.00</small>
+            <span class="score-note" id="scoreNote">Contas sem atrasos</span>
+          </a>
+        </header>
+
+        <nav class="tabs" aria-label="Abas principais">
+          <button class="tab active" type="button" data-tab="diarios">Hoje</button>
+          <button class="tab" type="button" data-tab="mensais">Fixos</button>
+          <button class="tab" type="button" data-tab="resumo">Entradas</button>
+        </nav>
+
+        <section class="screen active" id="screen-diarios">
+          <article class="balance-card due-card">
+            <p class="label">Para resolver hoje</p>
+            <div class="due-main">
+              <strong id="todayTotal" class="privacy-value">R$ 401,00</strong>
+              <button class="sync-cube-wrap" id="syncRefreshButton" type="button" aria-label="Atualizar aplicativo" aria-live="polite">
+                <canvas class="home-sync-cube" id="homeSyncCube" width="136" height="120" aria-hidden="true"></canvas>
+                <small id="syncCubeText">sincronizando...</small>
+              </button>
+            </div>
+            <span id="homeStatusText">Contas pendentes e pagas do mês</span>
+          </article>
+
+          <div class="quick-actions">
+            <button class="quick-action" type="button" id="typeButton"><b>+</b>Digitar</button>
+            <button class="quick-action" type="button" id="voiceButton"><b>◉</b>Áudio</button>
+            <button class="quick-action" type="button" id="cameraButton"><b>□</b>Nota</button>
+          </div>
+
+          <div class="section-title">
+            <h2>Gastos recentes</h2>
+            <span>compras do mês</span>
+          </div>
+          <div class="item-list" id="dailyList"></div>
+
+          <div class="section-title">
+            <h2>Contas fixas</h2>
+            <span id="homeFixedCount">0 cadastradas</span>
+          </div>
+          <div class="item-list" id="homeBillsList"></div>
+
+          <form class="card form-card" id="expenseForm">
+            <div class="field">
+              <label for="expenseName">Nome do gasto</label>
+              <input id="expenseName" placeholder="Ex.: Mercado Primor" autocomplete="off" required>
+            </div>
+            <div class="field">
+              <label for="expenseValue">Valor</label>
+              <input id="expenseValue" inputmode="decimal" placeholder="120,00" required>
+            </div>
+            <div class="field">
+              <label for="expenseCategory">Categoria</label>
+              <select id="expenseCategory">
+                <option>Supermercado</option>
+                <option>Bebidas</option>
+                <option>Álcool</option>
+                <option>Cigarro</option>
+                <option>Bet</option>
+                <option>Uber</option>
+                <option>iFood</option>
+                <option>Alimentação</option>
+                <option>Farmácia</option>
+                <option>Pet</option>
+                <option>Lazer</option>
+                <option>Luz</option>
+                <option>Água</option>
+                <option>Aluguel casa 2</option>
+                <option>Casa</option>
+                <option>Telefone</option>
+                <option>Internet</option>
+                <option>Cartão</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <button class="save" type="submit">Salvar gasto</button>
+          </form>
+        </section>
+
+        <section class="screen" id="screen-mensais">
+          <div class="monthly-head">
+            <p class="label">Contas fixas</p>
+            <div class="monthly-tools">
+              <div class="filter-wrap">
+                <button class="filter-button" id="billFilterButton" type="button" aria-expanded="false">Filtrar</button>
+                <div class="filter-menu" id="billFilterMenu" aria-label="Filtros de contas fixas">
+                  <button class="active" type="button" data-bill-filter="all">Todas</button>
+                  <button type="button" data-bill-filter="settled">Em dia</button>
+                  <button type="button" data-bill-filter="debit">Em débito</button>
+                  <button type="button" data-bill-filter="today">Vencendo hoje</button>
+                  <button type="button" data-bill-filter="overdue">Vencidas</button>
+                </div>
+              </div>
+              <button class="mass-edit-button" id="massEditButton" type="button">Ajuste em massa</button>
+            </div>
+          </div>
+
+          <article class="balance-card due-card">
+            <p class="label">Falta pagar nos fixos</p>
+            <strong id="dueNowTotal" class="privacy-value">R$ 278,00</strong>
+            <span id="dueNowText">Contas abertas ficam destacadas até pagar</span>
+          </article>
+
+          <div class="month-grid">
+            <div class="mini-card">
+              <p class="label">Fixos do mês</p>
+              <strong id="fixedTotal" class="privacy-value">R$ 2.502,00</strong>
+            </div>
+            <div class="mini-card">
+              <p class="label">Gastos do mês</p>
+              <strong id="monthTotal" class="privacy-value">R$ 2.111,00</strong>
+            </div>
+          </div>
+
+          <div class="item-list" id="monthlyCardsList"></div>
+
+          <article class="bill-sheet" id="billSheet">
+            <div class="sheet-actions">
+              <p class="label">Tabela de fixos</p>
+              <button type="button" id="addBillRow">Nova conta</button>
+              <p class="sheet-hint">Escolha o último mês quitado. Os meses seguintes contam como débito.</p>
+            </div>
+            <div class="sheet-scroll">
+              <table class="sheet-table" aria-label="Tabela de contas fixas">
+                <thead id="billSheetHead"></thead>
+                <tbody id="billSheetBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="screen" id="screen-resumo">
+          <article class="category-card" aria-label="Categorias com maior gasto">
+            <div class="donut" id="categoryDonut">
+              <div class="donut-center">
+                <strong id="topCategoryPercent">0%</strong>
+                <span>maior gasto</span>
+              </div>
+            </div>
+            <div class="category-list" id="categoryList"></div>
+          </article>
+
+          <div class="month-grid">
+            <div class="mini-card">
+              <p class="label">Me devem</p>
+              <strong id="owedTotal" class="private-value">R$ 1.600,00</strong>
+            </div>
+            <div class="mini-card">
+              <p class="label">Vou receber</p>
+              <strong id="receiveTotal" class="private-value">R$ 9.300,00</strong>
+            </div>
+          </div>
+
+          <article class="mini-card">
+            <p class="label">Pendências</p>
+            <strong id="standbyTotal" class="private-value">R$ 5.222,00</strong>
+          </article>
+
+          <article class="card admin-panel" id="adminPanel">
+            <div>
+              <p class="label">Admin nerd</p>
+              <strong>Visitas do NEXO</strong>
+            </div>
+            <div class="admin-grid">
+              <div class="admin-metric"><span>Hoje</span><strong id="adminToday">0</strong></div>
+              <div class="admin-metric"><span>Semana</span><strong id="adminWeek">0</strong></div>
+              <div class="admin-metric"><span>Mês</span><strong id="adminMonth">0</strong></div>
+            </div>
+            <div class="admin-grid">
+              <div class="admin-metric"><span>Total</span><strong id="adminTotal">0</strong></div>
+              <div class="admin-metric"><span>Cidades</span><strong id="adminCities">0</strong></div>
+              <div class="admin-metric"><span>Países</span><strong id="adminCountries">0</strong></div>
+            </div>
+            <div class="admin-list" id="adminLocations"></div>
+            <div class="admin-list" id="adminRecent"></div>
+          </article>
+
+          <div class="summary-list" id="summaryList"></div>
+        </section>
+      </div>
+
+      <section class="add-modal" id="addModal" aria-label="Adicionar lançamento">
+        <div class="add-panel" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+          <div class="modal-head">
+            <div>
+              <p class="label">Novo lançamento</p>
+              <h2 id="addModalTitle">O que quer cadastrar?</h2>
+            </div>
+            <button class="modal-close" id="closeAddModal" type="button" aria-label="Fechar">x</button>
+          </div>
+
+          <div class="modal-tabs" aria-label="Tipo de lançamento">
+            <button class="active" type="button" data-add-pane="daily">Gasto</button>
+            <button type="button" data-add-pane="fixed">Conta fixa</button>
+            <button type="button" data-add-pane="entry">Entrada</button>
+          </div>
+
+          <form class="modal-pane active" id="quickExpenseForm" data-pane="daily">
+            <div class="field">
+              <label for="quickExpenseName">Nome</label>
+              <input id="quickExpenseName" placeholder="Ex.: Mercado Primor" autocomplete="off">
+            </div>
+            <div class="compact-grid">
+              <div class="field">
+                <label for="quickExpenseValue">Valor</label>
+                <input id="quickExpenseValue" inputmode="decimal" placeholder="120,00">
+              </div>
+              <div class="field">
+                <label for="quickExpenseCategory">Categoria</label>
+                <select id="quickExpenseCategory">
+                  <option>Supermercado</option>
+                  <option>Alimentação</option>
+                  <option>Bebidas</option>
+                  <option>Álcool</option>
+                  <option>Cigarro</option>
+                  <option>Bet</option>
+                  <option>Uber</option>
+                  <option>iFood</option>
+                  <option>Farmácia</option>
+                  <option>Pet</option>
+                  <option>Lazer</option>
+                  <option>Casa</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+            </div>
+            <button class="save" type="submit">Salvar gasto</button>
+          </form>
+
+          <form class="modal-pane" id="quickBillForm" data-pane="fixed">
+            <div class="bulk-edit" id="bulkEditPanel">
+              <button class="save" id="addBillModalRow" type="button">Nova conta fixa</button>
+              <p class="sheet-hint">Escolha o último mês quitado. Os meses seguintes contam como débito.</p>
+              <div class="sheet-scroll">
+                <table class="sheet-table" aria-label="Editar contas fixas">
+                  <thead id="bulkEditHead"></thead>
+                  <tbody id="bulkEditBody"></tbody>
+                </table>
+              </div>
+              <div class="paste-card">
+                <p class="label">Preencher automaticamente</p>
+                <textarea class="bulk-input" id="fixedImportInput" placeholder="Vencimento, conta, valor&#10;2, Netflix, 90&#10;2, Spotify, 22&#10;7, Celular, 72"></textarea>
+                <button class="secondary-save" id="importFixedBills" type="button">Preencher automaticamente</button>
+                <p class="sheet-hint">Cole uma conta por linha. Aceita vírgula, ponto e vírgula, tab ou colunas copiadas da planilha.</p>
+              </div>
+            </div>
+          </form>
+
+          <form class="modal-pane status-form entry-form" id="debtForm" data-pane="entry">
+            <div class="field">
+              <label for="debtName">Entrada ou pendência</label>
+              <input id="debtName" placeholder="Ex.: Salário, Frank, auxílio" autocomplete="off">
+            </div>
+            <div class="compact-grid">
+              <div class="field">
+                <label for="debtValue">Valor</label>
+                <input id="debtValue" inputmode="decimal" placeholder="0,00">
+              </div>
+              <div class="field">
+                <label for="debtDate">Data</label>
+                <input id="debtDate" type="date">
+              </div>
+            </div>
+            <div class="field">
+              <label for="debtEmail">Gmail para lembrete</label>
+              <input id="debtEmail" type="email" placeholder="pessoa@gmail.com">
+            </div>
+            <div class="compact-grid">
+              <div class="field">
+                <label for="debtType">Categoria</label>
+                <select id="debtType">
+                  <option value="receive">Vou receber</option>
+                  <option value="owed">Pessoa me deve</option>
+                  <option value="standby">Pendência</option>
+                  <option value="pay">Falta pagar</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="debtStatus">Status</label>
+                <select id="debtStatus">
+                  <option value="unpaid">Não pago</option>
+                  <option value="standby">Pendente</option>
+                  <option value="paid">Pago</option>
+                </select>
+              </div>
+            </div>
+            <button class="save" type="submit">Salvar entrada</button>
+          </form>
+        </div>
+      </section>
+
+      <nav class="bottom-nav" aria-label="Menu inferior">
+        <button class="main-add" type="button" id="addNav" aria-label="Adicionar nova compra">+</button>
+        <button class="voice-add" type="button" id="voiceNav" aria-label="Adicionar gasto por voz"></button>
+      </nav>
+    </section>
+    </section>
+
+    <section class="phone secondary" aria-hidden="true">
+      <div class="app">
+        <header class="topbar">
+          <button class="icon-btn" type="button">‹</button>
+          <div class="nexo-logo"><span>N</span>NEXO</div>
+          <button class="icon-btn" type="button">☰</button>
+        </header>
+        <article class="balance-card">
+          <p class="label">Fixos do mês</p>
+          <strong>R$ 2.502</strong>
+          <span>Contas pagas e próximos vencimentos</span>
+        </article>
+        <div class="item-list" id="desktopBills"></div>
+      </div>
+      <nav class="bottom-nav">
+        <button type="button">+</button>
+        <button class="active" type="button">⌂</button>
+        <button type="button">▱</button>
+        <button type="button">⚙</button>
+      </nav>
+    </section>
+
+    <section class="phone secondary" aria-hidden="true">
+      <div class="app">
+        <header class="topbar">
+          <button class="icon-btn" type="button">‹</button>
+          <div class="nexo-logo"><span>N</span>NEXO</div>
+          <button class="icon-btn" type="button">☰</button>
+        </header>
+        <article class="chart-card">
+          <div class="chart-head">
+            <div>
+              <p class="label">Resumo</p>
+              <strong>R$ 311,00</strong>
+            </div>
+            <button class="icon-btn" type="button">+</button>
+          </div>
+          <div class="bars">
+            <span class="bar" style="height: 82%"></span>
+            <span class="bar" style="height: 60%"></span>
+            <span class="bar" style="height: 57%"></span>
+            <span class="bar" style="height: 42%"></span>
+            <span class="bar" style="height: 38%"></span>
+            <span class="bar" style="height: 40%"></span>
+            <span class="bar" style="height: 28%"></span>
+            <span class="bar" style="height: 48%"></span>
+            <span class="bar" style="height: 50%"></span>
+            <span class="bar" style="height: 47%"></span>
+            <span class="bar" style="height: 43%"></span>
+            <span class="bar" style="height: 41%"></span>
+          </div>
+        </article>
+        <div class="summary-list">
+          <article class="bill"><div><p class="label">Vou pagar</p><strong>R$ 6.878,00</strong></div><button type="button">−</button></article>
+          <article class="bill"><div><p class="label">Vou receber</p><strong>R$ 9.300,00</strong></div><button type="button">+</button></article>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button type="button">+</button>
+        <button type="button">⌂</button>
+        <button type="button">▱</button>
+        <button class="active" type="button">⚙</button>
+      </nav>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <section class="confirm-modal" id="confirmModal" aria-label="Confirmação">
+    <div class="confirm-box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle">Tem certeza?</h2>
+      <p id="confirmText"></p>
+      <div class="confirm-actions">
+        <button class="confirm-no" id="confirmNo" type="button">Não</button>
+        <button class="confirm-yes" id="confirmYes" type="button">Sim</button>
+      </div>
+    </div>
+  </section>
+  <div class="install-notice" id="installNotice" role="status" aria-live="polite">
+    <span id="installNoticeText">Instale o app para usar mais rápido, inclusive offline.</span>
+    <button id="installNoticeButton" type="button">Instalar</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signInWithPopup,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      addDoc,
+      collection,
+      deleteField,
+      doc,
+      getDoc,
+      getDocFromCache,
+      getDocFromServer,
+      getFirestore,
+      getDocs,
+      initializeFirestore,
+      limit,
+      orderBy,
+      persistentLocalCache,
+      persistentMultipleTabManager,
+      query,
+      serverTimestamp,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBhMmiCVF9GtVTLQUSmgdPkT1W5RR6ykkU",
+      authDomain: "nexo-contas.firebaseapp.com",
+      projectId: "nexo-contas",
+      storageBucket: "nexo-contas.firebasestorage.app",
+      messagingSenderId: "927169325649",
+      appId: "1:927169325649:web:1f3430758ac281ee01a670"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    let db;
+    try {
+      db = initializeFirestore(firebaseApp, {
+        experimentalAutoDetectLongPolling: true,
+        localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      });
+    } catch (error) {
+      db = getFirestore(firebaseApp);
+    }
+    const googleProvider = new GoogleAuthProvider();
+
+    const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const qs = (selector) => document.querySelector(selector);
+    const qsa = (selector) => [...document.querySelectorAll(selector)];
+    let currentUser = null;
+    let saveTimer = null;
+    let debouncedSavePending = false;
+    let profile = {};
+    let adminVisits = [];
+    let monthlyView = "cards";
+    let billFilter = "all";
+    let deferredInstallPrompt = null;
+    let needsDataMigration = false;
+    let setupComplete = true;
+    let lastLoadSource = "remote";
+    let syncBusyCount = 0;
+    let syncing = false;
+    let syncSlowTimer = null;
+    let syncStuckTimer = null;
+    let hasPendingSync = false;
+    const ADMIN_EMAIL = "ynsanuz@gmail.com";
+    const monthKeys = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+    const currentMonthIndex = new Date().getMonth();
+    const currentMonthKey = monthKeys[currentMonthIndex];
+    const currentMonthNumber = currentMonthIndex + 1;
+
+    const demoExpenses = [
+      { id: 1, name: "plano claro Jane", value: 20, category: "Telefone", date: "12/05 · 13:19", icon: "$" },
+      { id: 2, name: "shopee crock calcinha e cofre", value: 93, category: "Outro", date: "12/05 · 13:15", icon: "$" },
+      { id: 3, name: "net casa", value: 133, category: "Internet", date: "12/05 · 12:55", icon: "$" },
+      { id: 4, name: "luz qnl mês 4", value: 155, category: "Casa", date: "12/05 · 12:50", icon: "$" },
+      { id: 5, name: "luz qnl mês 3", value: 158, category: "Casa", date: "12/05 · 12:49", icon: "$" },
+      { id: 6, name: "bee house", value: 570, category: "Casa", date: "12/05 · 12:46", icon: "$" },
+      { id: 7, name: "agua qnl mês 4", value: 63, category: "Água", date: "12/05 · 12:45", icon: "$" },
+      { id: 8, name: "agua qnl mês 5", value: 64, category: "Água", date: "12/05 · 12:45", icon: "$" },
+      { id: 9, name: "iptu2024 agl", value: 350, category: "Casa", date: "08/05 · 12:51", icon: "$" },
+      { id: 10, name: "tim maio", value: 77, category: "Telefone", date: "08/05 · 12:45", icon: "$" },
+      { id: 11, name: "creditoshope", value: 190, category: "Cartão", date: "08/05 · 12:10", icon: "$" },
+      { id: 12, name: "credito picpay", value: 740, category: "Cartão", date: "08/05 · 12:07", icon: "$" },
+      { id: 13, name: "casa agl", value: 680, category: "Casa", date: "08/05 · 12:06", icon: "$" },
+      { id: 14, name: "casa qnl", value: 600, category: "Casa", date: "08/05 · 12:06", icon: "$" },
+      { id: 15, name: "Supermercado primor", value: 950, category: "Supermercado", date: "08/05 · 12:06", icon: "$" },
+      { id: 16, name: "net de casa tim brb", value: 120, category: "Internet", date: "02/04 · 08:54", icon: "$" },
+      { id: 17, name: "Tim Bruno", value: 76, category: "Telefone", date: "02/04 · 08:45", icon: "$" },
+      { id: 18, name: "Jane Claro BRB", value: 105, category: "Telefone", date: "02/04 · 08:33", icon: "$" },
+      { id: 19, name: "Nicole VIVO no BRB", value: 17, category: "Telefone", date: "02/04 · 08:33", icon: "$" },
+      { id: 20, name: "Primor", value: 465, category: "Supermercado", date: "19/01 · 00:00", icon: "$" }
+    ];
+
+    const currentDay = new Date().getDate();
+
+    const demoBills = [
+      { id: 1, name: "OdontoGROUP", value: 90, dueDay: 2, paid: true },
+      { id: 2, name: "Spotify", value: 22, dueDay: 2, paid: true },
+      { id: 3, name: "TIM celular Bruno", value: 72, dueDay: 7, paid: true },
+      { id: 4, name: "TIM NET casa", value: 120, dueDay: 7, paid: true },
+      { id: 5, name: "CASA QNL", value: 600, dueDay: 7, paid: true },
+      { id: 6, name: "Crunchyroll", value: 30, dueDay: 7, paid: true },
+      { id: 7, name: "CapCut", value: 32, dueDay: 9, paid: true },
+      { id: 8, name: "ÁGUA QNL", value: 57, dueDay: 10, paid: true },
+      { id: 9, name: "Água QNL 2", value: 63, dueDay: 10, paid: true },
+      { id: 10, name: "Claro celular Jane", value: 37, dueDay: 10, paid: true },
+      { id: 11, name: "Claro celular Nicole MKT", value: 20, dueDay: 10, paid: true },
+      { id: 12, name: "Claro celular Nicole 2", value: 20, dueDay: 10, paid: true },
+      { id: 13, name: "Máquina Cartão", value: 30, dueDay: 10, paid: true },
+      { id: 14, name: "Crédito Tático", value: 514, dueDay: 10, paid: true },
+      { id: 15, name: "ACADEMIA", value: 117, dueDay: 10, paid: true },
+      { id: 16, name: "LUZ QNL", value: 161, dueDay: 13, paid: true },
+      { id: 17, name: "CASA AGL", value: 666, dueDay: 20, paid: true },
+      { id: 18, name: "GOOGLE", value: 50, dueDay: 20, paid: true },
+      { id: 19, name: "NETFLIX", value: 21, dueDay: 30, paid: true },
+      { id: 20, name: "Crédito PicPay Bruno", value: 750, dueDay: 30, paid: true }
+    ];
+
+    let expenses = [];
+    let bills = [];
+
+    const demoObligations = [
+      { id: 1, name: "Frank", value: 350, type: "owed", status: "unpaid", date: "2026-05-06", email: "" },
+      { id: 2, name: "Leni", value: 900, type: "receive", status: "unpaid", date: "2026-05-01", email: "" },
+      { id: 3, name: "Casa IPTU", value: 836, type: "standby", status: "standby", date: "2026-06-01", email: "" },
+      { id: 4, name: "Carro multas", value: 4386, type: "standby", status: "standby", date: "2026-07-01", email: "" }
+    ];
+    let obligations = [];
+    let deletedRecords = { expenses: {}, bills: {}, obligations: {} };
+    const clientId = (() => {
+      const key = "nexo-contas-client-id";
+      const stored = localStorage.getItem(key);
+      if (stored) return stored;
+      const id = `client-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(key, id);
+      return id;
+    })();
+
+    function nowMs() {
+      return Date.now();
+    }
+
+    function makeId() {
+      return nowMs() + Math.random();
+    }
+
+    function emptyDeletedRecords() {
+      return { expenses: {}, bills: {}, obligations: {} };
+    }
+
+    function markChanged(item) {
+      item._updatedAt = nowMs();
+      return item;
+    }
+
+    function touchBill(bill) {
+      markChanged(bill);
+      return bill;
+    }
+
+    function rememberDeleted(collectionName, id) {
+      if (!deletedRecords[collectionName]) deletedRecords[collectionName] = {};
+      deletedRecords[collectionName][String(id)] = nowMs();
+    }
+
+    function normalizeDeletedRecords(value = {}) {
+      return {
+        expenses: { ...(value.expenses || {}) },
+        bills: { ...(value.bills || {}) },
+        obligations: { ...(value.obligations || {}) }
+      };
+    }
+
+    function normalizeRecords(items, fallbackUpdatedAt = nowMs()) {
+      return (Array.isArray(items) ? items : []).map((item) => ({
+        ...item,
+        _updatedAt: Number(item._updatedAt || fallbackUpdatedAt)
+      }));
+    }
+
+    function parseMoney(value) {
+      const normalized = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+      const number = Number(normalized);
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function parseDueDay(value, fallback = currentDay) {
+      const day = Number(String(value || "").replace(/\D/g, ""));
+      return Math.min(31, Math.max(1, Number.isFinite(day) && day > 0 ? day : fallback));
+    }
+
+    function todayStamp() {
+      const now = new Date();
+      return `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")} · ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    }
+
+    function addExpenseItem(name, value, category) {
+      expenses.unshift(markChanged({
+        id: makeId(),
+        name,
+        value,
+        category,
+        date: todayStamp(),
+        icon: categoryIcon(category || name)
+      }));
+    }
+
+    function guessExpenseCategory(text) {
+      const normalized = String(text || "").toLowerCase();
+      const rules = [
+        ["Supermercado", ["mercado", "supermercado", "atacadao", "atacadão", "primor"]],
+        ["Farmácia", ["farmacia", "farmácia", "remedio", "remédio", "drogaria"]],
+        ["Alimentação", ["almoco", "almoço", "jantar", "lanche", "comida", "restaurante", "padaria"]],
+        ["Uber", ["uber", "99", "corrida"]],
+        ["iFood", ["ifood", "i food", "delivery"]],
+        ["Bebidas", ["bebida", "cerveja", "refrigerante"]],
+        ["Lazer", ["cinema", "lazer", "passeio"]],
+        ["Pet", ["pet", "racao", "ração"]],
+        ["Casa", ["casa", "aluguel", "material"]],
+        ["Luz", ["luz", "energia"]],
+        ["Água", ["agua", "água"]],
+        ["Telefone", ["telefone", "celular", "claro", "tim", "vivo"]],
+        ["Internet", ["internet", "net"]],
+        ["Cartão", ["cartao", "cartão", "credito", "crédito", "picpay"]]
+      ];
+      const match = rules.find(([, words]) => words.some((word) => normalized.includes(word)));
+      return match ? match[0] : "Outro";
+    }
+
+    function parseVoiceExpense(transcript) {
+      const text = String(transcript || "").trim();
+      const valueMatch = text.match(/(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real|rs)?/i);
+      const value = valueMatch ? parseMoney(valueMatch[1]) : 0;
+      let name = text
+        .replace(valueMatch?.[0] || "", " ")
+        .replace(/\b(eu\s+)?(gastei|paguei|comprei|lança|lanca|adiciona|coloca|registra|reais|real|rs|em|com|no|na|de)\b/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!name) name = "Gasto por voz";
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+      return {
+        transcript: text,
+        name,
+        value,
+        category: guessExpenseCategory(text)
+      };
+    }
+
+    function categoryIcon(value) {
+      const text = String(value || "").toLowerCase();
+      if (text.includes("spotify") || text.includes("netflix") || text.includes("crunch")) return "▶";
+      if (text.includes("tim") || text.includes("claro") || text.includes("telefone") || text.includes("celular")) return "☎";
+      if (text.includes("net") || text.includes("internet") || text.includes("google")) return "◎";
+      if (text.includes("agua") || text.includes("água")) return "💧";
+      if (text.includes("luz") || text.includes("energia")) return "💡";
+      if (text.includes("casa") || text.includes("aluguel")) return "⌂";
+      if (text.includes("cart") || text.includes("credito") || text.includes("crédito") || text.includes("picpay")) return "▣";
+      if (text.includes("academia")) return "◆";
+      if (text.includes("mercado") || text.includes("supermercado")) return "▦";
+      if (text.includes("uber") || text.includes("99")) return "⇄";
+      if (text.includes("farm")) return "+";
+      return "$";
+    }
+
+    function addFixedBill(name, value, dueDay) {
+      bills.unshift(markChanged({
+        id: makeId(),
+        name,
+        value,
+        dueDay: parseDueDay(dueDay),
+        paid: true,
+        focus: true,
+        months: defaultBillMonths(true)
+      }));
+      return bills[0];
+    }
+
+    function parsePaidMonth(value) {
+      const text = String(value || "").trim().toLowerCase();
+      if (!text || text === "nenhum" || text === "0") return -1;
+      if (["true", "sim", "pago"].includes(text)) return currentMonthIndex;
+      if (["false", "nao", "não", "aberto"].includes(text)) return -1;
+      const normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").slice(0, 3);
+      const index = monthKeys.findIndex((month) => month.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalized);
+      const number = Number(text);
+      if (Number.isFinite(number) && number >= 1 && number <= 12) return number - 1;
+      return index;
+    }
+
+    function splitImportLine(line) {
+      if (line.includes("\t")) return line.split("\t").map((part) => part.trim());
+      if (line.includes(";")) return line.split(";").map((part) => part.trim());
+      if (line.includes(",")) {
+        const parts = line.split(",").map((part) => part.trim());
+        const last = parts[parts.length - 1];
+        const beforeLast = parts[parts.length - 2];
+        if (/^\d{1,2}$/.test(last) && /^\d+$/.test(beforeLast || "")) {
+          parts.splice(parts.length - 2, 2, `${beforeLast},${last}`);
+        }
+        return parts;
+      }
+      return line.split(/\s{2,}/).map((part) => part.trim());
+    }
+
+    function paidIndexFromBooleanColumns(values) {
+      let lastPaid = -1;
+      for (let index = 0; index < Math.min(values.length, monthKeys.length); index += 1) {
+        const value = String(values[index] || "").trim().toLowerCase();
+        if (["true", "sim", "1", "pago", "x"].includes(value)) {
+          lastPaid = index;
+          continue;
+        }
+        if (["false", "nao", "não", "0", "aberto"].includes(value)) break;
+      }
+      return lastPaid;
+    }
+
+    function looksBooleanCell(value) {
+      return /^(true|false|sim|nao|não|0|1|pago|aberto|x)$/i.test(String(value || "").trim());
+    }
+
+    function looksMonthCell(value) {
+      const text = String(value || "").trim().toLowerCase();
+      if (!text || looksBooleanCell(text)) return false;
+      if (["nenhum", "em dia", "pago"].includes(text)) return true;
+      const normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").slice(0, 3);
+      return monthKeys.some((month) => month.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalized);
+    }
+
+    function parseFlexibleFixedBillLine(line, fallbackIndex) {
+      const rawParts = splitImportLine(line).filter((part) => part !== "");
+      if (rawParts.length < 2) return null;
+
+      if (rawParts.length >= 3) {
+        const dueDay = parseDueDay(rawParts[0]);
+        const value = parseMoney(rawParts[rawParts.length - 1]);
+        const name = rawParts.slice(1, -1).join(" ").trim();
+        if (name && value > 0) {
+          return {
+            name,
+            value,
+            dueDay,
+            paidMonth: currentMonthIndex
+          };
+        }
+      }
+
+      const booleanStart = rawParts.findIndex(looksBooleanCell);
+      const boolParts = booleanStart >= 0 ? rawParts.slice(booleanStart) : [];
+      const dataParts = booleanStart >= 0 ? rawParts.slice(0, booleanStart) : rawParts;
+
+      let dueDay = null;
+      let value = 0;
+      let valueIndex = -1;
+      let dueIndex = -1;
+      let paidMonth = boolParts.length ? paidIndexFromBooleanColumns(boolParts) : currentMonthIndex;
+
+      dataParts.forEach((part, index) => {
+        const number = Number(String(part).replace(/[^\d]/g, ""));
+        if (dueIndex === -1 && number >= 1 && number <= 31 && !String(part).includes(",") && !String(part).includes(".")) {
+          dueDay = number;
+          dueIndex = index;
+        }
+      });
+
+      dataParts.forEach((part, index) => {
+        if (index === dueIndex) return;
+        const parsedValue = parseMoney(part);
+        if (parsedValue > 0 && (valueIndex === -1 || parsedValue >= value)) {
+          value = parsedValue;
+          valueIndex = index;
+        }
+      });
+
+      if (!boolParts.length) {
+        const monthIndex = dataParts.findIndex((part, index) => index !== dueIndex && index !== valueIndex && looksMonthCell(part));
+        if (monthIndex >= 0) paidMonth = parsePaidMonth(dataParts[monthIndex]);
+      }
+
+      const nameParts = dataParts.filter((part, index) => index !== dueIndex && index !== valueIndex && !looksMonthCell(part));
+      const name = nameParts.join(" ").trim() || `Conta ${fallbackIndex}`;
+
+      if (value <= 0) return null;
+      return {
+        name,
+        value,
+        dueDay: dueDay || currentDay,
+        paidMonth
+      };
+    }
+
+    function importFixedBillsFromText(text) {
+      let added = 0;
+      String(text || "").split(/\n+/).map((line) => line.trim()).filter(Boolean).forEach((line) => {
+        const parsed = parseFlexibleFixedBillLine(line, added + 1);
+        if (!parsed) return;
+        const bill = addFixedBill(parsed.name, parsed.value, parsed.dueDay);
+        setLastPaidMonth(bill, parsed.paidMonth);
+        added += 1;
+      });
+      return added;
+    }
+
+    function getExpenseMonth(item) {
+      const match = String(item.date || "").match(/\d{1,2}\s*\/\s*(\d{1,2})/);
+      return match ? Number(match[1]) : currentMonthNumber;
+    }
+
+    function isCurrentMonthExpense(item) {
+      return getExpenseMonth(item) === currentMonthNumber;
+    }
+
+    function isAdminUser(user = currentUser) {
+      return (user?.email || "").toLowerCase() === ADMIN_EMAIL;
+    }
+
+    function pad2(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function dateKey(date = new Date()) {
+      return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+    }
+
+    function monthKey(date = new Date()) {
+      return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
+    }
+
+    function weekKey(date = new Date()) {
+      const copy = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const day = copy.getUTCDay() || 7;
+      copy.setUTCDate(copy.getUTCDate() + 4 - day);
+      const yearStart = new Date(Date.UTC(copy.getUTCFullYear(), 0, 1));
+      const week = Math.ceil((((copy - yearStart) / 86400000) + 1) / 7);
+      return `${copy.getUTCFullYear()}-W${pad2(week)}`;
+    }
+
+    function totalValues(items) {
+      return items.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    }
+
+    function looksLikeLegacyDemoBills(items) {
+      return Array.isArray(items) && items.length === 13 && Math.round(totalValues(items)) === 1953;
+    }
+
+    function looksLikeLegacyDemoExpenses(items) {
+      return Array.isArray(items) && items.length === 6 && Math.round(totalValues(items)) === 1921;
+    }
+
+    function showToast(message) {
+      const toast = qs("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    let confirmResolver = null;
+
+    function askConfirm({ title = "Tem certeza?", text = "", yes = "Sim", no = "Não" } = {}) {
+      const modal = qs("#confirmModal");
+      qs("#confirmTitle").textContent = title;
+      qs("#confirmText").textContent = text;
+      qs("#confirmYes").textContent = yes;
+      qs("#confirmNo").textContent = no;
+      modal.classList.add("open");
+      qs("#confirmNo").focus();
+      return new Promise((resolve) => {
+        confirmResolver = resolve;
+      });
+    }
+
+    function closeConfirm(result) {
+      qs("#confirmModal").classList.remove("open");
+      if (confirmResolver) {
+        confirmResolver(result);
+        confirmResolver = null;
+      }
+    }
+
+    qs("#confirmNo").addEventListener("click", () => closeConfirm(false));
+    qs("#confirmYes").addEventListener("click", () => closeConfirm(true));
+    qs("#confirmModal").addEventListener("click", (event) => {
+      if (event.target.id === "confirmModal") closeConfirm(false);
+    });
+
+    function showInstallNotice(message = "Instale o app para usar mais rápido, inclusive offline.", options = {}) {
+      const notice = qs("#installNotice");
+      const text = qs("#installNoticeText");
+      const button = qs("#installNoticeButton");
+      text.textContent = message;
+      button.hidden = options.hideButton === true;
+      notice.classList.add("show");
+      window.clearTimeout(showInstallNotice.timer);
+      showInstallNotice.timer = window.setTimeout(() => notice.classList.remove("show"), 7000);
+    }
+
+    function hideInstallNotice() {
+      qs("#installNotice").classList.remove("show");
+    }
+
+    async function setupCubeCanvas(selector, options = {}) {
+      const cubeCanvas = qs(selector);
+      if (!cubeCanvas) return;
+      try {
+        const THREE = await import("https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js");
+        const renderer = new THREE.WebGLRenderer({ canvas: cubeCanvas, antialias: true, alpha: true });
+        const width = options.width || 336;
+        const height = options.height || 300;
+        const size = options.size || 1.75;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(width, height, false);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+        camera.position.set(0, 0, 6);
+
+        const cube = new THREE.Mesh(
+          new THREE.BoxGeometry(size, size, size),
+          new THREE.MeshStandardMaterial({
+            color: "#19e0bd",
+            emissive: "#087f71",
+            emissiveIntensity: 0.95,
+            metalness: 0.28,
+            roughness: 0.3,
+            transparent: true,
+            opacity: 0.84
+          })
+        );
+        cube.rotation.set(0.72, 0.68, 0.2);
+        cube.position.set(0, 0.05, 0);
+        scene.add(cube);
+
+        scene.add(new THREE.AmbientLight("#35a7ff", 1.4));
+        const light = new THREE.PointLight("#72ffe7", 52, 20);
+        light.position.set(3, 3, 6);
+        scene.add(light);
+
+        const edge = new THREE.LineSegments(
+          new THREE.EdgesGeometry(cube.geometry),
+          new THREE.LineBasicMaterial({ color: "#72ffe7", transparent: true, opacity: 0.18 })
+        );
+        cube.add(edge);
+
+        const renderCube = () => {
+          cube.rotation.x += 0.006;
+          cube.rotation.y += 0.008;
+          renderer.render(scene, camera);
+          window.requestAnimationFrame(renderCube);
+        };
+        renderCube();
+      } catch (error) {
+        cubeCanvas.style.display = "none";
+      }
+    }
+
+    function setupSplashCube() {
+      setupCubeCanvas("#splashCube");
+      setupCubeCanvas("#homeSyncCube", { width: 136, height: 120, size: 1.95 });
+    }
+
+    function row(item, options = {}) {
+      const mode = options.mode || "expense";
+      return `
+        <article class="item">
+          <div class="item-icon">${item.icon || categoryIcon(item.category || item.name)}</div>
+          <div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${escapeHtml(item.date || item.meta || "")} ${item.category ? "· " + escapeHtml(item.category) : ""}</p>
+          </div>
+          <strong class="amount private-value ${mode} ${item.value >= 500 && mode === "expense" ? "high" : ""}">
+            ${mode === "receive" ? "+" : ""}${brl.format(item.value)}
+          </strong>
+        </article>
+      `;
+    }
+
+    function renderExpenses() {
+      bills.forEach(ensureBillMonths);
+      const today = getTotalDueThroughCurrentMonth();
+      const month = expenses
+        .filter((item) => !item.autoFixed && isCurrentMonthExpense(item))
+        .reduce((sum, item) => sum + Number(item.value || 0), 0);
+      qs("#todayTotal").textContent = brl.format(today);
+      qs("#monthTotal").textContent = brl.format(month);
+      const dueCard = qs("#todayTotal").closest(".due-card");
+      qs("#homeStatusText").textContent = syncing
+        ? "sincronizando..."
+        : today > 0 ? "Contas em aberto até hoje" : "Tudo resolvido até o mês atual";
+      dueCard?.classList.toggle("settled", today <= 0);
+      dueCard?.classList.toggle("syncing", syncing);
+      qs("#dailyList").innerHTML = renderExpenseHistory();
+      qs("#homeFixedCount").textContent = `${bills.length} cadastrada(s)`;
+      qs("#homeBillsList").innerHTML = renderHomeBills();
+      renderCategoryInsight();
+    }
+
+    function renderExpenseHistory() {
+      if (!expenses.length) {
+        return `<article class="item"><div class="item-icon">$</div><div><h3>Sem gastos lançados</h3><p>Use o botão + para adicionar uma compra.</p></div></article>`;
+      }
+      return expenses.slice(0, 6).map((item) => row(item)).join("");
+    }
+
+    function renderHomeBills() {
+      const important = [...bills]
+        .sort((a, b) => Number(a.paid) - Number(b.paid) || a.dueDay - b.dueDay)
+        .slice(0, 8);
+      if (!important.length) {
+        return `<article class="item"><div class="item-icon">$</div><div><h3>Sem contas fixas</h3><p>Use Fixos para cadastrar suas contas mensais.</p></div></article>`;
+      }
+      return important.map((bill) => {
+        const status = getBillStatus(bill);
+        const billDueTotal = getBillDueTotalThroughCurrentMonth(bill);
+        const isSettled = billDueTotal <= 0;
+        return `
+          <article class="item ${isSettled ? "status-paid" : status.className === "due-today" ? "status-today" : "status-unpaid"}">
+            <div class="item-icon">${categoryIcon(bill.name)}</div>
+            <div>
+              <h3>${escapeHtml(bill.name)}</h3>
+              <p>vence dia ${bill.dueDay} · ${status.label}</p>
+            </div>
+            <strong class="amount private-value ${isSettled ? "receive" : "high"}">${brl.format(isSettled ? bill.value : billDueTotal)}</strong>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderCategoryInsight() {
+      const colors = ["#40e0d0", "#7effd7", "#5cb8ff", "#ffcf6a", "#ff8d7a", "#b49cff"];
+      const categoryTotals = expenses.reduce((acc, item) => {
+        const category = normalizeCategory(item.category || item.name);
+        acc[category] = (acc[category] || 0) + Number(item.value || 0);
+        return acc;
+      }, {});
+      const entries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      const total = entries.reduce((sum, [, value]) => sum + value, 0);
+
+      if (!total) {
+        qs("#categoryDonut").style.background = "conic-gradient(rgba(255,255,255,.2) 0 100%)";
+        qs("#topCategoryPercent").textContent = "0%";
+        qs("#categoryList").innerHTML = `
+          <div class="category-row">
+            <span class="category-dot" style="background: var(--aqua)"></span>
+            <span>Sem gastos ainda</span>
+            <strong>R$ 0,00</strong>
+          </div>
+        `;
+        return;
+      }
+
+      let cursor = 0;
+      const gradient = entries.map(([name, value], index) => {
+        const percent = value / total * 100;
+        const start = cursor;
+        cursor += percent;
+        return `${colors[index]} ${start}% ${cursor}%`;
+      }).join(", ");
+
+      const topPercent = Math.round(entries[0][1] / total * 100);
+      qs("#categoryDonut").style.background = `conic-gradient(${gradient})`;
+      qs("#topCategoryPercent").textContent = `${topPercent}%`;
+      qs("#categoryList").innerHTML = entries.map(([name, value], index) => `
+        <div class="category-row">
+          <span class="category-dot" style="background: ${colors[index]}"></span>
+          <span>${escapeHtml(name)}</span>
+          <strong>${brl.format(value)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function normalizeCategory(category) {
+      const text = String(category || "Outro").toLowerCase();
+      if (text.includes("cerveja") || text.includes("bebida")) return "Bebidas";
+      if (text.includes("alcool") || text.includes("álcool")) return "Álcool";
+      if (text.includes("cigarro") || text.includes("tabaco")) return "Cigarro";
+      if (text.includes("bet") || text.includes("aposta")) return "Bet";
+      if (text.includes("farm")) return "Farmácia";
+      if (text.includes("pet") || text.includes("racao") || text.includes("ração")) return "Pet";
+      if (text.includes("lazer") || text.includes("cinema") || text.includes("show")) return "Lazer";
+      if (text.includes("mercado") || text.includes("supermercado") || text.includes("primor")) return "Supermercado";
+      if (text.includes("uber") || text.includes("99")) return "Uber";
+      if (text.includes("ifood") || text.includes("i food")) return "iFood";
+      if (text.includes("aliment")) return "Alimentação";
+      if (text.includes("luz")) return "Luz";
+      if (text.includes("água") || text.includes("agua")) return "Água";
+      if (text.includes("aluguel") || text.includes("casa 2")) return "Aluguel casa 2";
+      if (text.includes("claro") || text.includes("tim") || text.includes("telefone")) return "Telefone";
+      return category || "Outro";
+    }
+
+    function isMonthDueWindow(month) {
+      return monthKeys.indexOf(month) <= currentMonthIndex;
+    }
+
+    function defaultBillMonths(isPaidThisMonth = false) {
+      return monthKeys.reduce((acc, month, index) => {
+        acc[month] = index < currentMonthIndex || (index === currentMonthIndex && Boolean(isPaidThisMonth));
+        return acc;
+      }, {});
+    }
+
+    function clampDebitMonthCount(count) {
+      const number = Number(count);
+      const value = Number.isFinite(number) ? number : 0;
+      return Math.max(0, Math.min(currentMonthIndex + 1, Math.round(value)));
+    }
+
+    function applyDebitCountToMonths(months, count) {
+      const value = clampDebitMonthCount(count);
+      const firstOpenMonthIndex = currentMonthIndex - value + 1;
+      monthKeys.forEach((month, index) => {
+        months[month] = index <= currentMonthIndex ? index < firstOpenMonthIndex : false;
+      });
+      return value;
+    }
+
+    function hasAnyStoredMonth(months) {
+      return Boolean(months && typeof months === "object" && monthKeys.some((month) => months[month] !== undefined));
+    }
+
+    function ensureBillMonths(bill) {
+      const storedMonths = bill.months && typeof bill.months === "object" ? bill.months : null;
+      const hadStoredMonths = hasAnyStoredMonth(storedMonths);
+      bill.months = storedMonths || {};
+
+      const legacyDebitMonths = Number(bill.debitMonths);
+      if (bill.debitMonths !== undefined && bill.debitMonths !== null && Number.isFinite(legacyDebitMonths)) {
+        applyDebitCountToMonths(bill.months, legacyDebitMonths);
+        delete bill.debitMonths;
+      } else if (!hadStoredMonths) {
+        bill.months = defaultBillMonths(Boolean(bill.paid));
+      } else {
+        monthKeys.forEach((month, index) => {
+          if (bill.months[month] !== undefined) {
+            bill.months[month] = Boolean(bill.months[month]);
+            return;
+          }
+          bill.months[month] = index < currentMonthIndex;
+        });
+      }
+
+      bill.paid = Boolean(bill.months[currentMonthKey]);
+      return bill.months;
+    }
+
+    function getUnpaidMonthsThroughCurrentMonth(bill) {
+      const months = ensureBillMonths(bill);
+      return monthKeys.filter((month) => isMonthDueWindow(month) && !months[month]);
+    }
+
+    function getBillDueTotalThroughCurrentMonth(bill) {
+      return getDebitMonthCount(bill) * Number(bill.value || 0);
+    }
+
+    function getTotalDueThroughCurrentMonth() {
+      return bills.reduce((sum, bill) => sum + getBillDueTotalThroughCurrentMonth(bill), 0);
+    }
+
+    function getOpenMonthLabel(count) {
+      if (count <= 0) return "";
+      if (count === 1) return "1 mês em débito";
+      return `${count} meses em débito`;
+    }
+
+    function getDebitMonthCount(bill) {
+      return getUnpaidMonthsThroughCurrentMonth(bill).length;
+    }
+
+    function setBillDebitMonths(bill, count) {
+      const months = ensureBillMonths(bill);
+      const value = applyDebitCountToMonths(months, count);
+      delete bill.debitMonths;
+      bill.paid = Boolean(months[currentMonthKey]);
+      syncBillPaymentExpense(bill);
+      touchBill(bill);
+      return value;
+    }
+
+    function getDebtLabel(count) {
+      return count === 1 ? "Mês em débito" : "Meses em débito";
+    }
+
+    function getRankTrackables() {
+      const fixedBills = bills.map((bill) => ({
+        settled: getDebitMonthCount(bill) === 0
+      }));
+      const payableObligations = obligations
+        .filter((item) => ["pay", "standby"].includes(item.type) || item.status === "standby")
+        .map((item) => ({
+          settled: item.status === "paid"
+        }));
+
+      return [...fixedBills, ...payableObligations];
+    }
+
+    function getProfileStatus() {
+      const trackables = getRankTrackables();
+      const totalItems = trackables.length;
+      if (!totalItems) {
+        return { icon: "🌱", title: "Iniciante", note: "Cadastre suas contas", className: "warn", score: 0 };
+      }
+
+      const settledItems = trackables.filter((item) => item.settled).length;
+      const settledRatio = settledItems / totalItems;
+      const score = Math.max(1, settledRatio * 5);
+      const note = `${settledItems} de ${totalItems} em dia`;
+
+      if (settledItems === totalItems) {
+        return { icon: "💎", title: "Diamante", note: "Tudo em dia", className: "good", score: 5 };
+      }
+      if (settledRatio >= 0.75) return { icon: "🥇", title: "Ouro", note, className: "warn", score };
+      if (settledRatio >= 0.5) return { icon: "🥈", title: "Prata", note, className: "warn", score };
+      return { icon: "🥉", title: "Bronze", note, className: "bad", score };
+    }
+
+    function billMatchesFilter(bill, status, debitCount) {
+      if (billFilter === "settled") return debitCount === 0;
+      if (billFilter === "debit") return debitCount > 0;
+      if (billFilter === "today") return debitCount > 0 && bill.dueDay === currentDay;
+      if (billFilter === "overdue") return debitCount > 0 && status.className === "overdue";
+      return true;
+    }
+
+    function filterLabel() {
+      return {
+        all: "Todas",
+        settled: "Em dia",
+        debit: "Em débito",
+        today: "Vencendo hoje",
+        overdue: "Vencidas"
+      }[billFilter] || "Todas";
+    }
+
+    function moneyInputValue(value) {
+      return Number(value || 0).toFixed(2).replace(".", ",");
+    }
+
+    function getLastPaidMonthIndex(bill) {
+      const months = ensureBillMonths(bill);
+      let lastPaidIndex = -1;
+      monthKeys.forEach((month, index) => {
+        if (months[month]) lastPaidIndex = index;
+      });
+      return lastPaidIndex;
+    }
+
+    function setLastPaidMonth(bill, lastPaidIndex) {
+      if (lastPaidIndex === undefined || lastPaidIndex === null || Number.isNaN(Number(lastPaidIndex))) {
+        lastPaidIndex = currentMonthIndex;
+      }
+      const months = ensureBillMonths(bill);
+      monthKeys.forEach((month, index) => {
+        months[month] = index <= lastPaidIndex;
+      });
+      delete bill.debitMonths;
+      bill.paid = Boolean(months[currentMonthKey]);
+      syncBillPaymentExpense(bill);
+      touchBill(bill);
+    }
+
+    function emptyBillRowMarkup(prefix) {
+      return `
+        <tr data-new-bill="${prefix}">
+          <td class="sheet-delete"></td>
+          <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" data-new-bill-field="dueDay" aria-label="Dia"></td>
+          <td class="sheet-name"><input type="text" data-new-bill-field="name" aria-label="Nome da conta"></td>
+          <td class="sheet-value"><input type="text" inputmode="decimal" data-new-bill-field="value" aria-label="Valor"></td>
+          <td class="sheet-paid-through">
+            <select data-new-bill-field="lastPaidMonth" aria-label="Último mês quitado">
+              <option value="${currentMonthIndex}" selected>EM DIA</option>
+              <option value="-1">NENHUM</option>
+              ${monthKeys.map((month, index) => `<option value="${index}">${month.toUpperCase()}</option>`).join("")}
+            </select>
+          </td>
+        </tr>
+      `;
+    }
+
+    function maybeCreateBillFromEmptyRow(row) {
+      const name = row.querySelector('[data-new-bill-field="name"]')?.value.trim() || "";
+      const value = parseMoney(row.querySelector('[data-new-bill-field="value"]')?.value);
+      const dueDay = parseDueDay(row.querySelector('[data-new-bill-field="dueDay"]')?.value);
+      const lastPaidIndex = Number(row.querySelector('[data-new-bill-field="lastPaidMonth"]')?.value || -1);
+      if (!name && value <= 0) return false;
+      if (!name || value <= 0) return false;
+      const bill = addFixedBill(name, value, dueDay);
+      setLastPaidMonth(bill, lastPaidIndex);
+      showToast("Conta fixa criada.");
+      return true;
+    }
+
+    function syncBillPaymentExpense(bill) {
+      if (bill.paid) {
+        const alreadyLaunched = expenses.some((expense) => expense.autoFixed && expense.billId === bill.id);
+        if (!alreadyLaunched) {
+          expenses.unshift(markChanged({
+            id: makeId(),
+            billId: bill.id,
+            autoFixed: true,
+            name: bill.name,
+            value: bill.value,
+            category: "Fixo",
+            date: "13/05 · 13:28",
+            icon: "+"
+          }));
+        }
+        return;
+      }
+      expenses
+        .filter((expense) => expense.autoFixed && expense.billId === bill.id)
+        .forEach((expense) => rememberDeleted("expenses", expense.id));
+      expenses = expenses.filter((expense) => !(expense.autoFixed && expense.billId === bill.id));
+    }
+
+    function setMonthlyView(view) {
+      monthlyView = view === "sheet" ? "sheet" : "cards";
+      qsa("[data-month-view]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.monthView === monthlyView);
+      });
+      qs("#monthlyCardsList").classList.toggle("view-cards-hidden", monthlyView === "sheet");
+      qs("#billSheet").classList.toggle("active", monthlyView === "sheet");
+    }
+
+    function renderBills() {
+      bills.forEach(ensureBillMonths);
+      const fixedMonthTotal = bills.reduce((sum, bill) => sum + bill.value, 0);
+      const dueNowTotal = getTotalDueThroughCurrentMonth();
+      const dueNowEntries = bills.reduce((sum, bill) => sum + getDebitMonthCount(bill), 0);
+
+      const sortedBills = [...bills].sort((a, b) => {
+        const statusWeight = (bill) => {
+          if (getBillDueTotalThroughCurrentMonth(bill) <= 0) return 4;
+          if (bill.dueDay < currentDay) return 0;
+          if (bill.focus) return 1;
+          return 2;
+        };
+        return statusWeight(a) - statusWeight(b) || a.dueDay - b.dueDay || a.name.localeCompare(b.name);
+      });
+
+      const visibleBills = sortedBills.filter((bill) => {
+        const status = getBillStatus(bill);
+        return billMatchesFilter(bill, status, getDebitMonthCount(bill));
+      });
+
+      const billMarkup = visibleBills.map((bill) => {
+        const status = getBillStatus(bill);
+        const billDueTotal = getBillDueTotalThroughCurrentMonth(bill);
+        const openMonthCount = getDebitMonthCount(bill);
+        const isSettled = billDueTotal <= 0;
+        return `
+        <div class="bill-swipe" data-swipe-bill="${bill.id}">
+          <button class="bill-delete-reveal" type="button" data-delete-bill="${bill.id}">Excluir</button>
+          <article class="bill ${getBillCardClass(bill, status, isSettled)}" data-bill-card="${bill.id}">
+            <div class="bill-day">${String(bill.dueDay).padStart(2, "0")}</div>
+            <div class="bill-meta">
+              <button class="bill-name" type="button" data-bill-action="edit" data-bill="${bill.id}" aria-label="Editar ${escapeHtml(bill.name)}"><span>${escapeHtml(bill.name)}</span></button>
+              <span class="bill-value">${brl.format(Number(bill.value || 0))}</span>
+            </div>
+            <div class="bill-side">
+              <span class="bill-state-text">${status.label}</span>
+              <span class="bill-debt-text">· ${getDebtLabel(openMonthCount).toLowerCase()}</span>
+            </div>
+            <div class="bill-status ${isSettled ? "bill-toggle-paid" : "bill-toggle-unpaid"}" data-debit-control="${bill.id}" role="group" aria-label="Ajustar meses em débito">
+              <button type="button" data-debit-step="-1" aria-label="Diminuir débito">‹</button>
+              <strong>${openMonthCount}</strong>
+              <button type="button" data-debit-step="1" aria-label="Aumentar débito">›</button>
+            </div>
+          </article>
+        </div>
+      `;
+      }).join("") || `<p class="empty-filter">Nenhuma conta encontrada em ${filterLabel().toLowerCase()}.</p>`;
+      const fixedList = qs("#fixedList");
+      if (fixedList) fixedList.innerHTML = billMarkup;
+      qs("#monthlyCardsList").innerHTML = `${billMarkup}<p class="bill-list-hint">Arraste um card para a esquerda para excluir.</p>`;
+      qs("#desktopBills").innerHTML = billMarkup.replaceAll("data-bill=", "data-preview-bill=");
+      renderBillSheet(sortedBills);
+      qs("#fixedTotal").textContent = brl.format(fixedMonthTotal);
+      qs("#dueNowTotal").textContent = brl.format(dueNowTotal);
+      qs("#dueNowTotal").closest(".due-card")?.classList.toggle("settled", dueNowTotal <= 0);
+      qs("#dueNowText").textContent = dueNowEntries
+        ? `${dueNowEntries} conta(s) em débito até quitar`
+        : "Todas as contas fixas estão em dia";
+      renderScore(dueNowTotal, fixedMonthTotal);
+      qs("#billFilterButton").textContent = `Filtrar: ${filterLabel()}`;
+      qsa("[data-bill-filter]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.billFilter === billFilter);
+      });
+      if (qs("#bulkEditPanel")?.classList.contains("open")) {
+        renderBulkEditSheet();
+      }
+      setMonthlyView(monthlyView);
+      initBillSwipe();
+    }
+
+    function renderBillSheet(sortedBills) {
+      const fixedMonthTotal = bills.reduce((sum, bill) => sum + Number(bill.value || 0), 0);
+      qs("#billSheetHead").innerHTML = `
+        <tr>
+          <th class="sheet-delete"><button class="sheet-reset" id="resetDataButton" type="button">ZERAR</button></th>
+          <th class="sheet-day">DIA</th>
+          <th class="sheet-name">CONTA</th>
+          <th class="sheet-value">VALOR<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
+          <th class="sheet-paid-through">PAGO ATÉ</th>
+        </tr>
+      `;
+
+      qs("#billSheetBody").innerHTML = sortedBills.map((bill) => {
+        const lastPaidIndex = getLastPaidMonthIndex(bill);
+        return `
+          <tr data-sheet-bill="${bill.id}">
+            <td class="sheet-delete"><button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">🗑</button></td>
+            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bill-field="dueDay" aria-label="Dia"></td>
+            <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bill-field="name" aria-label="Nome da conta"></td>
+            <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bill-field="value" aria-label="Valor"></td>
+            <td class="sheet-paid-through">
+              <select data-bill-field="lastPaidMonth" aria-label="Último mês quitado">
+                <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
+                <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
+                ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join("") + Array.from({ length: 5 }, () => emptyBillRowMarkup("sheet")).join("");
+    }
+
+    function renderBulkEditSheet() {
+      const fixedMonthTotal = bills.reduce((sum, bill) => sum + Number(bill.value || 0), 0);
+      qs("#bulkEditHead").innerHTML = `
+        <tr>
+          <th class="sheet-delete">🗑</th>
+          <th class="sheet-day">DIA</th>
+          <th class="sheet-name">CONTA</th>
+          <th class="sheet-value">VALOR<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
+          <th class="sheet-paid-through">PAGO ATÉ</th>
+        </tr>
+      `;
+
+      qs("#bulkEditBody").innerHTML = bills.map((bill) => {
+        const lastPaidIndex = getLastPaidMonthIndex(bill);
+        return `
+          <tr data-bulk-bill="${bill.id}">
+            <td class="sheet-delete"><button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">🗑</button></td>
+            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bulk-field="dueDay" aria-label="Dia"></td>
+            <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bulk-field="name" aria-label="Nome da conta"></td>
+            <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bulk-field="value" aria-label="Valor"></td>
+            <td class="sheet-paid-through">
+              <select data-bulk-field="lastPaidMonth" aria-label="Último mês quitado">
+                <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
+                <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
+                ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join("") + Array.from({ length: 5 }, () => emptyBillRowMarkup("bulk")).join("");
+    }
+
+    function renderScore(dueNowTotal, fixedMonthTotal) {
+      const status = getProfileStatus();
+      qs("#scoreIcon").textContent = status.icon;
+      qs("#scoreStars").textContent = status.title;
+      qs("#scoreText").textContent = `Score ${status.score.toFixed(2)}`;
+      qs("#scoreNote").textContent = status.note || "Bônus ativo";
+      qs("#scoreLink").classList.toggle("good", status.className === "good");
+      qs("#scoreLink").classList.toggle("warn", status.className === "warn");
+      qs("#scoreLink").classList.toggle("bad", status.className === "bad");
+    }
+
+    function getBillStatus(bill) {
+      const openMonths = getUnpaidMonthsThroughCurrentMonth(bill);
+      if (!openMonths.length) return { label: "pago", className: "" };
+      if (openMonths.some((month) => monthKeys.indexOf(month) < currentMonthIndex)) return { label: "atrasado", className: "overdue" };
+      if (bill.dueDay < currentDay) return { label: `venceu há ${currentDay - bill.dueDay} dia(s)`, className: "overdue" };
+      if (bill.dueDay === currentDay) return { label: "vence hoje", className: "due-today" };
+      return { label: `vence em ${bill.dueDay - currentDay} dia(s)`, className: "" };
+    }
+
+    function getBillCardClass(bill, status, isSettled) {
+      if (isSettled) return "paid";
+      if (status.className === "due-today") return "pending due-today";
+      return `pending ${status.className === "overdue" ? "overdue" : ""}`;
+    }
+
+    function renderSummary() {
+      const totals = obligations.reduce((acc, item) => {
+        if (item.status === "paid") return acc;
+        if (item.type === "owed") acc.owed += Number(item.value || 0);
+        if (item.type === "receive") acc.receive += Number(item.value || 0);
+        if (item.type === "standby") acc.standby += Number(item.value || 0);
+        return acc;
+      }, { owed: 0, receive: 0, standby: 0 });
+      qs("#owedTotal").textContent = brl.format(totals.owed);
+      qs("#receiveTotal").textContent = brl.format(totals.receive);
+      qs("#standbyTotal").textContent = brl.format(totals.standby);
+      qs("#summaryList").innerHTML = obligations.map((item) => `
+        <article class="item debt-row status-${item.status}">
+          <div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${labelForType(item.type)} · ${labelForStatus(item.status)}${item.date ? " · " + item.date : ""}${item.email ? " · " + item.email : ""}</p>
+          </div>
+          <div class="debt-actions">
+            <strong class="amount private-value ${item.type === "receive" || item.type === "owed" ? "receive" : "high"}">${brl.format(item.value)}</strong>
+            <button type="button" data-edit-debt="${item.id}">Editar</button>
+          </div>
+          <div class="debt-edit-actions">
+            <button type="button" data-toggle-debt="${item.id}">${item.status === "paid" ? "Não pago" : "Pago"}</button>
+            <button type="button" data-delete-debt="${item.id}">Excluir</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    async function getVisitGeo() {
+      try {
+        const response = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+        if (!response.ok) throw new Error("geo");
+        const data = await response.json();
+        return {
+          city: data.city || "Cidade não identificada",
+          region: data.region || data.region_code || "",
+          country: data.country_name || data.country || "",
+          countryCode: data.country_code || "",
+          timezone: data.timezone || ""
+        };
+      } catch (error) {
+        return {
+          city: "Cidade não identificada",
+          region: "",
+          country: "País não identificado",
+          countryCode: "",
+          timezone: ""
+        };
+      }
+    }
+
+    async function recordVisit(user) {
+      const today = dateKey();
+      const sessionKey = `nexoVisit:${user.uid}:${today}`;
+      if (sessionStorage.getItem(sessionKey)) return;
+      sessionStorage.setItem(sessionKey, "1");
+
+      const geo = await getVisitGeo();
+      const now = new Date();
+      await addDoc(collection(db, "analyticsVisits"), {
+        uid: user.uid,
+        email: user.email || "",
+        name: user.displayName || "",
+        city: geo.city,
+        region: geo.region,
+        country: geo.country,
+        countryCode: geo.countryCode,
+        timezone: geo.timezone,
+        language: navigator.language || "",
+        userAgent: navigator.userAgent || "",
+        path: location.pathname || "/",
+        day: dateKey(now),
+        week: weekKey(now),
+        month: monthKey(now),
+        createdAt: serverTimestamp()
+      });
+    }
+
+    function visitDate(visit) {
+      if (visit.createdAt?.toDate) return visit.createdAt.toDate();
+      if (visit.createdAt?.seconds) return new Date(visit.createdAt.seconds * 1000);
+      return null;
+    }
+
+    function countUnique(values) {
+      return new Set(values.filter(Boolean)).size;
+    }
+
+    function topEntries(items, keyFn, limitCount = 5) {
+      const totals = items.reduce((acc, item) => {
+        const key = keyFn(item);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      return Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, limitCount);
+    }
+
+    async function loadAdminVisits() {
+      if (!isAdminUser()) {
+        qs("#adminPanel").classList.remove("visible");
+        return;
+      }
+      qs("#adminPanel").classList.add("visible");
+      qs("#adminRecent").innerHTML = `<div class="admin-row"><span>Carregando visitas...</span><small>banco de dados</small></div>`;
+      try {
+        const snapshot = await getDocs(query(collection(db, "analyticsVisits"), orderBy("createdAt", "desc"), limit(500)));
+        adminVisits = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+        renderAdminPanel();
+      } catch (error) {
+        qs("#adminRecent").innerHTML = `<div class="admin-row"><span>Não consegui ler as visitas.</span><small>ver regras</small></div>`;
+      }
+    }
+
+    function renderAdminPanel() {
+      const today = dateKey();
+      const thisWeek = weekKey();
+      const thisMonth = monthKey();
+      qs("#adminToday").textContent = adminVisits.filter((visit) => visit.day === today).length;
+      qs("#adminWeek").textContent = adminVisits.filter((visit) => visit.week === thisWeek).length;
+      qs("#adminMonth").textContent = adminVisits.filter((visit) => visit.month === thisMonth).length;
+      qs("#adminTotal").textContent = adminVisits.length;
+      qs("#adminCities").textContent = countUnique(adminVisits.map((visit) => `${visit.city || ""}-${visit.region || ""}`));
+      qs("#adminCountries").textContent = countUnique(adminVisits.map((visit) => visit.country || visit.countryCode));
+
+      const locations = topEntries(adminVisits, (visit) => {
+        const state = visit.region ? `, ${visit.region}` : "";
+        return `${visit.city || "Sem cidade"}${state} · ${visit.country || "Sem país"}`;
+      });
+      qs("#adminLocations").innerHTML = locations.length
+        ? locations.map(([place, count]) => `<div class="admin-row"><span>${escapeHtml(place)}</span><small>${count} visita(s)</small></div>`).join("")
+        : `<div class="admin-row"><span>Sem visitas registradas ainda.</span><small>0</small></div>`;
+
+      qs("#adminRecent").innerHTML = adminVisits.slice(0, 6).map((visit) => {
+        const date = visitDate(visit);
+        const when = date ? `${pad2(date.getDate())}/${pad2(date.getMonth() + 1)} ${pad2(date.getHours())}:${pad2(date.getMinutes())}` : "agora";
+        const state = visit.region ? `, ${visit.region}` : "";
+        return `<div class="admin-row"><span>${escapeHtml(visit.city || "Sem cidade")}${escapeHtml(state)} · ${escapeHtml(visit.country || "Sem país")}</span><small>${when}</small></div>`;
+      }).join("");
+    }
+
+    function labelForType(type) {
+      return { owed: "Pessoa me deve", receive: "Vou receber", standby: "Pendência", pay: "Falta pagar" }[type] || "Item";
+    }
+
+    function labelForStatus(status) {
+      return { paid: "Pago", unpaid: "Em aberto", standby: "Pendente" }[status] || status;
+    }
+
+    function renderAll() {
+      renderExpenses();
+      renderBills();
+      renderSummary();
+    }
+
+    function userDocRef(uid) {
+      return doc(db, "users", uid, "app", "nexo-contas");
+    }
+
+    function localUserKey(uid) {
+      return `nexo-contas:${uid}`;
+    }
+
+    function currentSnapshot(localUpdatedAt = Date.now()) {
+      return {
+        schemaVersion: 5,
+        expenses,
+        bills,
+        obligations,
+        deletedRecords,
+        profile,
+        setupComplete,
+        localUpdatedAt,
+        clientId
+      };
+    }
+
+    function saveLocalSnapshot() {
+      if (!currentUser) return null;
+      const snapshot = currentSnapshot();
+      localStorage.setItem(localUserKey(currentUser.uid), JSON.stringify(snapshot));
+      return snapshot.localUpdatedAt;
+    }
+
+    function readLocalSnapshot(uid) {
+      try {
+        return JSON.parse(localStorage.getItem(localUserKey(uid)) || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function withTimeout(promise, ms, message) {
+      let timer;
+      const timeout = new Promise((_, reject) => {
+        timer = window.setTimeout(() => reject(new Error(message)), ms);
+      });
+      return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timer));
+    }
+
+    function setSyncing(active) {
+      const dueCard = qs("#todayTotal")?.closest(".due-card");
+      const cubeText = qs("#syncCubeText");
+      if (active) {
+        syncBusyCount += 1;
+        window.clearTimeout(syncSlowTimer);
+        window.clearTimeout(syncStuckTimer);
+        syncSlowTimer = window.setTimeout(() => {
+          if (syncing && cubeText) cubeText.textContent = "clique aqui";
+        }, 10000);
+        syncStuckTimer = window.setTimeout(() => {
+          syncBusyCount = 0;
+          syncing = false;
+          dueCard?.classList.remove("syncing");
+          if (cubeText) cubeText.textContent = "sincronizando...";
+          renderAll();
+        }, 30000);
+      } else {
+        syncBusyCount = Math.max(0, syncBusyCount - 1);
+        if (syncBusyCount === 0) {
+          window.clearTimeout(syncSlowTimer);
+          window.clearTimeout(syncStuckTimer);
+          if (cubeText) cubeText.textContent = "sincronizando...";
+        }
+      }
+      syncing = syncBusyCount > 0;
+      dueCard?.classList.toggle("syncing", syncing);
+      const homeStatus = qs("#homeStatusText");
+      if (homeStatus) {
+        const today = getTotalDueThroughCurrentMonth();
+        homeStatus.textContent = syncing
+          ? "sincronizando..."
+          : today > 0 ? "Contas em aberto até hoje" : "Tudo resolvido até o mês atual";
+      }
+    }
+
+    async function fetchUserSnapshot(uid) {
+      const ref = userDocRef(uid);
+      try {
+        return await withTimeout(getDocFromServer(ref), 10000, "Banco de dados demorou para responder");
+      } catch (serverError) {
+        try {
+          const cached = await withTimeout(getDocFromCache(ref), 1500, "Cache local indisponível");
+          if (cached.exists()) return cached;
+        } catch (cacheError) {}
+        try {
+          const fallback = await withTimeout(getDoc(ref), 5000, "Banco de dados indisponível");
+          if (fallback.exists()) return fallback;
+        } catch (fallbackError) {}
+        throw serverError;
+      }
+    }
+
+    function mergeDeletedRecords(localDeleted = {}, remoteDeleted = {}) {
+      const merged = emptyDeletedRecords();
+      ["expenses", "bills", "obligations"].forEach((collectionName) => {
+        const ids = new Set([
+          ...Object.keys(remoteDeleted[collectionName] || {}),
+          ...Object.keys(localDeleted[collectionName] || {})
+        ]);
+        ids.forEach((id) => {
+          merged[collectionName][id] = Math.max(
+            Number(remoteDeleted[collectionName]?.[id] || 0),
+            Number(localDeleted[collectionName]?.[id] || 0)
+          );
+        });
+      });
+      return merged;
+    }
+
+    function mergeRecordList(localItems, remoteItems, tombstones) {
+      const byId = new Map();
+      normalizeRecords(remoteItems, 0).forEach((item) => byId.set(String(item.id), item));
+      normalizeRecords(localItems, 0).forEach((item) => {
+        const key = String(item.id);
+        const current = byId.get(key);
+        if (!current || Number(item._updatedAt || 0) >= Number(current._updatedAt || 0)) {
+          byId.set(key, item);
+        }
+      });
+      return [...byId.values()]
+        .filter((item) => Number(tombstones[String(item.id)] || 0) < Number(item._updatedAt || 0))
+        .sort((a, b) => Number(b._updatedAt || 0) - Number(a._updatedAt || 0));
+    }
+
+    function mergeSnapshots(localSnapshot, remoteSnapshot = {}) {
+      const mergedDeleted = mergeDeletedRecords(
+        normalizeDeletedRecords(localSnapshot.deletedRecords),
+        normalizeDeletedRecords(remoteSnapshot.deletedRecords)
+      );
+      return {
+        ...remoteSnapshot,
+        ...localSnapshot,
+        schemaVersion: 5,
+        expenses: mergeRecordList(localSnapshot.expenses, remoteSnapshot.expenses, mergedDeleted.expenses),
+        bills: mergeRecordList(localSnapshot.bills, remoteSnapshot.bills, mergedDeleted.bills),
+        obligations: mergeRecordList(localSnapshot.obligations, remoteSnapshot.obligations, mergedDeleted.obligations),
+        deletedRecords: mergedDeleted
+      };
+    }
+
+    function mergePendingSnapshots(snapshot = {}) {
+      const pending = snapshot.pendingSnapshots && typeof snapshot.pendingSnapshots === "object"
+        ? Object.values(snapshot.pendingSnapshots)
+        : [];
+      return pending.reduce((merged, pendingSnapshot) => mergeSnapshots(pendingSnapshot, merged), snapshot);
+    }
+
+    function applyDataSnapshot(data) {
+      data = mergePendingSnapshots(data || {});
+      const schemaVersion = Number(data.schemaVersion || 1);
+      const fallbackUpdatedAt = Number(data.localUpdatedAt || Date.now());
+      expenses = normalizeRecords(data.expenses, fallbackUpdatedAt);
+      bills = normalizeRecords(data.bills, fallbackUpdatedAt);
+      obligations = normalizeRecords(data.obligations, fallbackUpdatedAt);
+      deletedRecords = normalizeDeletedRecords(data.deletedRecords);
+      profile = data.profile || {};
+      setupComplete = true;
+      needsDataMigration = schemaVersion < 5 || bills.some((bill) => bill.debitMonths !== undefined && bill.debitMonths !== null);
+      if (schemaVersion < 3) {
+        bills = bills.map((bill) => ({
+          ...bill,
+          paid: true,
+          months: defaultBillMonths(true),
+          _updatedAt: nowMs()
+        }));
+      }
+      bills.forEach(ensureBillMonths);
+    }
+
+    function startEmptyUserData(user) {
+      expenses = [];
+      bills = [];
+      obligations = [];
+      deletedRecords = emptyDeletedRecords();
+      profile = {
+        displayName: (user.displayName || "Bruno").trim().split(/\s+/)[0] || "Bruno",
+        goal: null,
+        income: null
+      };
+      setupComplete = true;
+    }
+
+    async function loadUserData(user) {
+      const localData = readLocalSnapshot(user.uid);
+      setSyncing(true);
+      try {
+        qs("#userStatus").textContent = "Sincronizando dados...";
+        const snapshot = await fetchUserSnapshot(user.uid);
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          const hadPending = Boolean(data.pendingSnapshots && Object.keys(data.pendingSnapshots).length);
+          applyDataSnapshot(data);
+          saveLocalSnapshot();
+          if (needsDataMigration || hadPending) await saveUserData({ immediate: true });
+          lastLoadSource = "remote";
+        } else if (localData) {
+          applyDataSnapshot(localData);
+          await saveUserData({ immediate: true });
+          lastLoadSource = "local";
+        } else {
+          startEmptyUserData(user);
+          await saveUserData({ immediate: true, extraFields: { setupComplete: true } });
+          lastLoadSource = "new";
+        }
+        qs("#userStatus").textContent = "Conta Google conectada";
+      } catch (error) {
+        if (localData) {
+          applyDataSnapshot(localData);
+          lastLoadSource = "local";
+          showSyncProblem("Dados deste aparelho", error);
+        } else {
+          startEmptyUserData(user);
+          lastLoadSource = "error";
+          showSyncProblem("Banco de dados não carregou", error);
+        }
+      } finally {
+        setSyncing(false);
+      }
+      renderAll();
+    }
+
+    async function saveUserData(options = {}) {
+      if (!currentUser) return;
+      const localUpdatedAt = saveLocalSnapshot();
+      const runSave = async () => {
+        const localSnapshot = currentSnapshot(localUpdatedAt);
+        let remoteDoc = null;
+        try {
+          remoteDoc = await withTimeout(
+            getDocFromServer(userDocRef(currentUser.uid)),
+            10000,
+            "Banco de dados demorou para responder"
+          );
+        } catch (readError) {
+          try {
+            await setDoc(userDocRef(currentUser.uid), {
+              pendingSnapshots: {
+                [clientId]: {
+                  ...localSnapshot,
+                  ...(options.extraFields || {}),
+                  pendingAt: localUpdatedAt
+                }
+              },
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+            qs("#userStatus").textContent = "Salvo para sincronizar";
+            return { pending: true };
+          } catch (writeError) {
+            qs("#userStatus").textContent = "Guardado neste aparelho";
+            return { pending: true, localOnly: true };
+          }
+        }
+        const mergedSnapshot = remoteDoc.exists()
+          ? mergeSnapshots(localSnapshot, mergePendingSnapshots(remoteDoc.data()))
+          : localSnapshot;
+        applyDataSnapshot(mergedSnapshot);
+        saveLocalSnapshot();
+        await setDoc(userDocRef(currentUser.uid), {
+          ...mergedSnapshot,
+          ...(options.extraFields || {}),
+          pendingSnapshots: deleteField(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        return { pending: false };
+      };
+
+      if (options.immediate) {
+        window.clearTimeout(saveTimer);
+        setSyncing(true);
+        try {
+          const result = await runSave();
+          renderAll();
+          hasPendingSync = Boolean(result?.pending);
+          qs("#userStatus").textContent = result?.localOnly
+            ? "Guardado neste aparelho"
+            : result?.pending ? "Salvo para sincronizar" : "Salvo na Conta Google";
+        } catch (error) {
+          showSyncProblem("Banco de dados não salvou", error);
+          throw error;
+        } finally {
+          setSyncing(false);
+        }
+        return;
+      }
+
+      window.clearTimeout(saveTimer);
+      if (!debouncedSavePending) {
+        debouncedSavePending = true;
+        setSyncing(true);
+      }
+      saveTimer = window.setTimeout(() => {
+        runSave()
+          .then((result) => {
+            renderAll();
+            hasPendingSync = Boolean(result?.pending);
+            qs("#userStatus").textContent = result?.localOnly
+              ? "Guardado neste aparelho"
+              : result?.pending ? "Salvo para sincronizar" : "Salvo na Conta Google";
+          })
+          .catch((error) => showSyncProblem("Banco de dados não salvou", error))
+          .finally(() => {
+            debouncedSavePending = false;
+            setSyncing(false);
+          });
+      }, 350);
+    }
+
+    function setSignedOutView() {
+      currentUser = null;
+      expenses = [];
+      bills = [];
+      obligations = [];
+      deletedRecords = emptyDeletedRecords();
+      profile = {};
+      setupComplete = true;
+      document.body.classList.add("auth-signed-out");
+      document.body.classList.remove("auth-signed-in", "show-onboarding");
+      qs("#adminPanel").classList.remove("visible");
+      qs("#userName").textContent = "Entrar";
+      qs("#userStatus").textContent = "Toque para usar Google";
+      qs("#avatarImg").removeAttribute("src");
+      qs("#avatarImg").style.display = "none";
+      qs("#avatar span").style.display = "grid";
+      qs("#avatar span").textContent = "G";
+      qs("#loginButton").setAttribute("aria-label", "Entrar com Google");
+      updateAppMenu();
+      renderAll();
+    }
+
+    function setTab(tabName) {
+      qsa(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === tabName));
+      qsa(".screen").forEach((screen) => screen.classList.toggle("active", screen.id === `screen-${tabName}`));
+      qsa(".bottom-nav [data-tab]").forEach((button) => button.classList.toggle("active", button.dataset.tab === tabName));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function applyGoogleProfile(profile) {
+      const firstName = (profile?.name || "Bruno").trim().split(/\s+/)[0] || "Bruno";
+      qs("#userName").textContent = firstName;
+      qs("#userStatus").textContent = "Conta Google conectada";
+      if (profile?.picture) {
+        qs("#avatarImg").src = profile.picture;
+        qs("#avatarImg").style.display = "block";
+        qs("#avatar span").style.display = "none";
+      }
+      updateAppMenu();
+    }
+
+    function showSyncProblem(prefix, error) {
+      const code = String(error?.code || error?.message || "erro")
+        .replace(/firebase/gi, "banco de dados")
+        .replace(/firestore/gi, "banco de dados");
+      const message = `${prefix}: ${code}`;
+      qs("#userStatus").textContent = message;
+      showToast(message);
+    }
+
+    async function loginWithGoogle() {
+      try {
+        await signInWithPopup(auth, googleProvider);
+        closeAppMenu();
+      } catch (error) {
+        showToast(error.code === "auth/popup-closed-by-user" ? "Login cancelado." : "Falha no login Google.");
+      }
+    }
+
+    function openAppMenu() {
+      qs("#appMenuPanel").classList.add("open");
+      updateAppMenu();
+    }
+
+    function closeAppMenu() {
+      qs("#appMenuPanel").classList.remove("open");
+    }
+
+    function updateAppMenu() {
+      qs("#menuSessionLabel").textContent = currentUser?.email || "Acesse sua conta";
+      qs("#menuGoogleButton").textContent = currentUser ? "Trocar conta Google" : "Entrar com Google";
+      qs("#menuLogoutButton").hidden = !currentUser;
+    }
+
+    qs("#expenseForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = qs("#expenseName").value.trim();
+      const value = parseMoney(qs("#expenseValue").value);
+      if (!name || value <= 0) {
+        showToast("Informe nome e valor.");
+        return;
+      }
+      addExpenseItem(name, value, qs("#expenseCategory").value);
+      event.target.reset();
+      renderExpenses();
+      saveUserData();
+      showToast("Gasto salvo.");
+    });
+
+    function handleBillCardClick(event) {
+      const deleteButton = event.target.closest("[data-delete-bill]");
+      if (deleteButton) {
+        deleteBill(Number(deleteButton.dataset.deleteBill));
+        return;
+      }
+
+      const button = event.target.closest("[data-bill]");
+      if (!button) return;
+      const bill = bills.find((item) => item.id === Number(button.dataset.bill));
+      if (!bill) {
+        return;
+      }
+
+      const action = button.dataset.billAction || "paid";
+      if (action === "edit") {
+        editBill(bill);
+        return;
+      }
+
+      const paid = action === "paid";
+      bill.paid = paid;
+      if (paid) {
+        setBillDebitMonths(bill, 0);
+      } else {
+        setBillDebitMonths(bill, Math.max(1, getDebitMonthCount(bill)));
+      }
+      touchBill(bill);
+      showToast(paid ? "Conta marcada como paga." : "Conta marcada como não paga.");
+
+      renderBills();
+      renderExpenses();
+      saveUserData({ immediate: true });
+    }
+
+    function initBillSwipe() {
+      qsa("#monthlyCardsList .bill-swipe").forEach((wrap) => {
+        const card = wrap.querySelector(".bill");
+        if (!card || card.dataset.swipeReady === "true") return;
+        card.dataset.swipeReady = "true";
+        let startX = 0;
+        let currentX = 0;
+        let dragging = false;
+
+        const setOffset = (value) => {
+          card.style.transform = `translateX(${Math.max(-96, Math.min(0, value))}px)`;
+        };
+
+        card.addEventListener("pointerdown", (event) => {
+          if (event.target.closest("button")) return;
+          dragging = true;
+          startX = event.clientX;
+          currentX = 0;
+          card.setPointerCapture?.(event.pointerId);
+        });
+
+        card.addEventListener("pointermove", (event) => {
+          if (!dragging) return;
+          currentX = event.clientX - startX;
+          if (currentX < 0) setOffset(currentX);
+        });
+
+        card.addEventListener("pointerup", () => {
+          if (!dragging) return;
+          dragging = false;
+          setOffset(currentX < -46 ? -96 : 0);
+        });
+
+        card.addEventListener("pointercancel", () => {
+          dragging = false;
+          setOffset(0);
+        });
+      });
+      initDebitControls();
+    }
+
+    function initDebitControls() {
+      qsa("#monthlyCardsList [data-debit-control]").forEach((control) => {
+        if (control.dataset.debitReady === "true") return;
+        control.dataset.debitReady = "true";
+        const valueLabel = control.querySelector("strong");
+        let startX = 0;
+        let startValue = 0;
+        let lastValue = 0;
+        let dragging = false;
+
+        const applyValue = (value, shouldRender = false) => {
+          const bill = bills.find((item) => item.id === Number(control.dataset.debitControl));
+          if (!bill) return;
+          lastValue = setBillDebitMonths(bill, value);
+          if (valueLabel) valueLabel.textContent = String(lastValue);
+          if (shouldRender) {
+            renderBills();
+            renderExpenses();
+            saveUserData({ immediate: true });
+          }
+        };
+
+        control.addEventListener("click", (event) => {
+          const stepButton = event.target.closest("[data-debit-step]");
+          if (!stepButton) return;
+          event.stopPropagation();
+          const currentValue = Number(valueLabel?.textContent || 0);
+          applyValue(currentValue + Number(stepButton.dataset.debitStep || 0), true);
+        });
+
+        control.addEventListener("pointerdown", (event) => {
+          if (event.target.closest("button")) return;
+          dragging = true;
+          startX = event.clientX;
+          startValue = Number(valueLabel?.textContent || 0);
+          lastValue = startValue;
+          control.setPointerCapture?.(event.pointerId);
+        });
+
+        control.addEventListener("pointermove", (event) => {
+          if (!dragging) return;
+          const steps = Math.round((event.clientX - startX) / 16);
+          applyValue(startValue + steps);
+        });
+
+        control.addEventListener("pointerup", () => {
+          if (!dragging) return;
+          dragging = false;
+          applyValue(lastValue, true);
+        });
+
+        control.addEventListener("pointercancel", () => {
+          dragging = false;
+          applyValue(lastValue, true);
+        });
+
+        control.addEventListener("wheel", (event) => {
+          event.preventDefault();
+          const delta = event.deltaY > 0 || event.deltaX > 0 ? 1 : -1;
+          applyValue(Number(valueLabel?.textContent || 0) + delta, true);
+        }, { passive: false });
+      });
+    }
+
+    function editBill(bill) {
+      const name = window.prompt("Nome da conta", bill.name);
+      if (name === null) return;
+      const valueText = window.prompt("Valor da conta", String(bill.value).replace(".", ","));
+      if (valueText === null) return;
+      const dueText = window.prompt("Dia de vencimento", String(bill.dueDay));
+      if (dueText === null) return;
+
+      const value = parseMoney(valueText);
+      bill.name = name.trim() || bill.name;
+      if (value > 0) bill.value = value;
+      bill.dueDay = parseDueDay(dueText, bill.dueDay || currentDay);
+      touchBill(bill);
+      renderBills();
+      renderExpenses();
+      saveUserData({ immediate: true });
+      showToast("Conta editada.");
+    }
+
+    qs("#fixedList")?.addEventListener("click", handleBillCardClick);
+    qs("#monthlyCardsList").addEventListener("click", handleBillCardClick);
+
+    function handleBillDeleteClick(event) {
+      const resetButton = event.target.closest("#resetDataButton");
+      if (resetButton) {
+        resetUserData();
+        return;
+      }
+      const deleteButton = event.target.closest("[data-delete-bill]");
+      if (!deleteButton) return;
+      deleteBill(Number(deleteButton.dataset.deleteBill));
+    }
+
+    qs("#billSheet").addEventListener("click", handleBillDeleteClick);
+    qs("#bulkEditBody").addEventListener("click", handleBillDeleteClick);
+
+    qs("#billSheet").addEventListener("change", async (event) => {
+
+      const newRow = event.target.closest("[data-new-bill]");
+      if (newRow) {
+        if (!maybeCreateBillFromEmptyRow(newRow)) return;
+        renderBills();
+        renderExpenses();
+        await saveUserData({ immediate: true });
+        return;
+      }
+
+      const row = event.target.closest("[data-sheet-bill]");
+      if (!row) return;
+      const bill = bills.find((item) => item.id === Number(row.dataset.sheetBill));
+      if (!bill) return;
+
+      const field = event.target.dataset.billField;
+      if (field) {
+        if (field === "name") bill.name = event.target.value.trim() || "Nova conta";
+        if (field === "value") bill.value = Math.max(0, parseMoney(event.target.value));
+        if (field === "dueDay") bill.dueDay = parseDueDay(event.target.value, bill.dueDay || currentDay);
+        if (field === "lastPaidMonth") {
+          if (event.type !== "change") return;
+          setLastPaidMonth(bill, Number(event.target.value));
+        }
+        touchBill(bill);
+      }
+
+      const month = event.target.dataset.billMonth;
+      if (month) {
+        ensureBillMonths(bill)[month] = event.target.checked;
+        if (month === currentMonthKey) {
+          bill.paid = event.target.checked;
+          syncBillPaymentExpense(bill);
+        }
+        touchBill(bill);
+      }
+
+      if (event.type === "input" && field) {
+        saveUserData();
+        return;
+      }
+
+      renderBills();
+      renderExpenses();
+      if (month) {
+        await saveUserData({ immediate: true });
+        showToast("Alteração salva.");
+      } else {
+      saveUserData();
+      }
+    });
+
+    qsa("[data-month-view]").forEach((button) => {
+      button.addEventListener("click", () => setMonthlyView(button.dataset.monthView));
+    });
+
+    qs("#billFilterButton").addEventListener("click", () => {
+      const menu = qs("#billFilterMenu");
+      const isOpen = !menu.classList.contains("open");
+      menu.classList.toggle("open", isOpen);
+      qs("#billFilterButton").setAttribute("aria-expanded", String(isOpen));
+    });
+
+    qs("#billFilterMenu").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-bill-filter]");
+      if (!button) return;
+      billFilter = button.dataset.billFilter || "all";
+      qs("#billFilterMenu").classList.remove("open");
+      qs("#billFilterButton").setAttribute("aria-expanded", "false");
+      renderBills();
+    });
+
+    qs("#massEditButton").addEventListener("click", () => openAddModal("fixed"));
+
+    function openAddModal(pane = "daily") {
+      qs("#addModal").classList.add("open");
+      setAddPane(pane);
+      window.setTimeout(() => {
+        const input = pane === "fixed" ? qs("#bulkEditBody input") : pane === "entry" ? qs("#debtName") : qs("#quickExpenseName");
+        input?.focus();
+      }, 0);
+    }
+
+    function closeAddModal() {
+      qs("#addModal").classList.remove("open");
+    }
+
+    function setAddPane(pane) {
+      const target = ["fixed", "entry"].includes(pane) ? pane : "daily";
+      qsa("[data-add-pane]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.addPane === target);
+      });
+      qsa("[data-pane]").forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.pane === target);
+      });
+      qs("#addModalTitle").textContent = {
+        daily: "Adicionar gasto",
+        fixed: "Editar contas fixas",
+        entry: "Entrada ou pendência"
+      }[target];
+      const bulkEditPanel = qs("#bulkEditPanel");
+      if (target === "fixed") {
+        bulkEditPanel.classList.add("open");
+        renderBulkEditSheet();
+      } else {
+        bulkEditPanel.classList.remove("open");
+      }
+    }
+
+    qsa("[data-add-pane]").forEach((button) => {
+      button.addEventListener("click", () => setAddPane(button.dataset.addPane));
+    });
+
+    qs("#closeAddModal").addEventListener("click", closeAddModal);
+    qs("#addModal").addEventListener("click", (event) => {
+      if (event.target.id === "addModal") closeAddModal();
+    });
+
+    qs("#quickExpenseForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = qs("#quickExpenseName").value.trim();
+      const value = parseMoney(qs("#quickExpenseValue").value);
+      if (!name || value <= 0) {
+        showToast("Informe nome e valor.");
+        return;
+      }
+      addExpenseItem(name, value, qs("#quickExpenseCategory").value);
+      event.target.reset();
+      renderExpenses();
+      saveUserData();
+      closeAddModal();
+      showToast("Gasto salvo.");
+    });
+
+    qs("#quickBillForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+    });
+
+    async function handleBulkEdit(event) {
+      const newRow = event.target.closest("[data-new-bill]");
+      if (newRow) {
+        if (event.type === "input") return;
+        if (!maybeCreateBillFromEmptyRow(newRow)) return;
+        renderBills();
+        renderExpenses();
+        await saveUserData({ immediate: true });
+        return;
+      }
+
+      const row = event.target.closest("[data-bulk-bill]");
+      if (!row) return;
+      const bill = bills.find((item) => item.id === Number(row.dataset.bulkBill));
+      if (!bill) return;
+
+      const field = event.target.dataset.bulkField;
+      if (field) {
+        if (field === "name") bill.name = event.target.value.trim() || "Nova conta";
+        if (field === "value") bill.value = Math.max(0, parseMoney(event.target.value));
+        if (field === "dueDay") bill.dueDay = parseDueDay(event.target.value, bill.dueDay || currentDay);
+        if (field === "lastPaidMonth") {
+          if (event.type !== "change") return;
+          setLastPaidMonth(bill, Number(event.target.value));
+        }
+        touchBill(bill);
+      }
+
+      if (event.type === "input" && field) {
+        saveUserData();
+        return;
+      }
+
+      const month = event.target.dataset.bulkMonth;
+      if (month) {
+        if (event.type !== "change") return;
+        ensureBillMonths(bill)[month] = event.target.checked;
+        if (month === currentMonthKey) {
+          bill.paid = event.target.checked;
+          syncBillPaymentExpense(bill);
+        }
+        touchBill(bill);
+      }
+
+      renderBills();
+      renderExpenses();
+      if (month) {
+        await saveUserData({ immediate: true });
+        showToast("Alteração salva.");
+      } else {
+        saveUserData();
+      }
+    }
+
+    qs("#bulkEditBody").addEventListener("input", handleBulkEdit);
+    qs("#bulkEditBody").addEventListener("change", handleBulkEdit);
+
+    function createEditableBill() {
+      bills.unshift(markChanged({
+        id: makeId(),
+        name: "Nova conta",
+        value: 0,
+        dueDay: currentDay,
+        paid: true,
+        focus: true,
+        months: defaultBillMonths(true)
+      }));
+      renderBills();
+      saveUserData();
+      showToast("Conta criada para editar.");
+    }
+
+    async function deleteBill(billId) {
+      const bill = bills.find((item) => item.id === billId);
+      if (bill && !(await askConfirm({ title: "Tem certeza?", text: "", yes: "Sim", no: "Não" }))) {
+        showToast("Exclusão cancelada.");
+        return;
+      }
+      rememberDeleted("bills", billId);
+      expenses
+        .filter((expense) => expense.autoFixed && expense.billId === billId)
+        .forEach((expense) => rememberDeleted("expenses", expense.id));
+      bills = bills.filter((bill) => bill.id !== billId);
+      expenses = expenses.filter((expense) => !(expense.autoFixed && expense.billId === billId));
+      renderBills();
+      renderExpenses();
+      saveUserData({ immediate: true });
+      showToast("Conta apagada.");
+    }
+
+    function resetUserData() {
+      const typed = window.prompt("Digite ZERAR para apagar contas, gastos e entradas.");
+      if (typed !== "ZERAR") {
+        showToast("Nada foi apagado.");
+        return;
+      }
+      expenses.forEach((item) => rememberDeleted("expenses", item.id));
+      bills.forEach((item) => rememberDeleted("bills", item.id));
+      obligations.forEach((item) => rememberDeleted("obligations", item.id));
+      expenses = [];
+      bills = [];
+      obligations = [];
+      renderAll();
+      saveUserData({ immediate: true });
+      showToast("Dados apagados. Pode começar do zero.");
+    }
+
+    qs("#addBillRow").addEventListener("click", createEditableBill);
+
+    qs("#addBillModalRow").addEventListener("click", () => {
+      createEditableBill();
+      renderBulkEditSheet();
+    });
+
+    qs("#importFixedBills").addEventListener("click", async () => {
+      const input = qs("#fixedImportInput");
+      const added = importFixedBillsFromText(input.value);
+      if (!added) {
+        showToast("Cole linhas como: Dia; Conta; Valor; mês quitado.");
+        return;
+      }
+      input.value = "";
+      renderBills();
+      renderExpenses();
+      try {
+        await saveUserData({ immediate: true });
+        showToast(`${added} conta(s) importada(s) e salvas.`);
+      } catch (error) {
+        showToast(`${added} conta(s) ficaram neste aparelho. Banco de dados falhou.`);
+      }
+    });
+
+    qs("#debtForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = qs("#debtName").value.trim();
+      const value = parseMoney(qs("#debtValue").value);
+      if (!name || value <= 0) {
+        showToast("Informe item e valor.");
+        return;
+      }
+      obligations.unshift(markChanged({
+        id: makeId(),
+        name,
+        value,
+        type: qs("#debtType").value,
+        status: qs("#debtStatus").value,
+        date: qs("#debtDate").value,
+        email: qs("#debtEmail").value.trim()
+      }));
+      event.target.reset();
+      renderSummary();
+      saveUserData();
+      showToast("Entrada salva.");
+    });
+
+    qs("#summaryList").addEventListener("click", (event) => {
+      const editButton = event.target.closest("[data-edit-debt]");
+      if (editButton) {
+        const item = obligations.find((entry) => entry.id === Number(editButton.dataset.editDebt));
+        if (!item) return;
+        editObligation(item);
+        return;
+      }
+
+      const toggleButton = event.target.closest("[data-toggle-debt]");
+      if (toggleButton) {
+        const item = obligations.find((entry) => entry.id === Number(toggleButton.dataset.toggleDebt));
+        if (!item) return;
+        item.status = item.status === "paid" ? "unpaid" : "paid";
+        markChanged(item);
+        renderSummary();
+        saveUserData({ immediate: true });
+        showToast(item.status === "paid" ? "Entrada marcada como paga." : "Entrada voltou para aberto.");
+        return;
+      }
+
+      const deleteButton = event.target.closest("[data-delete-debt]");
+      if (!deleteButton) return;
+      const deletedId = Number(deleteButton.dataset.deleteDebt);
+      rememberDeleted("obligations", deletedId);
+      obligations = obligations.filter((item) => item.id !== deletedId);
+      renderSummary();
+      saveUserData();
+      showToast("Entrada excluída.");
+    });
+
+    function editObligation(item) {
+      const name = window.prompt("Nome do item", item.name);
+      if (name === null) return;
+      const valueText = window.prompt("Valor", String(item.value).replace(".", ","));
+      if (valueText === null) return;
+      const date = window.prompt("Data", item.date || "");
+      if (date === null) return;
+      const type = window.prompt("Categoria: owed, receive, standby ou pay", item.type || "receive");
+      if (type === null) return;
+      const status = window.prompt("Status: unpaid, paid ou standby", item.status || "unpaid");
+      if (status === null) return;
+
+      const value = parseMoney(valueText);
+      item.name = name.trim() || item.name;
+      if (value > 0) item.value = value;
+      item.date = date.trim();
+      if (["owed", "receive", "standby", "pay"].includes(type.trim())) item.type = type.trim();
+      if (["unpaid", "paid", "standby"].includes(status.trim())) item.status = status.trim();
+      markChanged(item);
+      renderSummary();
+      saveUserData({ immediate: true });
+      showToast("Entrada editada.");
+    }
+
+    let voiceRecognition = null;
+
+    function setVoiceListening(isListening) {
+      qs("#voiceButton")?.classList.toggle("listening", isListening);
+      qs("#voiceNav")?.classList.toggle("listening", isListening);
+    }
+
+    function listenForExpense() {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) {
+        showToast("Seu navegador não liberou voz aqui. Use Chrome ou Edge.");
+        openAddModal("daily");
+        return Promise.resolve("");
+      }
+      if (voiceRecognition) {
+        voiceRecognition.abort();
+        voiceRecognition = null;
+      }
+      return new Promise((resolve) => {
+        let transcript = "";
+        const recognition = new Recognition();
+        voiceRecognition = recognition;
+        recognition.lang = "pt-BR";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.onstart = () => {
+          setVoiceListening(true);
+          showToast("Estou ouvindo...");
+        };
+        recognition.onresult = (event) => {
+          transcript = Array.from(event.results)
+            .map((result) => result[0]?.transcript || "")
+            .join(" ")
+            .trim();
+        };
+        recognition.onerror = () => {
+          transcript = "";
+        };
+        recognition.onend = () => {
+          setVoiceListening(false);
+          voiceRecognition = null;
+          resolve(transcript);
+        };
+        recognition.start();
+      });
+    }
+
+    async function startVoiceExpense() {
+      const transcript = await listenForExpense();
+      if (!transcript) {
+        showToast("Não consegui ouvir. Tente de novo.");
+        return;
+      }
+      const parsed = parseVoiceExpense(transcript);
+      if (parsed.value <= 0) {
+        qs("#quickExpenseName").value = parsed.name || transcript;
+        qs("#quickExpenseValue").value = "";
+        qs("#quickExpenseCategory").value = parsed.category;
+        openAddModal("daily");
+        showToast("Ouvi, mas preciso do valor.");
+        return;
+      }
+      const confirmed = await askConfirm({
+        title: "Salvar gasto?",
+        text: `Ouvi: "${parsed.transcript}". Salvar ${parsed.name} por ${brl.format(parsed.value)} em ${parsed.category}?`,
+        yes: "Sim",
+        no: "Não"
+      });
+      if (!confirmed) {
+        showToast("Gasto por voz cancelado.");
+        return;
+      }
+      addExpenseItem(parsed.name, parsed.value, parsed.category);
+      renderExpenses();
+      await saveUserData({ immediate: true }).catch(() => saveUserData());
+      showToast("Gasto por voz salvo.");
+    }
+
+    qsa(".tab, .bottom-nav [data-tab]").forEach((button) => {
+      button.addEventListener("click", () => setTab(button.dataset.tab));
+    });
+
+    qs("#addNav").addEventListener("click", () => {
+      const activeTab = qs(".tab.active")?.dataset.tab;
+      openAddModal(activeTab === "mensais" ? "fixed" : activeTab === "resumo" ? "entry" : "daily");
+    });
+    qs("#typeButton").addEventListener("click", () => {
+      document.body.classList.remove("entry-collapsed");
+      qs("#expenseName").focus();
+    });
+    qs("#privacyToggle").addEventListener("click", () => {
+      document.body.classList.toggle("value-hidden");
+      showToast(document.body.classList.contains("value-hidden") ? "Valores ocultos." : "Valores visíveis.");
+    });
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      showInstallNotice("Instale o NEXO Contas e use como app, inclusive offline.");
+    });
+
+    qs("#installNoticeButton").addEventListener("click", async () => {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice.catch(() => null);
+        deferredInstallPrompt = null;
+        hideInstallNotice();
+        return;
+      }
+      showInstallNotice("Android/PC: menu do navegador > Instalar app. iPhone: Compartilhar > Adicionar à Tela de Início.", { hideButton: true });
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      hideInstallNotice();
+      showToast("App instalado.");
+    });
+    window.addEventListener("offline", () => showToast("Modo offline ativo."));
+    window.addEventListener("online", () => {
+      showToast("Conexão restaurada.");
+      if (currentUser) saveUserData({ immediate: true }).catch(() => {});
+    });
+    window.setInterval(() => {
+      if (!currentUser || syncing || !hasPendingSync || navigator.onLine === false) return;
+      saveUserData({ immediate: true }).catch(() => {});
+    }, 45000);
+    window.setTimeout(() => {
+      if (!deferredInstallPrompt && !window.matchMedia("(display-mode: standalone)").matches) {
+        showInstallNotice("Você pode instalar o NEXO Contas para abrir como app.", { hideButton: true });
+      }
+    }, 1400);
+    setupSplashCube();
+    qs("#voiceButton").addEventListener("click", startVoiceExpense);
+    qs("#voiceNav").addEventListener("click", startVoiceExpense);
+    qs("#cameraButton").addEventListener("click", () => showToast("Leitura de notinha entra na próxima fase."));
+    qs("#infoButton")?.addEventListener("click", () => showToast("Entradas, pessoas que devem e pendências."));
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    qs("#loginButton").addEventListener("click", openAppMenu);
+    qs("#splashLoginButton").addEventListener("click", openAppMenu);
+    qs("#closeAppMenuButton").addEventListener("click", closeAppMenu);
+    qs("#appMenuPanel").addEventListener("click", (event) => {
+      if (event.target.id === "appMenuPanel") closeAppMenu();
+    });
+    qs("#menuGoogleButton").addEventListener("click", loginWithGoogle);
+    qs("#menuLogoutButton").addEventListener("click", async () => {
+      try {
+        if (currentUser) {
+          await signOut(auth);
+          closeAppMenu();
+          showToast("Você saiu da conta.");
+        }
+      } catch (error) {
+        showToast("Falha ao sair da conta Google.");
+      }
+    });
+    qs("#syncRefreshButton")?.addEventListener("click", () => {
+      showToast("Atualizando...");
+      window.location.reload();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setSignedOutView();
+        return;
+      }
+
+      currentUser = user;
+      document.body.classList.remove("auth-signed-out");
+      document.body.classList.add("auth-signed-in");
+      applyGoogleProfile({ name: user.displayName || "Bruno", picture: user.photoURL });
+      qs("#loginButton").setAttribute("aria-label", "Sair da conta Google");
+      try {
+        await loadUserData(user);
+        await recordVisit(user).catch(() => {});
+        await loadAdminVisits();
+        showToast(lastLoadSource === "remote" ? "Dados carregados do banco de dados." : "Dados carregados deste aparelho.");
+      } catch (error) {
+        showToast("Login ok, mas confira o banco de dados.");
+      }
+    });
+
+    renderAll();
+  </script>
+  <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-contas" data-site-name="Contas" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+Options -Indexes
+DirectoryIndex index.html
+
+<FilesMatch "^(README\.md|config\.php)$">
+  Require all denied
+</FilesMatch>

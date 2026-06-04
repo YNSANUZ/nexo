@@ -1,0 +1,24 @@
+# Sistema / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+*.log
+
+# Segredos locais
+.env
+.env.*
+!.env.example
+
+# Dependencias e builds locais, se algum site ganhar build depois
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+
+# Estado local de deploy
+.ftp-deploy-sync-state.json
+

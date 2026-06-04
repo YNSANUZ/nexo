@@ -1,0 +1,406 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXO | PrimusDF</title>
+  <link rel="icon" href="https://i.ibb.co/FLXs28z0/11-layout-primus-1.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(114, 255, 231, 0.22), transparent 34%),
+        linear-gradient(145deg, #041a52 0%, #063d8e 45%, #0aa9ee 100%);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      touch-action: none;
+      user-select: none;
+      font-family: "League Spartan", Arial, sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: relative;
+      z-index: 4;
+      width: min(48vw, 390px);
+      height: min(44vw, 350px);
+      max-height: 70vh;
+      display: block;
+      cursor: grab;
+      outline: none;
+      touch-action: none;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    .brand-layer {
+      --reveal: 0;
+      --reset: 0;
+      --orbit: 0;
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .brand-logo {
+      position: absolute;
+      top: clamp(150px, 24vh, 230px);
+      left: 50%;
+      margin: 0;
+      width: min(72vw, 520px);
+      height: auto;
+      opacity: calc(var(--reveal) * (1 - var(--reset)));
+      filter: blur(calc((1 - var(--reveal)) * 22px + var(--reset) * 14px));
+      text-shadow: 0 18px 54px rgba(1, 31, 76, 0.22);
+      transform: translateX(-50%) scale(calc(0.985 + var(--reveal) * 0.015));
+      transition: opacity 120ms linear, filter 120ms linear;
+      pointer-events: none;
+    }
+
+    .site-link,
+    .orbit-word {
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 500;
+      letter-spacing: 0.26em;
+      text-decoration: none;
+      text-transform: uppercase;
+      text-shadow: 0 8px 28px rgba(0, 38, 91, 0.3);
+      pointer-events: auto;
+      transition: color 180ms ease, opacity 180ms ease, filter 180ms ease;
+    }
+
+    .site-link:hover,
+    .orbit-word:hover {
+      color: #fff;
+      opacity: 1;
+    }
+
+    .site-link {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + min(25vw, 190px));
+      font-size: clamp(10px, 2vw, 14px);
+      opacity: calc(max(0, (var(--reveal) - 0.92) * 12.5) * (1 - var(--reset)));
+      filter: blur(calc((1 - var(--reveal)) * 8px + var(--reset) * 10px));
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .orbit-field {
+      position: absolute;
+      inset: 0;
+      opacity: calc(var(--orbit) * (1 - var(--reset)));
+      filter: blur(calc(var(--reset) * 10px));
+      pointer-events: none;
+      transition: opacity 360ms ease, filter 360ms ease;
+    }
+
+    .brand-layer[data-state="revealed"] .orbit-field {
+      pointer-events: auto;
+    }
+
+    .orbit-word {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: inline-block;
+      font-size: clamp(10px, 1.85vw, 14px);
+      opacity: 0.74;
+      white-space: nowrap;
+      will-change: transform;
+    }
+
+    .site-orbit {
+      font-size: clamp(9px, 1.55vw, 12px);
+      letter-spacing: 0.22em;
+    }
+
+    @media (max-width: 620px) {
+      .brand-logo {
+        top: 24vh;
+        width: min(76vw, 390px);
+      }
+
+      .orbit-word {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="brand-layer" id="brandLayer">
+      <svg class="brand-logo" role="img" aria-label="NEXO" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1236.07 358.23">
+        <defs>
+          <style>
+            .nexo-logo-top { fill: #6cc4c7; }
+            .nexo-logo-white { fill: #fff; }
+            .nexo-logo-side { fill: #35b6ae; }
+            .nexo-logo-shadow { fill: #1d857d; }
+          </style>
+        </defs>
+        <path class="nexo-logo-white" d="M1058.79.02c130.79-1.93,210.3,131.53,163.97,249.97-55.4,141.61-261.76,145.5-320.94,4.41C853.08,138.19,929.42,1.93,1058.79.02ZM1143.99,133.74l-83.42-42-82.59,42.49,83.98,42,82.02-42.49ZM1064,271.72l79.99-40.47v-94.34l-80.29,41.85.3,92.97ZM1060,178.72l-82.41-40.52.56,91.27,81.84,41.24v-92Z"/>
+        <polygon class="nexo-logo-white" points="79.5 6.72 217 220.72 217 6.72 296 6.72 296 351.72 217.5 351.72 79 137.72 79 351.72 0 351.72 0 6.72 79.5 6.72"/>
+        <polygon class="nexo-logo-white" points="682.5 6.72 744.16 98.06 746.49 99.74 809.5 6.72 907 6.72 795.17 166.06 929 351.72 827.5 351.72 745.02 234.72 664.5 351.72 567 351.72 696.87 166.04 589 6.72 682.5 6.72"/>
+        <polygon class="nexo-logo-white" points="544 6.72 544 75.72 425 75.72 425 143.72 539 143.72 539 213.72 425 213.72 425 282.72 544 282.72 544 351.72 346 351.72 346 6.72 544 6.72"/>
+        <polygon class="nexo-logo-shadow" points="1059.82 273.66 976.45 231.3 976.45 135.34 1060 178.05 1059.82 273.66"/>
+        <polygon class="nexo-logo-side" points="1145.87 232.38 1060 273.84 1060 178.05 1145.87 134.45 1145.87 232.38"/>
+        <polygon class="nexo-logo-top" points="1060 178.05 976.45 135.34 1060.09 91.73 1145.87 134.49 1060 178.05"/>
+      </svg>
+      <div class="orbit-field" id="orbitField">
+        <a class="orbit-word" href="../contas/" data-angle="-38" data-speed="0.00018" data-rx="0.37" data-ry="0.30">Contas</a>
+        <a class="orbit-word" href="../copa/" data-angle="-12" data-speed="0.00015" data-rx="0.44" data-ry="0.24">Copa</a>
+        <a class="orbit-word" href="../sena/" data-angle="94" data-speed="0.00017" data-rx="0.36" data-ry="0.28">Sena</a>
+        <a class="orbit-word" href="https://nexovagas.com.br" data-angle="-142" data-speed="-0.00014" data-rx="0.42" data-ry="0.26">Emprego</a>
+        <a class="orbit-word" href="https://nexovagas.com.br" data-angle="178" data-speed="0.00016" data-rx="0.47" data-ry="0.18">Oportunidades</a>
+        <a class="orbit-word" href="../contas/" data-angle="18" data-speed="-0.00012" data-rx="0.34" data-ry="0.22">Organizacao<br>Financeira</a>
+        <a class="orbit-word" href="https://primusdf.com.br" data-angle="52" data-speed="0.00013" data-rx="0.39" data-ry="0.34">Empresas</a>
+        <a class="orbit-word" href="https://nexovagas.com.br" data-angle="-82" data-speed="-0.00016" data-rx="0.32" data-ry="0.31">Vagas</a>
+        <a class="orbit-word site-orbit" href="https://primusdf.com.br" data-angle="134" data-speed="-0.00009" data-rx="0.43" data-ry="0.34">primusdf.com.br</a>
+      </div>
+    </div>
+    <canvas id="cubeCanvas" width="1040" height="940" aria-label="Cubo NEXO interativo"></canvas>
+  </main>
+
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
+
+    const stage = document.querySelector(".stage");
+    const canvas = document.querySelector("#cubeCanvas");
+    const brandLayer = document.querySelector("#brandLayer");
+    const orbitWords = [...document.querySelectorAll(".orbit-word")].map((word) => ({
+      element: word,
+      angle: Number(word.dataset.angle) * Math.PI / 180,
+      speed: Number(word.dataset.speed),
+      rx: Number(word.dataset.rx),
+      ry: Number(word.dataset.ry)
+    }));
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    const pointer = {
+      active: false,
+      lastX: 0,
+      lastY: 0,
+      lastTime: 0,
+      velocityX: 0,
+      velocityY: 0
+    };
+    const autoSpin = { x: 0.006, y: 0.008 };
+    const maxInertia = 0.34;
+    const reveal = {
+      state: "idle",
+      progress: 0,
+      resetProgress: 0,
+      spin: 0,
+      threshold: Math.PI * 44,
+      gain: 1,
+      decay: 0.34,
+      revealedAt: 0
+    };
+
+    camera.position.z = 5;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(1.72, 1.72, 1.72),
+      new THREE.MeshStandardMaterial({
+        color: "#19e0bd",
+        roughness: 0.3,
+        metalness: 0.28,
+        emissive: "#087f71",
+        emissiveIntensity: 0.95,
+        transparent: true,
+        opacity: 0.84
+      })
+    );
+
+    cube.rotation.set(0.72, 0.68, 0.2);
+    cube.position.set(0, 0.05, 0);
+    scene.add(cube);
+
+    scene.add(new THREE.AmbientLight("#35a7ff", 1.4));
+
+    const light = new THREE.PointLight("#72ffe7", 52, 20);
+    light.position.set(2.5, 3.1, 4.2);
+    scene.add(light);
+
+    const edge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(cube.geometry),
+      new THREE.LineBasicMaterial({ color: "#72ffe7", transparent: true, opacity: 0.18 })
+    );
+    cube.add(edge);
+
+    function resizeRenderer() {
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = Math.max(1, Math.floor(rect.height));
+
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    function handlePointerDown(event) {
+      if (event.target.closest("a")) return;
+
+      pointer.active = true;
+      pointer.lastX = event.clientX;
+      pointer.lastY = event.clientY;
+      pointer.lastTime = performance.now();
+      pointer.velocityX = 0;
+      pointer.velocityY = 0;
+      stage.setPointerCapture(event.pointerId);
+    }
+
+    function handlePointerMove(event) {
+      if (!pointer.active) return;
+
+      const deltaX = event.clientX - pointer.lastX;
+      const deltaY = event.clientY - pointer.lastY;
+      const now = performance.now();
+      const elapsed = Math.max(12, now - pointer.lastTime);
+      const frameSpeed = 16.67 / elapsed;
+
+      pointer.lastX = event.clientX;
+      pointer.lastY = event.clientY;
+      pointer.lastTime = now;
+      pointer.velocityX = THREE.MathUtils.clamp(deltaX * 0.009 * frameSpeed, -maxInertia, maxInertia);
+      pointer.velocityY = THREE.MathUtils.clamp(deltaY * 0.009 * frameSpeed, -maxInertia, maxInertia);
+
+      cube.rotation.y += deltaX * 0.0045;
+      cube.rotation.x += deltaY * 0.0045;
+      addRevealSpin(Math.abs(deltaX * 0.0045) + Math.abs(deltaY * 0.0045));
+    }
+
+    function handlePointerUp(event) {
+      pointer.active = false;
+
+      if (stage.hasPointerCapture(event.pointerId)) {
+        stage.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    stage.addEventListener("pointerdown", handlePointerDown);
+    stage.addEventListener("pointermove", handlePointerMove);
+    stage.addEventListener("pointerup", handlePointerUp);
+    stage.addEventListener("pointercancel", handlePointerUp);
+
+    window.addEventListener("resize", resizeRenderer);
+    resizeRenderer();
+
+    function addRevealSpin(amount) {
+      if (reveal.state === "revealed" || reveal.state === "resetting") return;
+
+      reveal.state = "revealing";
+      reveal.spin = Math.min(reveal.threshold, reveal.spin + amount * reveal.gain);
+      reveal.progress = reveal.spin / reveal.threshold;
+
+      if (reveal.progress >= 1) {
+        reveal.state = "revealed";
+        reveal.progress = 1;
+        reveal.revealedAt = performance.now();
+      }
+    }
+
+    function updateReveal(now) {
+      const currentSpinSpeed = Math.abs(pointer.velocityX) + Math.abs(pointer.velocityY);
+
+      if (reveal.state === "revealing" && !pointer.active && currentSpinSpeed < 0.002) {
+        reveal.spin = Math.max(0, reveal.spin - reveal.decay);
+        reveal.progress = reveal.spin / reveal.threshold;
+
+        if (reveal.spin === 0) {
+          reveal.state = "idle";
+        }
+      }
+
+      if (reveal.state === "revealed" && now - reveal.revealedAt > 8000) {
+        reveal.state = "resetting";
+        reveal.resetStartedAt = now;
+      }
+
+      if (reveal.state === "resetting") {
+        reveal.resetProgress = Math.min(1, (now - reveal.resetStartedAt) / 900);
+
+        if (reveal.resetProgress >= 1) {
+          reveal.state = "idle";
+          reveal.progress = 0;
+          reveal.resetProgress = 0;
+          reveal.spin = 0;
+          pointer.velocityX = 0;
+          pointer.velocityY = 0;
+        }
+      }
+
+      brandLayer.style.setProperty("--reveal", reveal.progress.toFixed(4));
+      brandLayer.style.setProperty("--reset", reveal.resetProgress.toFixed(4));
+      brandLayer.style.setProperty("--orbit", reveal.state === "revealed" ? "1" : "0");
+      brandLayer.dataset.state = reveal.state;
+    }
+
+    function updateOrbit(now) {
+      const viewport = Math.min(window.innerWidth, window.innerHeight);
+      const baseX = window.innerWidth / 2;
+      const baseY = window.innerHeight / 2 + viewport * 0.045;
+
+      orbitWords.forEach((word) => {
+        const angle = word.angle + now * word.speed;
+        const x = Math.cos(angle) * window.innerWidth * word.rx;
+        const y = Math.sin(angle) * window.innerHeight * word.ry;
+        word.element.style.transform = `translate3d(${baseX + x}px, ${baseY + y}px, 0) translate(-50%, -50%)`;
+      });
+    }
+
+    function renderCube() {
+      const now = performance.now();
+
+      if (!pointer.active) {
+        cube.rotation.x += autoSpin.x + pointer.velocityY;
+        cube.rotation.y += autoSpin.y + pointer.velocityX;
+        addRevealSpin(Math.abs(pointer.velocityX) + Math.abs(pointer.velocityY));
+        pointer.velocityX *= 0.988;
+        pointer.velocityY *= 0.988;
+
+        if (Math.abs(pointer.velocityX) < 0.0004) pointer.velocityX = 0;
+        if (Math.abs(pointer.velocityY) < 0.0004) pointer.velocityY = 0;
+      }
+
+      updateReveal(now);
+      updateOrbit(now);
+      renderer.render(scene, camera);
+      window.requestAnimationFrame(renderCube);
+    }
+
+    renderCube();
+  </script>
+  <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-nexo" data-site-name="Nexo" defer></script>
+</body>
+</html>

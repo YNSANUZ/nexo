@@ -1,0 +1,569 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1f659c">
+    <title>NEXO Credencial</title>
+    <meta name="description" content="Credenciamento, CHECK-IN e gestão de presença pelo NEXO Credencial.">
+    <meta property="og:title" content="NEXO Credencial">
+    <meta property="og:description" content="Credenciamento, CHECK-IN e gestão de presença pelo NEXO Credencial.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+    <script>
+      (() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("convite") !== "1") return;
+        const name = params.get("nome") || "Convite NEXO Credencial";
+        const date = params.get("data") || "";
+        const description = params.get("descricao") || [name, date].filter(Boolean).join(" - ");
+        const logo = params.get("logo") || "";
+        const setMeta = (selector, attr, value) => {
+          const tag = document.querySelector(selector);
+          if (tag && value) tag.setAttribute(attr, value);
+        };
+        document.title = date ? `${name} - ${date}` : name;
+        setMeta('meta[name="description"]', "content", description);
+        setMeta('meta[property="og:title"]', "content", document.title);
+        setMeta('meta[property="og:description"]', "content", description);
+        setMeta('meta[name="twitter:card"]', "content", logo ? "summary_large_image" : "summary");
+        if (logo) {
+          setMeta('meta[property="og:image"]', "content", logo);
+          document.querySelector('link[rel="icon"]')?.setAttribute("href", logo);
+          document.querySelector('link[rel="apple-touch-icon"]')?.setAttribute("href", logo);
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260522-credencial">
+  </head>
+  <body>
+    <div class="event-watermark" id="eventWatermark" aria-hidden="true"></div>
+    <section class="login-gate" id="loginGate" hidden>
+      <div class="gate-card">
+        <div class="gate-brand">
+          <strong>NEXO</strong>
+          <span>Credencial</span>
+        </div>
+        <div class="login-cube-wrap">
+          <canvas id="loginCubeCanvas" width="720" height="640" aria-label="Cubo NEXO Credencial interativo"></canvas>
+        </div>
+        <p>Faça login Google para começar</p>
+        <button class="google-login-button gate-login" id="gateLoginButton" type="button">
+          <img class="google-mark" src="https://ajuda.fastcommerce.com.br/lojas/00000009/prod/fc15025-configurar-login-cliente-google.jpg?cccfc=2adbf805" alt="" aria-hidden="true">
+          <strong>Entrar com Google</strong>
+        </button>
+      </div>
+    </section>
+
+    <section class="public-invite" id="publicInvite" hidden>
+      <div class="invite-card">
+        <div class="invite-logo" id="inviteLogo" hidden></div>
+        <p>Convite do evento</p>
+        <h1 id="inviteEventName">Evento</h1>
+        <span id="inviteEventDate"></span>
+        <p class="invite-description" id="inviteEventDescription"></p>
+        <a class="route-link" id="inviteEventRoute" href="#" target="_blank" rel="noopener" hidden>Como chegar</a>
+        <button class="primary-button signup-call" id="openPublicSignupButton" type="button">EU VOU</button>
+        <form id="publicSignupForm" hidden>
+          <label data-public-field="name">
+            <span>Nome <b class="required-mark">*</b></span>
+            <input name="name" autocomplete="name" required placeholder="NOME">
+          </label>
+          <label data-public-field="phone">
+            <span>Telefone <b class="required-mark">*</b></span>
+            <div class="phone-field">
+              <div class="phone-preview" id="publicPhonePreview" aria-hidden="true">
+                <span></span><strong></strong>
+              </div>
+              <input
+                id="publicPhoneInput"
+                name="phone"
+                inputmode="numeric"
+                autocomplete="tel"
+                required
+                pattern="[0-9]{11}"
+                maxlength="11"
+                minlength="11"
+                placeholder="61991078409"
+                aria-describedby="publicPhoneHelp"
+              >
+            </div>
+            <small id="publicPhoneHelp" class="field-help">Digite 11 números, sem ponto, traço ou espaço. Exemplo: 61991078409</small>
+          </label>
+          <label data-public-field="workplace">
+            <span>Local que trabalha <em class="optional-mark">(opcional)</em></span>
+            <input name="workplace" autocomplete="organization" placeholder="LOCAL QUE TRABALHA">
+          </label>
+          <label data-public-field="email">
+            <span>E-mail <em class="optional-mark">(opcional)</em></span>
+            <input name="email" type="email" autocomplete="email" placeholder="E-MAIL">
+          </label>
+          <label data-public-field="rg">
+            <span>RG <em class="optional-mark">(opcional)</em></span>
+            <input name="rg" autocomplete="off" placeholder="RG">
+          </label>
+          <label data-public-field="cpf">
+            <span>CPF <em class="optional-mark">(opcional)</em></span>
+            <input name="cpf" inputmode="numeric" autocomplete="off" placeholder="CPF">
+          </label>
+          <label data-public-field="address">
+            <span>Endereço <em class="optional-mark">(opcional)</em></span>
+            <input name="address" autocomplete="street-address" placeholder="ENDEREÇO">
+          </label>
+          <label data-public-field="enrollment">
+            <span>Matrícula <em class="optional-mark">(opcional)</em></span>
+            <input name="enrollment" autocomplete="off" placeholder="MATRÍCULA">
+          </label>
+          <div class="location-field" data-public-field="location">
+            <span>Localização <em class="optional-mark">(opcional)</em></span>
+            <button class="secondary-button" id="publicLocationButton" type="button">Marcar localização</button>
+            <small class="field-help" id="publicLocationStatus">Use quando o evento exigir posição no mapa.</small>
+          </div>
+          <label class="switch-row work-switch" data-public-field="workMode">
+            <span>Vou ao evento a trabalho</span>
+            <input id="publicWorkInput" name="workMode" type="checkbox" value="1">
+          </label>
+          <div class="work-fields" id="publicWorkFields" hidden>
+            <label>
+              <span>Função no evento</span>
+              <select name="workRole">
+                <option value="">Escolha</option>
+                <option>Staff</option>
+                <option>Credenciamento</option>
+                <option>Produção</option>
+                <option>Segurança</option>
+                <option>Expositor</option>
+                <option>Fornecedor</option>
+                <option>Imprensa</option>
+                <option>Outro</option>
+              </select>
+            </label>
+            <label>
+              <span>Equipe ou empresa</span>
+              <input name="workTeam" autocomplete="organization" placeholder="EQUIPE / EMPRESA">
+            </label>
+            <p class="field-help">Ao marcar trabalho, sua localização podera ser usada durante o evento quando este app estiver aberto.</p>
+          </div>
+          <button class="primary-button" type="submit">Enviar pré-cadastro</button>
+        </form>
+        <p class="helper-text" id="publicInviteMessage"></p>
+      </div>
+    </section>
+
+    <header class="app-header">
+      <div class="left-tools">
+        <button class="icon-button" id="menuButton" type="button" aria-label="Abrir menu">G</button>
+        <button class="event-chip" id="currentEventButton" type="button" hidden>Nenhum evento</button>
+        <button class="user-badge" id="userBadge" type="button" aria-label="Abrir menu do perfil">
+          <img id="userPhoto" alt="">
+          <span id="userInitial" aria-hidden="true"></span>
+          <strong id="userName"></strong>
+        </button>
+      </div>
+      <div class="header-brand">
+        <p>NEXO</p>
+        <h1>Credencial</h1>
+      </div>
+      <button class="top-action" id="openRegisterButton" type="button">Cadastrar</button>
+    </header>
+
+    <main class="checkin-shell">
+      <section class="search-box" aria-labelledby="searchTitle">
+        <div class="list-tabs" role="tablist" aria-label="Listas de convidados">
+          <button class="list-tab active" id="listOneButton" type="button">Lista 1</button>
+          <button class="list-tab" id="listTwoButton" type="button">CHECK-IN</button>
+        </div>
+        <h2 id="searchTitle">Buscar convidado</h2>
+        <label>
+          <span>Digite o nome</span>
+          <input id="searchInput" type="search" inputmode="search" autocomplete="off" placeholder="DIGITE O NOME">
+        </label>
+      </section>
+
+      <section class="results" aria-live="polite">
+        <div id="guestList" class="guest-list"></div>
+        <p id="emptyState" class="empty-state">Digite um nome para começar</p>
+      </section>
+    </main>
+
+    <aside class="menu-panel" id="menuPanel" aria-label="Menu" hidden>
+      <div class="menu-card">
+        <div class="menu-head">
+          <div>
+            <p>NEXO Credencial</p>
+            <strong id="sessionLabel">Acesso de portaria</strong>
+          </div>
+          <button class="icon-button dark" id="closeMenuButton" type="button" aria-label="Fechar menu">x</button>
+        </div>
+
+        <button class="quiet-menu-item" id="restrictedButton" type="button">Relatório</button>
+        <button class="menu-item" id="menuLoginButton" type="button">Entrar com Google</button>
+        <button class="menu-item" id="openEventsButton" type="button">Meus eventos</button>
+        <button class="menu-item" id="openCreateEventButton" type="button">Criar evento</button>
+        <button class="menu-item" id="reportButton" type="button" hidden>Ver relatorio</button>
+        <button class="menu-item admin-only" id="exportButton" type="button" hidden>Exportar CSV</button>
+        <button class="menu-item admin-only" id="openImportButton" type="button" hidden>Importar lista</button>
+        <button class="menu-item admin-only" id="openInviteButton" type="button" hidden>Convite público</button>
+        <button class="menu-item admin-only danger" id="resetButton" type="button" hidden>Limpar dados</button>
+        <button class="menu-item admin-only" id="openModeratorsButton" type="button" hidden>Moderadores</button>
+        <button class="menu-item" id="logoutButton" type="button" hidden>Sair</button>
+        <div class="plan-status" id="planStatus">Plano Gratuito</div>
+        <button class="menu-item plans-menu-item" id="openPlansButton" type="button">Planos</button>
+        <div class="other-apps" aria-label="Outros Apps NEXO">
+          <p>Outros Apps</p>
+          <a class="app-link vagas" href="https://nexovagas.com.br" target="_blank" rel="noopener">Vagas</a>
+          <a class="app-link eventos" href="https://nexovagas.com.br/eventos" target="_blank" rel="noopener">Eventos</a>
+          <a class="app-link corridas" href="https://nexovagas.com.br/corridas" target="_blank" rel="noopener">Corridas</a>
+          <a class="app-link copa" href="https://nexovagas.com.br/copa" target="_blank" rel="noopener">Copa</a>
+          <a class="app-link contas" href="../contas/">Organização Financeira</a>
+        </div>
+      </div>
+    </aside>
+
+    <template id="guestTemplate">
+      <article class="guest-card">
+        <div class="swipe-hint left">Pendente</div>
+        <div class="swipe-hint right">Check in</div>
+        <div class="guest-content">
+          <div>
+            <h3></h3>
+            <p></p>
+          </div>
+          <button class="guest-delete-button" type="button" aria-label="Excluir contato">🗑</button>
+          <span></span>
+        </div>
+      </article>
+    </template>
+
+    <dialog id="workerDialog">
+      <div class="dialog-head">
+        <h2 id="workerDialogTitle">CHECK-IN</h2>
+        <button class="plain-button" id="closeWorkerButton" type="button">Fechar</button>
+      </div>
+      <div class="worker-profile">
+        <div class="worker-avatar" id="workerSelfiePreview">SELFIE</div>
+        <div>
+          <strong id="workerName"></strong>
+          <p id="workerMeta"></p>
+        </div>
+      </div>
+      <div class="worker-actions">
+        <button class="primary-button" id="workerCheckinButton" type="button">Fazer check-in</button>
+        <button class="secondary-button" id="workerLocationButton" type="button">Marcar localização</button>
+        <button class="secondary-button" id="workerSelfieButton" type="button">Enviar selfie compactada</button>
+        <input id="workerSelfieInput" type="file" accept="image/*" capture="user" hidden>
+      </div>
+      <p class="helper-text" id="workerProofStatus"></p>
+      <div class="location-history" id="workerLocationHistory"></div>
+    </dialog>
+
+    <dialog id="registerDialog">
+      <form id="registerForm" method="dialog">
+        <div class="dialog-head">
+          <h2>Cadastrar convidado</h2>
+          <button class="plain-button" value="cancel" type="submit" formnovalidate>Fechar</button>
+        </div>
+        <label>
+          <span>Nome <b class="required-mark">*</b></span>
+          <input name="name" autocomplete="name" required placeholder="NOME">
+        </label>
+        <label>
+          <span>Telefone <b class="required-mark">*</b></span>
+          <input
+            name="phone"
+            inputmode="numeric"
+            autocomplete="tel"
+            required
+            pattern="[0-9]{11}"
+            maxlength="11"
+            minlength="11"
+            placeholder="61991078409"
+          >
+          <small class="field-help">Digite 11 números, sem ponto, traço ou espaço. Exemplo: 61991078409</small>
+        </label>
+        <label>
+          <span>Local que trabalha <em class="optional-mark">(opcional)</em></span>
+          <input name="workplace" autocomplete="organization" placeholder="LOCAL QUE TRABALHA">
+        </label>
+        <label class="switch-row work-switch">
+          <span>Esta pessoa está a trabalho</span>
+          <input id="registerWorkInput" name="workMode" type="checkbox" value="1">
+        </label>
+        <div class="work-fields" id="registerWorkFields" hidden>
+          <label>
+            <span>Função no evento</span>
+            <select name="workRole">
+              <option value="">Escolha</option>
+              <option>Staff</option>
+              <option>Credenciamento</option>
+              <option>Produção</option>
+              <option>Segurança</option>
+              <option>Expositor</option>
+              <option>Fornecedor</option>
+              <option>Imprensa</option>
+              <option>Outro</option>
+            </select>
+          </label>
+          <label>
+            <span>Equipe ou empresa</span>
+            <input name="workTeam" autocomplete="organization" placeholder="EQUIPE / EMPRESA">
+          </label>
+          <p class="field-help">No check-in, o app tentará registrar a localização desta pessoa.</p>
+        </div>
+        <button class="primary-button" value="save" type="submit">Salvar e confirmar</button>
+      </form>
+    </dialog>
+
+    <dialog id="restrictedDialog">
+      <div class="dialog-head">
+        <h2>Área restrita</h2>
+        <button class="plain-button" id="closeRestrictedButton" type="button">Fechar</button>
+      </div>
+      <p class="helper-text" id="restrictedText">
+        Entre com Google. Apenas primusdf@gmail.com entra como ADM. Outros e-mails precisam estar cadastrados como moderadores.
+      </p>
+      <button class="primary-button" id="googleLoginButton" type="button">Entrar com Google</button>
+      <p class="error-text" id="loginError" hidden></p>
+    </dialog>
+
+    <dialog id="moderatorsDialog">
+      <form id="moderatorForm" method="dialog">
+        <div class="dialog-head">
+          <h2>Moderadores</h2>
+          <button class="plain-button" value="cancel" type="submit" formnovalidate>Fechar</button>
+        </div>
+        <label>
+          <span>Gmail do moderador</span>
+          <input name="email" type="email" autocomplete="email" placeholder="email@gmail.com">
+        </label>
+        <button class="primary-button" value="add" type="submit">Adicionar moderador</button>
+        <div class="moderator-list" id="moderatorList"></div>
+      </form>
+    </dialog>
+
+    <dialog id="reportDialog">
+      <div class="dialog-head">
+        <h2>Relatório</h2>
+        <button class="plain-button" id="closeReportButton" type="button">Fechar</button>
+      </div>
+      <div class="report-grid">
+        <article>
+          <strong id="totalCount">0</strong>
+          <span>Cadastrados</span>
+        </article>
+        <article>
+          <strong id="checkedCount">0</strong>
+          <span>Presentes</span>
+        </article>
+        <article>
+          <strong id="pendingCount">0</strong>
+          <span>Faltam</span>
+        </article>
+        <article>
+          <strong id="walkinCount">0</strong>
+          <span>Na hora</span>
+        </article>
+        <article>
+          <strong id="workerCount">0</strong>
+          <span>A trabalho</span>
+        </article>
+        <article>
+          <strong id="deletedCount">0</strong>
+          <span>Arquivados</span>
+        </article>
+      </div>
+      <div class="moderator-stats" id="moderatorStats"></div>
+      <div class="event-settings admin-only" hidden>
+        <label>
+          <span>Logo do evento</span>
+          <input id="eventLogoInput" type="url" placeholder="https://link-da-logo.png">
+        </label>
+        <label>
+          <span>Enviar logo</span>
+          <input id="eventLogoFileInput" type="file" accept="image/*">
+        </label>
+        <label>
+          <span>Descrição</span>
+          <input id="eventDescriptionInput" placeholder="DESCRICAO CURTA DO EVENTO">
+        </label>
+        <label>
+          <span>Rota ou endereco</span>
+          <input id="eventRouteInput" placeholder="LINK DO MAPS OU ENDERECO">
+        </label>
+        <button class="primary-button" id="saveEventLogoButton" type="button">Salvar dados do evento</button>
+      </div>
+    </dialog>
+
+    <dialog id="importDialog">
+      <div class="dialog-head">
+        <h2>Importar lista</h2>
+        <button class="plain-button" id="closeImportButton" type="button">Fechar</button>
+      </div>
+      <p class="helper-text">Use CSV exportado do Google Sheets ou uma URL pública em CSV.</p>
+      <label>
+        <span>Colar dados do Google Sheets</span>
+        <textarea id="pasteImportInput" placeholder="Cole aqui as linhas copiadas da planilha do Forms"></textarea>
+      </label>
+      <button class="primary-button" id="pasteImportButton" type="button">Importar colagem</button>
+      <label>
+        <span>Arquivo CSV</span>
+        <input id="csvFileInput" type="file" accept=".csv,text/csv">
+      </label>
+      <label>
+        <span>URL CSV</span>
+        <input id="csvUrlInput" type="url" placeholder="https://docs.google.com/spreadsheets/...">
+      </label>
+      <button class="primary-button" id="loadUrlButton" type="button">Carregar URL</button>
+    </dialog>
+
+    <dialog id="inviteDialog">
+      <div class="dialog-head">
+        <h2>Convite público</h2>
+        <button class="plain-button" id="closeInviteButton" type="button">Fechar</button>
+      </div>
+      <label class="switch-row">
+        <span>Cadastro público ligado</span>
+        <input id="publicRegistrationInput" type="checkbox">
+      </label>
+      <label>
+        <span>Link de convite</span>
+        <input id="publicLinkInput" readonly>
+      </label>
+      <div class="form-field-settings" id="formFieldSettings"></div>
+      <div class="button-row">
+        <button class="primary-button" id="savePublicInviteButton" type="button">Salvar</button>
+        <button class="secondary-button" id="copyPublicLinkButton" type="button">Copiar link</button>
+      </div>
+      <p class="helper-text">Convidados usam este link sem login Google e entram como pré-cadastro pendente.</p>
+    </dialog>
+
+    <dialog id="eventsDialog">
+      <div class="dialog-head">
+        <h2>Meus eventos</h2>
+        <button class="plain-button" id="closeEventsButton" type="button">Fechar</button>
+      </div>
+      <div class="event-list" id="eventList"></div>
+      <button class="primary-button" id="createFromEventsButton" type="button">Criar evento</button>
+    </dialog>
+
+    <dialog id="createEventDialog">
+      <form id="createEventForm" method="dialog">
+        <div class="dialog-head">
+          <h2>Criar evento</h2>
+          <button class="plain-button" value="cancel" type="submit" formnovalidate>Fechar</button>
+        </div>
+        <label>
+          <span>Nome do evento</span>
+          <input name="name" required placeholder="NOME DO EVENTO">
+        </label>
+        <label>
+          <span>Data do evento</span>
+          <input name="date" type="date">
+        </label>
+        <label>
+          <span>Descrição</span>
+          <input name="description" placeholder="DESCRICAO CURTA DO EVENTO">
+        </label>
+        <label>
+          <span>Rota ou endereco</span>
+          <input name="route" placeholder="LINK DO MAPS OU ENDERECO">
+        </label>
+        <label>
+          <span>Logo do evento</span>
+          <input name="logoUrl" type="url" placeholder="https://link-da-logo.png">
+        </label>
+        <label>
+          <span>Enviar logo</span>
+          <input name="logoFile" type="file" accept="image/*">
+        </label>
+        <label>
+          <span>Média de público aceitável</span>
+          <input id="eventAudienceInput" name="expectedAudience" type="number" min="1" step="1" placeholder="EX: 300">
+        </label>
+        <div class="plan-suggestion" id="eventPlanSuggestion">
+          Informe o público estimado para ver a faixa sugerida.
+        </div>
+        <div class="create-event-options">
+          <h3>Campos do cadastro público</h3>
+          <p class="helper-text">Escolha o que aparece no convite e se será opcional ou obrigatório.</p>
+          <div class="form-field-settings" id="createFormFieldSettings"></div>
+        </div>
+        <div class="create-event-options">
+          <h3>Prova de CHECK-IN</h3>
+          <label class="switch-row">
+            <span>Permitir selfie compactada</span>
+            <input name="proofSelfie" type="checkbox" value="1">
+          </label>
+          <label class="switch-row">
+            <span>Registrar localização no CHECK-IN</span>
+            <input name="proofLocation" type="checkbox" value="1" checked>
+          </label>
+          <label>
+            <span>Frequência da prova</span>
+            <select name="proofFrequency">
+              <option value="entry">Entrada</option>
+              <option value="entry-exit">Entrada e saída</option>
+              <option value="hourly">A cada hora</option>
+            </select>
+          </label>
+          <label>
+            <span>Guardar selfies por quantos dias</span>
+            <input name="proofRetentionDays" type="number" min="1" max="365" value="30">
+          </label>
+        </div>
+        <button class="primary-button" value="create" type="submit">Criar e abrir</button>
+      </form>
+    </dialog>
+
+    <dialog id="plansDialog" class="plans-dialog">
+      <div class="dialog-head">
+        <h2>Planos</h2>
+        <button class="plain-button" id="closePlansButton" type="button">Fechar</button>
+      </div>
+      <div class="plans-hero">
+        <div class="plans-vector" aria-hidden="true">
+          <span>Evento</span><i></i><span>Cadastro</span><i></i><span>CHECK-IN</span><i></i><span>Relatório</span>
+        </div>
+        <p>Escolha o plano conforme o tamanho e o controle do seu evento.</p>
+      </div>
+      <div class="plans-grid">
+        <article data-plan="gratuito" tabindex="0"><strong>Gratuito</strong><span>Até 100 pessoas</span><p>Teste, eventos pequenos, cadastro simples e check-in básico.</p><button type="button">Abrir</button></article>
+        <article data-plan="basico" tabindex="0"><strong>Básico</strong><span>101 a 500 pessoas</span><p>Campos personalizados, CPF opcional ou obrigatório e exportação simples.</p><button type="button">Escolher</button></article>
+        <article class="featured" data-plan="pro" tabindex="0"><strong>Pro</strong><span>501 a 2.000 pessoas</span><p>Geolocalização, selfie de entrada, relatórios e múltiplos operadores.</p><button type="button">Escolher</button></article>
+        <article data-plan="premium" tabindex="0"><strong>Premium</strong><span>2.001 a 5.000 pessoas</span><p>Selfie recorrente, entrada e saída, alertas e relatórios avançados.</p><button type="button">Escolher</button></article>
+        <article class="master" data-plan="master" tabindex="0"><strong>Master</strong><span>Público ilimitado</span><p>Acesso total, recursos avançados, suporte prioritário e operação empresarial.</p><button type="button">Consultar</button></article>
+      </div>
+      <p class="helper-text">Os limites podem variar conforme armazenamento, volume de check-ins e recursos ativados.</p>
+    </dialog>
+
+    <dialog id="confirmDialog">
+      <div class="dialog-head">
+        <h2>Quer excluir?</h2>
+      </div>
+      <p id="confirmText" class="helper-text"></p>
+      <div class="confirm-actions">
+        <button class="secondary-button" id="cancelDeleteButton" type="button">Não</button>
+        <button class="danger-button" id="confirmDeleteButton" type="button">Sim</button>
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <span id="toastText"></span>
+      <button id="undoButton" type="button" hidden>Desfazer</button>
+    </div>
+    <button id="voiceCheckinButton" class="voice-checkin-button" type="button" aria-label="Cadastrar por voz">🎙</button>
+    <div id="voiceCheckinHelper" class="voice-checkin-helper" role="dialog" aria-modal="true" aria-labelledby="voiceCheckinTitle" aria-live="polite">
+      <div class="voice-checkin-card">
+        <strong id="voiceCheckinTitle">Estou ouvindo...</strong>
+        <p id="voiceCheckinText">Diga nome, celular e local de trabalho se tiver.</p>
+        <div class="voice-checkin-wave" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <script src="app.js?v=20260522-credencial" defer></script>
+    <script type="module" src="login-cube.js?v=20260522-credencial"></script>
+    <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-credencial" data-site-name="Credencial" defer></script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PrimusDF</title>
+    <meta
+      name="description"
+      content="Marketing Estratégico"
+    >
+    <meta name="theme-color" content="#020809">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="icon" href="https://i.ibb.co/gbGXvR2g/Captura-de-ecr-2026-05-12-112501.png" type="image/png">
+    <link rel="stylesheet" href="styles.css?v=apps-share-4">
+  </head>
+  <body>
+    <canvas id="network" class="network" aria-hidden="true"></canvas>
+    <canvas id="world" class="world" aria-hidden="true"></canvas>
+    <div class="grain" aria-hidden="true"></div>
+    <aside class="quest-trail" aria-label="Trilha Primus">
+      <strong>trilha</strong>
+      <ol>
+        <li class="active" data-target="inicio"><span></span>Start</li>
+        <li data-target="nexo"><span></span>Trabalhos</li>
+        <li data-target="sites"><span></span>Apps</li>
+        <li data-target="sistema"><span></span>Soluções</li>
+        <li data-target="metodo"><span></span>Método</li>
+        <li data-target="presenca"><span></span>Presença</li>
+        <li data-target="contato"><span></span>Contato</li>
+      </ol>
+      <p><b id="quest-count">1</b>/7 sinais ativados</p>
+    </aside>
+
+    <header class="nav">
+      <a class="brand" href="#inicio" aria-label="PrimusDF início">
+        <img src="assets/primus-symbol-white-crop.png" alt="">
+        <span>PRIMUS<strong>DF</strong></span>
+      </a>
+      <nav aria-label="Navegação">
+        <a href="#nexo">Trabalhos</a>
+        <a href="#sites">Apps</a>
+        <a href="#sistema">Soluções</a>
+        <a href="#metodo">Método</a>
+        <a href="#presenca">Presença</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <div class="sound-controls" aria-label="Trilha sonora">
+        <button class="sound" id="sound" type="button" aria-pressed="false">som</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="scene hero" id="inicio">
+        <div class="hero-copy reveal">
+          <p class="kicker">marketing estratégico + tecnologia + audiovisual</p>
+          <h1>Não é só aparecer. É parecer inevitável.</h1>
+          <p>
+            Marketing estratégico para empresas, lideranças públicas, figuras políticas e projetos que precisam
+            transformar comunicação em presença, autoridade e oportunidade real.
+          </p>
+          <div class="actions">
+            <a href="https://wa.me/5561981510188" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
+            <a href="#sobre">Conhecer soluções</a>
+            <a href="#nexo">Ver trabalhos</a>
+          </div>
+        </div>
+        <div class="hero-portrait reveal" aria-hidden="true">
+          <img src="https://i.ibb.co/kgBWWqrc/11-layout-primus-7.png" alt="">
+        </div>
+      </section>
+
+      <section class="scene nexo" id="nexo">
+        <div class="phone-demo reveal">
+          <div class="phone-shell">
+            <span class="phone-speaker"></span>
+            <iframe
+              data-src="https://nexovagas.com.br"
+              title="Prévia do NEXO Vagas"
+              loading="lazy"
+            ></iframe>
+            <div class="phone-mobile-ui" aria-hidden="true">
+              <div class="mini-map">
+                <span class="map-grid"></span>
+                <span class="pin pin-a"></span>
+                <span class="pin pin-b"></span>
+                <span class="pin pin-c"></span>
+                <span class="pin pin-d"></span>
+                <span class="pin pin-e"></span>
+              </div>
+              <div class="mini-card">
+                <strong>1155 online</strong>
+                <span>vagas próximas da sua cidade</span>
+              </div>
+              <button type="button">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="nexo-copy reveal">
+          <p class="kicker">trabalhos desenvolvidos pela primusdf</p>
+          <h2>Estratégia, conteúdo e tecnologia para resolver dores reais.</h2>
+          <p>
+            A Primus DF cria campanhas, posicionamento, gravações, social media, sites, sistemas e experiências digitais.
+            O NEXO entra como laboratório de soluções próprias: uma parte do ecossistema, sem limitar tudo o que a
+            Primus entrega para marcas, eventos e projetos.
+          </p>
+          <div class="actions nexo-actions">
+            <a class="nexo-experience-link" href="./nexo/index.html" aria-label="Conheça outros sistemas NEXO">
+              <span aria-hidden="true"></span>
+              Conheça outros sistemas NEXO
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene created-sites" id="sites">
+        <div class="created-sites-copy reveal">
+          <p class="kicker">apps e sites criados</p>
+          <h2>Ferramentas digitais em um só bloco.</h2>
+          <p>
+            Uma vitrine compacta dos apps, sites e protótipos criados pela PrimusDF. Cada item tem acesso direto e
+            um botão para compartilhar com uma mensagem pronta.
+          </p>
+        </div>
+        <div class="created-sites-grid">
+          <article class="created-site-card reveal tilt-card">
+            <strong>Mapa de oportunidades</strong>
+            <span>NEXO Vagas</span>
+            <p>Mapa de oportunidades, empresas e serviços locais.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="https://nexovagas.com.br" target="_blank" rel="noreferrer">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Vagas" data-share-url="https://nexovagas.com.br" data-share-message="Vagas de emprego todos os dias.&#10;Receba notificações e divulgue sua empresa grátis.&#10;&#10;🔷 https://nexovagas.com.br">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card reveal tilt-card">
+            <strong>Verificador de usuários</strong>
+            <span>NEXO User</span>
+            <p>Busca de disponibilidade de usuário em múltiplas plataformas.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./user/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO User" data-share-url="./user/" data-share-message="Veja se seu nome de usuário está livre.&#10;Pesquise em várias plataformas antes de criar sua marca.&#10;&#10;🔷 ./user/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card reveal tilt-card">
+            <strong>Central de ferramentas</strong>
+            <span>Sistemas NEXO</span>
+            <p>Hub com experiências, ferramentas e protótipos NEXO.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./nexo/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="Sistemas NEXO" data-share-url="./nexo/" data-share-message="Ferramentas digitais simples para testar e usar.&#10;Conheça os apps e protótipos criados pela PrimusDF.&#10;&#10;🔷 ./nexo/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card reveal tilt-card">
+            <strong>Organizador financeiro</strong>
+            <span>NEXO Contas</span>
+            <p>Organização financeira em formato direto e acessível.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./contas/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Contas" data-share-url="./contas/" data-share-message="Organize suas contas de um jeito simples.&#10;Controle gastos, pagamentos e prioridades sem complicação.&#10;&#10;🔷 ./contas/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card reveal tilt-card">
+            <strong>Credenciamento de eventos</strong>
+            <span>NEXO Check-in</span>
+            <p>Credenciamento e presença para eventos e ativações.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./credencial/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Check-in" data-share-url="./credencial/" data-share-message="Credenciamento rápido para eventos.&#10;Organize entrada, presença e participantes em poucos cliques.&#10;&#10;🔷 ./credencial/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card reveal tilt-card">
+            <strong>Rede social</strong>
+            <span>NEXO Social</span>
+            <p>Rede social NEXO com comunidades, avatar, emblemas e interações.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./NEXOsocial/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Social" data-share-url="./NEXOsocial/" data-share-message="Rede social NEXO com comunidades, avatar, emblemas e interações.&#10;Entre e veja a experiência funcionando.&#10;&#10;🔷 ./NEXOsocial/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card featured-site-card reveal tilt-card">
+            <strong>Album de trocas</strong>
+            <span>NEXO Album</span>
+            <p>Mapa de colecionadores, controle de figurinhas, faltantes e repetidas para testar trocas da Copa.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./card/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Album" data-share-url="./card/" data-share-message="Album Copa 2026 com mapa de colecionadores, faltantes e repetidas.&#10;Teste as trocas pelo NEXO Album.&#10;&#10;🔷 https://primusdf.com.br/card/">Compartilhar</a>
+            </div>
+          </article>
+          <article class="created-site-card featured-site-card reveal tilt-card">
+            <strong>Conferidor de jogos</strong>
+            <span>NEXO Jogos</span>
+            <p>Conferidor simples para jogos da Mega-Sena, com resultado atualizado, ranking de acertos e compartilhamento.</p>
+            <div class="site-card-actions">
+              <a class="access-link" href="./jogos/">Acessar</a>
+              <a class="share-link" href="#" target="_blank" rel="noreferrer" data-share-title="NEXO Jogos" data-share-url="./jogos/" data-share-message="Confira seus jogos da Mega-Sena com facilidade.&#10;Veja resultados, acertos e ranking em uma tela simples.&#10;&#10;🔷 https://primusdf.com.br/jogos">Compartilhar</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="scene system" id="sistema">
+        <div class="system-panel reveal">
+          <span>01</span>
+          <h3>Marketing Estratégico</h3>
+          <p>Diagnóstico, posicionamento, campanhas e presença digital orientada por objetivo.</p>
+        </div>
+        <div class="system-panel reveal">
+          <span>02</span>
+          <h3>Tecnologia Aplicada</h3>
+          <p>Sites, sistemas, apps sem instalação, automações e jornadas gamificadas.</p>
+        </div>
+        <div class="system-panel reveal">
+          <span>03</span>
+          <h3>Audiovisual</h3>
+          <p>Cobertura de eventos, drone, vídeos com IA e conteúdo para marcas serem lembradas.</p>
+        </div>
+        <div class="system-image reveal">
+          <img src="assets/primus-modelo-posts.jpg" alt="Produção visual da PrimusDF">
+        </div>
+      </section>
+
+      <section class="scene method" id="metodo">
+        <div class="method-copy reveal">
+          <p class="kicker">método primus</p>
+          <h2>Ideia boa precisa virar circulação.</h2>
+          <p>
+            A Primus olha para marca, público, canal e tecnologia como partes do mesmo sistema.
+            O resultado é presença com estética, estratégia e execução.
+          </p>
+        </div>
+        <div class="method-steps">
+          <article class="method-step reveal tilt-card">
+            <span>01</span>
+            <strong>Mapear</strong>
+            <p>Entendemos objetivo, público, reputação e oportunidade.</p>
+          </article>
+          <article class="method-step reveal tilt-card">
+            <span>02</span>
+            <strong>Criar</strong>
+            <p>Transformamos diagnóstico em campanha, design, mídia e tecnologia.</p>
+          </article>
+          <article class="method-step reveal tilt-card">
+            <span>03</span>
+            <strong>Ativar</strong>
+            <p>Publicamos, filmamos, impulsionamos, desenvolvemos e acompanhamos.</p>
+          </article>
+          <article class="method-step reveal tilt-card">
+            <span>04</span>
+            <strong>Escalar</strong>
+            <p>Medimos sinais, ajustamos criativos e ampliamos o que gera atenção.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="scene read-more" id="sobre">
+        <div class="read-heading reveal">
+          <p class="kicker">para quem quer entender melhor</p>
+          <h2>Não somos só uma agência de post.</h2>
+        </div>
+        <div class="read-grid">
+          <article class="read-card reveal tilt-card">
+            <h3>Audiovisual, Drone e IA</h3>
+            <p>Cobertura de eventos, vídeos institucionais, captação com drone e produção com inteligência artificial.</p>
+          </article>
+          <article class="read-card reveal tilt-card">
+            <h3>Sites, Apps e Gamificação</h3>
+            <p>Experiências digitais, sistemas, aplicativos sem instalação e jornadas interativas para marcas e eventos.</p>
+          </article>
+          <article class="read-card reveal tilt-card">
+            <h3>Branding e Design Estratégico</h3>
+            <p>Identidade visual, peças 2D/3D, campanhas e linguagem visual com intenção.</p>
+          </article>
+          <article class="read-card reveal tilt-card">
+            <h3>Tráfego e Redes Sociais</h3>
+            <p>Gestão de mídia, conteúdo, campanhas e presença digital orientada por objetivo.</p>
+          </article>
+          <article class="read-card reveal tilt-card">
+            <h3>Projetos e Licitações</h3>
+            <p>Consultoria para estruturar propostas, comunicação e apresentação de projetos.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="scene presence" id="presenca">
+        <div class="portrait reveal">
+          <img src="https://i.ibb.co/kgBWWqrc/11-layout-primus-7.png" alt="Modelo da PrimusDF">
+        </div>
+        <div class="presence-copy reveal">
+          <p class="kicker">imagem com intenção</p>
+          <h2>Marketing Estratégico para marcas em movimento.</h2>
+          <p>
+            A Primus transforma estratégia em estética: conteúdo, campanha, audiovisual, apps e presença pública com assinatura.
+          </p>
+        </div>
+      </section>
+
+      <section class="finale" id="contato">
+        <img src="assets/primus-logo-horizontal-crop.png" alt="PrimusDF Marketing Estratégico">
+        <h2>Vamos criar o próximo movimento?</h2>
+        <div class="contact-actions">
+          <a href="https://wa.me/5561981510188" target="_blank" rel="noreferrer">+55 61 98151-0188</a>
+          <a href="mailto:primusdf@gmail.com">primusdf@gmail.com</a>
+          <a href="https://www.instagram.com/primusdf/" target="_blank" rel="noreferrer">@primusdf</a>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="experience.js?v=apps-share-4"></script>
+    <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-home" data-site-name="Primus DF" defer></script>
+</body>
+</html>
+

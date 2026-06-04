@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXO User</title>
+    <link rel="icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=20260524-13" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="cube-scene" aria-label="Cubo NEXO interativo">
+          <canvas id="userCubeCanvas" width="420" height="360"></canvas>
+        </div>
+
+        <h1 id="page-title">NEXO User</h1>
+        <p>Verifique a disponibilidade do seu usuario em multiplas plataformas com alta precisao</p>
+
+        <form class="search-form" data-search-form>
+          <label class="sr-only" for="username">Digite o nome de usuario</label>
+          <span class="field-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M20 21a8 8 0 0 0-16 0" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </span>
+          <input id="username" name="username" type="search" autocomplete="off" placeholder="Digite o nome de usuario" data-search-input />
+          <button class="search-button" type="submit" aria-label="Buscar disponibilidade">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4.2-4.2" />
+            </svg>
+          </button>
+        </form>
+
+        <p class="example">Exemplo: <a href="https://www.instagram.com/brunoleaod/" target="_blank" rel="noopener noreferrer">brunoleaod</a></p>
+
+        <section class="results-panel" data-results-panel hidden aria-live="polite">
+          <div class="results-loading" data-loading hidden>Verificando disponibilidade...</div>
+          <div class="results-content" data-results-content hidden>
+            <div class="results-head">
+              <div>
+                <h2>Resultados para: <span data-query-label></span></h2>
+                <p class="accuracy-note">Resultado automatico. Quando aparecer Confirmar, abra o site para validar.</p>
+              </div>
+            </div>
+            <div class="platform-grid" data-platform-grid></div>
+          </div>
+        </section>
+
+        <p class="trust-note">
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+            <path d="m9 12 2 2 4-5" />
+          </svg>
+          Buscamos a disponibilidade em multiplas plataformas
+        </p>
+      </section>
+    </main>
+
+    <script src="./script.js?v=20260524-13"></script>
+    <script type="module" src="./cube.js?v=20260524-13"></script>
+    <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-user" data-site-name="NEXO User" defer></script>
+</body>
+</html>

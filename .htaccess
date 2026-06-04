@@ -1,0 +1,15 @@
+RewriteEngine On
+AddType application/manifest+json .webmanifest
+RewriteRule ^card$ /card/ [R=301,L,QSA]
+RewriteRule ^card/$ /card/index.html [L,QSA]
+RewriteRule ^album/?(.*)$ /card/$1 [R=301,L,QSA]
+RewriteRule ^copa/?(.*)$ /card/$1 [R=301,L,QSA]
+RewriteRule ^NEXO%20card/?$ /card/ [R=301,L,QSA]
+RewriteRule ^NEXO%20card/nexocard\.html$ /card/ [R=301,L,QSA]
+RewriteRule ^NEXO\ card/?$ /card/ [R=301,L,QSA]
+RewriteRule ^NEXO\ card/nexocard\.html$ /card/ [R=301,L,QSA]
+RewriteRule ^sena/?(.*)$ /jogos/$1 [R=301,L,QSA]
+RewriteRule ^publicar%20copa/?(.*)$ /card/$1 [R=301,L,QSA]
+RewriteRule ^publicar\ copa/?(.*)$ /card/$1 [R=301,L,QSA]
+RewriteRule ^nexo-checkin/?(.*)$ /credencial/$1 [R=301,L,QSA]
+RewriteRule ^credenciamento/?(.*)$ /credencial/$1 [R=301,L,QSA]

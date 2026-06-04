@@ -1,0 +1,193 @@
+/* NEXO tutorial popup - adapted from the 3333 update package. */
+.nexo-tutorial-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(2, 8, 16, .66);
+  backdrop-filter: blur(8px);
+}
+
+.nexo-tutorial-modal.is-open {
+  display: flex;
+}
+
+.nexo-tutorial-dialog {
+  position: relative;
+  width: min(390px, 92vw);
+  aspect-ratio: 9 / 16;
+  max-height: min(82vh, 720px);
+  overflow: hidden;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.nexo-tutorial-dialog::before {
+  display: none;
+  content: none;
+}
+
+.nexo-tutorial-dialog::after {
+  display: none;
+  content: none;
+}
+
+.nexo-tutorial-video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: transparent;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.nexo-tutorial-dialog {
+  cursor: pointer;
+}
+
+.nexo-tutorial-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  color: #000;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  -webkit-text-stroke: 1px #fff;
+  text-shadow:
+    0 1px 0 #fff,
+    1px 0 0 #fff,
+    0 -1px 0 #fff,
+    -1px 0 0 #fff;
+  font: 900 30px/1 Arial, sans-serif;
+}
+
+.nexo-tutorial-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+.nexo-tutorial-mute {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(0,0,0,.42);
+  box-shadow: 0 6px 18px rgba(0,0,0,.24);
+  cursor: pointer;
+}
+
+.nexo-tutorial-mute svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.nexo-tutorial-mute .mic-slash {
+  display: none;
+}
+
+.nexo-tutorial-mute.is-muted .mic-slash {
+  display: block;
+}
+
+.nexo-tutorial-mute:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.nexo-tutorial-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: 86px;
+  height: 86px;
+  display: none;
+  place-items: center;
+  border: 0;
+  color: #000;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.nexo-tutorial-play.is-visible {
+  display: grid;
+}
+
+.nexo-tutorial-play svg {
+  width: 74px;
+  height: 74px;
+  fill: currentColor;
+  stroke: rgba(255,255,255,.88);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 5px 14px rgba(0,0,0,.34));
+  transform: translateX(2px);
+}
+
+.nexo-tutorial-play:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .nexo-tutorial-modal {
+    padding: 12px;
+  }
+
+  .nexo-tutorial-dialog {
+    width: min(360px, 94vw);
+    max-height: 78vh;
+    border-radius: 0;
+  }
+
+  .nexo-tutorial-mute {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .nexo-tutorial-play {
+    width: 78px;
+    height: 78px;
+  }
+
+  .nexo-tutorial-play svg {
+    width: 66px;
+    height: 66px;
+  }
+}
+
+@supports not (aspect-ratio: 9 / 16) {
+  .nexo-tutorial-dialog {
+    height: min(82vh, 690px);
+  }
+}

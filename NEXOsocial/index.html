@@ -1,0 +1,170 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>NEXO Social</title>
+    <meta name="description" content="Rede social NEXO com comunidades, avatar, emblemas e presenca social leve." />
+    <meta name="theme-color" content="#06151c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="NEXO Social" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=gif1" />
+    <link rel="stylesheet" href="./primus-dark.css?v=gif1" />
+  </head>
+  <body>
+    <main class="site-shell">
+      <div class="space-parallax" data-space-parallax aria-hidden="true">
+        <span class="space-layer stars-near"></span>
+        <span class="space-layer stars-far"></span>
+        <span class="space-grid"></span>
+        <span class="space-ribbon ribbon-one"></span>
+        <span class="space-ribbon ribbon-two"></span>
+        <span class="wire-cube wire-one">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <span class="wire-cube wire-two">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <span class="primus-bg-cube" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <span class="signal-line signal-one"></span>
+        <span class="signal-line signal-two"></span>
+      </div>
+
+      <section class="login-view active" data-view="login" aria-label="Entrada NEXO Social">
+        <div class="splash-brand">
+          <p><strong>NEXO</strong> Social</p>
+          <button class="splash-logo-cube" type="button" data-cube-ping aria-label="Interagir com o cubo NEXO">
+            <canvas class="primus-cube-canvas" id="splashCube" width="336" height="300" aria-hidden="true"></canvas>
+          </button>
+          <span class="splash-hint" data-cube-hint>toque no cubo</span>
+        </div>
+
+        <div class="splash-actions">
+          <button class="google-login" type="button" data-google-login>
+            <span class="google-g">G</span>
+            Entrar com Google
+          </button>
+          <button class="visitor-login" type="button" data-enter>Entrar sem login para teste</button>
+        </div>
+
+        <p class="splash-footer">
+          by <a href="https://primusdf.com.br" target="_blank" rel="noopener">PrimusDF</a>
+        </p>
+      </section>
+
+      <section class="app-view" data-view="app" aria-label="NEXO Social">
+        <header class="topbar">
+          <a class="brand" href="#" data-route="home" aria-label="NEXO Social inicio">
+            <span>N</span>
+            NEXO Social
+          </a>
+          <nav class="main-nav" aria-label="Navegacao principal">
+            <button type="button" data-route="home">inicio</button>
+            <button type="button" data-route="profile">perfil</button>
+            <button type="button" data-route="friends">amigos</button>
+            <button type="button" data-route="communities">comunidades</button>
+          </nav>
+          <form class="search-box" data-search-form>
+            <label class="sr-only" for="site-search">Buscar</label>
+            <input id="site-search" type="search" data-search placeholder="buscar pessoas e comunidades" />
+          </form>
+        </header>
+
+        <div class="page-grid">
+          <aside class="left-column" data-left-column></aside>
+          <section class="center-column" data-main-stage></section>
+          <aside class="right-column" data-right-column></aside>
+        </div>
+
+        <button class="floating-post" type="button" data-focus-composer aria-label="Postar recado">+</button>
+
+        <nav class="bottom-nav" aria-label="Navegacao rapida">
+          <button type="button" data-route="home">
+            <span>I</span>
+            Inicio
+          </button>
+          <button type="button" data-route="communities">
+            <span>E</span>
+            Explorar
+          </button>
+          <button type="button" data-focus-composer>
+            <span>+</span>
+            Postar
+          </button>
+          <button type="button" data-route="friends">
+            <span>A</span>
+            Amigos
+          </button>
+          <button type="button" data-route="profile">
+            <span>P</span>
+            Perfil
+          </button>
+        </nav>
+      </section>
+
+      <div class="modal-backdrop" data-modal hidden>
+        <section class="modal-card" role="dialog" aria-modal="true" aria-label="Escolher GIF">
+          <header class="modal-head">
+            <div>
+              <p class="eyebrow">GIF externo</p>
+              <h2>Escolha um GIF</h2>
+            </div>
+            <button class="icon-button" type="button" data-close-modal aria-label="Fechar">x</button>
+          </header>
+          <form class="gif-search" data-gif-search-form>
+            <label class="sr-only" for="gif-search">Buscar GIF</label>
+            <input id="gif-search" type="search" data-gif-search placeholder="buscar GIFs" autocomplete="off" />
+            <button class="secondary-button" type="submit" data-gif-search-button>buscar</button>
+          </form>
+          <p class="gif-status" data-gif-status>Mostrando GIFs leves para teste.</p>
+          <div class="gif-grid" data-gif-grid></div>
+        </section>
+      </div>
+
+      <div class="badge-reveal-backdrop" data-badge-modal hidden>
+        <section class="badge-reveal-card" role="dialog" aria-modal="true" aria-label="Emblema desbloqueado">
+          <button class="badge-close" type="button" data-close-badge aria-label="Fechar">x</button>
+          <div class="reveal-rays" aria-hidden="true"></div>
+          <img data-badge-image alt="Emblema Cheguei Brasil NEXO" />
+          <p class="eyebrow">emblema desbloqueado</p>
+          <h2 data-badge-title>Cheguei Brasil</h2>
+          <p data-badge-copy>Voce garantiu o primeiro emblema unico do NEXO.</p>
+          <div class="badge-reveal-actions">
+            <button class="primary-button" type="button" data-share-badge>compartilhar conquista</button>
+            <button class="secondary-button" type="button" data-close-badge>fechar</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="gift-backdrop" data-gift-modal hidden>
+        <section class="gift-card" role="dialog" aria-modal="true" aria-label="Enviar presente">
+          <header class="modal-head">
+            <div>
+              <p class="eyebrow">presentes</p>
+              <h2>Valorize esse post</h2>
+            </div>
+            <button class="icon-button" type="button" data-close-gift aria-label="Fechar">x</button>
+          </header>
+          <p class="small-copy" data-gift-balance></p>
+          <div class="gift-grid" data-gift-grid></div>
+        </section>
+      </div>
+
+      <div class="toast" data-toast hidden></div>
+    </main>
+
+    <script src="./firebase-config.js?v=gif2"></script>
+    <script src="./script.js?v=gif4"></script>
+    <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-social" data-site-name="NEXO Social" defer></script>
+</body>
+</html>

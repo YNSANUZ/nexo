@@ -1,0 +1,20 @@
+{
+  "name": "NEXO Social",
+  "short_name": "NEXO",
+  "description": "Rede social NEXO com comunidades, avatar, emblemas e presenca social leve.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06151c",
+  "theme_color": "#06151c",
+  "categories": ["social", "entertainment"],
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

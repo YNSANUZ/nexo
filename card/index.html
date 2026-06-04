@@ -1,0 +1,379 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#13c8a3">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="NEXO Card">
+  <title>NEXO Album Copa 2026</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/pwa-icon-192.png">
+  <link rel="shortcut icon" type="image/png" href="assets/pwa-icon-192.png">
+  <link rel="apple-touch-icon" href="assets/pwa-icon-192.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css?v=card-20260603-nav-search-card">
+  <link rel="stylesheet" href="nexo-tutorial-popup.css?v=card-20260603-rounded-play">
+</head>
+<body>
+  <div class="app-shell" data-theme="light">
+    <aside class="sidebar" aria-label="Navegacao principal">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">26</div>
+        <div>
+          <strong>NEXO Album</strong>
+          <span>Copa 2026</span>
+        </div>
+      </div>
+
+      <nav class="nav-stack" aria-label="Secoes">
+        <button class="nav-btn" type="button" data-view="album">
+          <span class="nav-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"></path>
+              <path d="M8 3v17"></path>
+              <path d="M20 7H8"></path>
+            </svg>
+          </span>
+          <span>Figurinhas</span>
+        </button>
+        <button class="nav-btn nav-btn-primary active" type="button" data-view="map">
+          <span class="nav-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"></path>
+              <circle cx="12" cy="10" r="2.4"></circle>
+            </svg>
+          </span>
+          <span>Mapa</span>
+        </button>
+        <button class="nav-btn nav-card-btn" type="button" id="nav-my-card">
+          <span class="nav-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <rect x="4" y="5" width="16" height="14" rx="3"></rect>
+              <circle cx="9" cy="11" r="2.1"></circle>
+              <path d="M14 10h3"></path>
+              <path d="M14 14h3"></path>
+              <path d="M7 17c1.1-2 2.1-3 3-3s1.9 1 3 3"></path>
+            </svg>
+          </span>
+          <span>Meu Card</span>
+        </button>
+        <button class="nav-btn" type="button" id="nav-profile">
+          <span class="nav-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="8" r="4"></circle>
+            </svg>
+          </span>
+          <span>Perfil</span>
+        </button>
+      </nav>
+
+      <div class="side-meter">
+        <span>Progresso</span>
+        <strong id="side-progress">0%</strong>
+        <div class="line-meter"><i id="side-progress-line"></i></div>
+      </div>
+    </aside>
+
+    <main class="phone-frame" aria-live="polite">
+      <header class="topbar">
+        <div class="top-title-row">
+          <button class="account-chip" type="button" id="account-summary" title="Meu perfil" hidden>
+            <span class="account-photo" id="account-photo-shell" data-initials="N" aria-hidden="true">
+              <img id="account-photo-img" alt="" hidden>
+            </span>
+            <span id="account-name-label"></span>
+          </button>
+          <div>
+            <span class="eyebrow" id="view-eyebrow">Colecionadores perto de voce</span>
+            <h1 id="view-title">NEXO Card</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="account-btn google-logo-btn" type="button" id="google-login" title="Entrar com Google" aria-label="Entrar com Google">
+            <img src="https://user-images.githubusercontent.com/194400/70987158-4069c900-20b7-11ea-892e-8a2e1166b6b7.png" alt="">
+          </button>
+          <button class="share-btn" type="button" id="share-summary" title="Compartilhar no WhatsApp">Compartilhar</button>
+          <button class="share-btn tutorial-btn" type="button" id="nexo-tutorial-open" data-open-nexo-tutorial title="Ver tutorial">Tutorial</button>
+        </div>
+      </header>
+
+      <section class="hero-band" id="overview-panel">
+        <div class="pitch-visual" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="progress-ring" id="progress-ring">
+          <strong id="progress-percent">0%</strong>
+          <span>completo</span>
+        </div>
+        <div class="hero-copy">
+          <strong id="summary-title">Colecionador</strong>
+          <span id="summary-subtitle">0 de 0 figurinhas</span>
+        </div>
+      </section>
+
+      <section class="stats-grid" aria-label="Resumo">
+        <div><span>Tenho</span><strong id="stat-owned">0</strong></div>
+        <div><span>Faltam</span><strong id="stat-missing">0</strong></div>
+        <div><span>Repetidas</span><strong id="stat-duplicates">0</strong></div>
+        <div><span>Total</span><strong id="stat-total">0</strong></div>
+      </section>
+
+      <section class="toolbar" id="collection-toolbar">
+        <label class="search-box">
+          <span>Buscar</span>
+          <input id="search-input" type="search" placeholder="Pais, codigo, numero ou usuario">
+        </label>
+        <div class="segmented" role="tablist" aria-label="Filtro">
+          <button type="button" class="active" data-filter="all">Todas</button>
+          <button type="button" data-filter="owned">Tenho</button>
+          <button type="button" data-filter="missing">Faltam</button>
+          <button type="button" data-filter="duplicate">Rep.</button>
+        </div>
+      </section>
+
+      <section class="group-strip" id="group-strip" aria-label="Grupos"></section>
+      <section class="user-search-results" id="user-search-results" aria-label="Usuarios encontrados" hidden></section>
+
+      <section class="view active map-view" id="view-map">
+        <div class="section-head">
+          <span>Minimapa de trocas</span>
+          <div class="section-actions">
+            <button type="button" class="text-btn map-action map-action-location" id="map-center-location">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m5 12 14-7-7 14-2-7z"></path>
+              </svg>
+              <span>Local</span>
+            </button>
+            <button type="button" class="text-btn map-action map-action-collectors" id="nearby-collectors-open">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M17 21a5 5 0 0 0-10 0"></path>
+                <circle cx="12" cy="9" r="4"></circle>
+                <path d="M22 21a4 4 0 0 0-4-4"></path>
+                <path d="M2 21a4 4 0 0 1 4-4"></path>
+              </svg>
+              <span>Próximos</span>
+            </button>
+            <button type="button" class="text-btn map-action map-action-admin" id="admin-metrics-open" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4 19V5"></path>
+                <path d="M8 19v-7"></path>
+                <path d="M13 19V8"></path>
+                <path d="M18 19v-4"></path>
+              </svg>
+              <span>Metricas</span>
+            </button>
+            <button type="button" class="text-btn map-action map-action-admin" id="admin-event-open" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M8 2v4"></path>
+                <path d="M16 2v4"></path>
+                <path d="M3 10h18"></path>
+                <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+              </svg>
+              <span>Encontro</span>
+            </button>
+          </div>
+          <button type="button" class="map-target-btn" id="map-target-location" title="Centralizar no local" aria-label="Centralizar no local">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="8"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+              <path d="M12 2v3"></path>
+              <path d="M12 19v3"></path>
+              <path d="M2 12h3"></path>
+              <path d="M19 12h3"></path>
+            </svg>
+          </button>
+        </div>
+        <section class="event-countdown" id="event-countdown" aria-live="polite" hidden>
+          <div class="event-copy">
+            <span id="event-status">Encontro comunitario</span>
+            <strong id="event-timer">Carregando</strong>
+            <small id="event-detail">Estacionamento 10 do Parque da Cidade</small>
+          </div>
+          <button type="button" id="event-focus-point">Ver Estacionamento 10</button>
+        </section>
+        <div class="map-stage leaflet-stage" id="collector-map-shell" aria-label="Mapa local de colecionadores">
+          <div class="leaflet-map" id="collector-map"></div>
+          <div class="map-fallback" id="map-fallback" hidden>
+            <strong>Mapa local indisponivel</strong>
+            <span>O album continua funcionando e volta a exibir o mapa quando o Leaflet carregar.</span>
+          </div>
+        </div>
+        <div class="map-summary-grid" id="map-summary-grid"></div>
+      </section>
+
+      <section class="view" id="view-album">
+        <div class="section-head">
+          <span>Todas as figurinhas</span>
+          <div class="sticker-mode-toggle" role="group" aria-label="Modo de preenchimento">
+            <button type="button" class="active" data-sticker-mode="add" title="Adicionar figurinha" aria-label="Adicionar figurinha">+</button>
+            <button type="button" data-sticker-mode="remove" title="Remover figurinha" aria-label="Remover figurinha">-</button>
+          </div>
+        </div>
+        <div class="sticker-grid" id="album-grid"></div>
+      </section>
+
+      <section class="view" id="view-missing">
+        <div class="section-head">
+          <span>Lista de faltantes</span>
+          <button type="button" class="text-btn" data-view-shortcut="map">Mapa</button>
+        </div>
+        <div class="compact-list" id="missing-list"></div>
+      </section>
+
+      <section class="view" id="view-duplicates">
+        <div class="section-head">
+          <span>Repetidas para troca</span>
+          <button type="button" class="text-btn" id="copy-duplicates">Copiar</button>
+        </div>
+        <div class="trade-stack" id="duplicate-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <dialog class="sticker-dialog" id="sticker-dialog">
+    <button class="dialog-close" type="button" data-close-dialog>Fechar</button>
+    <div id="dialog-content"></div>
+  </dialog>
+
+  <dialog class="profile-dialog" id="profile-dialog">
+    <div id="profile-content"></div>
+  </dialog>
+
+  <dialog class="nearby-dialog" id="nearby-dialog">
+    <button class="dialog-close" type="button" data-close-nearby>Fechar</button>
+    <div class="nearby-shell">
+      <header class="nearby-head">
+        <div>
+          <strong>Colecionadores próximos</strong>
+          <span id="nearby-summary">Buscando colecionadores recentes</span>
+        </div>
+      </header>
+      <div class="nearby-tabs" aria-label="Filtro de colecionadores">
+        <button type="button" class="active" data-nearby-filter="trade">Trocas</button>
+        <button type="button" data-nearby-filter="online">Online</button>
+        <button type="button" data-nearby-filter="all">Todos</button>
+      </div>
+      <div class="nearby-list" id="nearby-list"></div>
+    </div>
+  </dialog>
+
+  <dialog class="message-dialog" id="message-dialog">
+    <button class="dialog-close" type="button" data-close-message>Fechar</button>
+    <div class="message-shell">
+      <header class="message-head">
+        <div>
+          <strong>Mensagem segura</strong>
+          <span id="message-target-name">Escolha um texto pronto</span>
+        </div>
+      </header>
+      <div class="message-safety-note">
+        Combine trocas em locais publicos. Nunca envie dados pessoais, endereco, PIX ou pagamento antecipado.
+      </div>
+      <div class="message-options" id="message-options"></div>
+    </div>
+  </dialog>
+
+  <dialog class="settings-dialog" id="account-dialog">
+    <button class="dialog-close" type="button" data-close-account>Fechar</button>
+    <div class="settings-card">
+      <div class="settings-profile-head">
+        <img id="profile-photo-preview" alt="" hidden>
+        <div>
+          <strong>Meu perfil</strong>
+          <span id="account-status">Conta ativa</span>
+        </div>
+      </div>
+      <label class="field-row">
+        <span>Nome</span>
+        <input id="profile-name-input" type="text" autocomplete="name">
+      </label>
+      <label class="field-row">
+        <span>Usuario</span>
+        <input id="profile-username-input" type="text" inputmode="text" autocomplete="username" maxlength="20" placeholder="usuario">
+      </label>
+      <label class="field-row">
+        <span>Apelido</span>
+        <input id="profile-nickname-input" type="text" autocomplete="nickname">
+      </label>
+      <label class="field-row">
+        <span>Instagram</span>
+        <input id="profile-instagram-input" type="text" inputmode="text" placeholder="usuario">
+      </label>
+      <div class="settings-actions">
+        <button class="account-btn" type="button" id="settings-google-login">Entrar com Google</button>
+        <button class="ghost-btn disconnect-btn" type="button" id="settings-google-logout">Desconectar</button>
+        <button class="ghost-btn admin-settings-btn" type="button" id="admin-metrics-account-open" hidden>Metricas</button>
+        <button class="ghost-btn admin-settings-btn" type="button" id="admin-event-account-open" hidden>Encontro</button>
+        <button class="primary-btn" type="button" id="profile-save-settings">Salvar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="admin-event-dialog" id="admin-event-dialog">
+    <button class="dialog-close" type="button" data-close-admin-event>Fechar</button>
+    <div class="admin-event-shell">
+      <header class="admin-event-head">
+        <div>
+          <strong>Encontro no Estacionamento 10</strong>
+          <span>Configuracao visivel somente para o dono.</span>
+        </div>
+      </header>
+      <div class="admin-event-fields">
+        <label class="admin-event-field">
+          <span>Dia</span>
+          <input id="admin-event-date" type="date">
+        </label>
+        <label class="admin-event-field">
+          <span>Hora</span>
+          <input id="admin-event-time" type="time">
+        </label>
+      </div>
+      <div class="admin-event-preview">
+        <span>Timer publico</span>
+        <strong id="admin-event-preview">--:--:--:--</strong>
+      </div>
+      <div class="admin-event-actions">
+        <button class="ghost-btn" type="button" id="admin-event-clear">Desativar</button>
+        <button class="primary-btn" type="button" id="admin-event-save">Ativar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="admin-metrics-dialog" id="admin-metrics-dialog">
+    <button class="dialog-close" type="button" data-close-admin-metrics>Fechar</button>
+    <div class="admin-metrics-shell">
+      <header class="admin-metrics-head">
+        <div>
+          <strong>Metricas do Card</strong>
+          <span id="admin-metrics-note">Dados visiveis somente para o dono.</span>
+        </div>
+      </header>
+      <div class="admin-metrics-tabs" aria-label="Periodo">
+        <button type="button" class="active" data-admin-metrics-mode="hour">Hora</button>
+        <button type="button" data-admin-metrics-mode="day">Dia</button>
+        <button type="button" data-admin-metrics-mode="week">Semana</button>
+        <button type="button" data-admin-metrics-mode="month">Mes</button>
+        <button type="button" data-admin-metrics-mode="year">Ano</button>
+      </div>
+      <div class="admin-metrics-grid" id="admin-metrics-grid"></div>
+      <div class="admin-metrics-chart" id="admin-metrics-chart" aria-label="Acessos por periodo"></div>
+      <div class="admin-metrics-sections" id="admin-metrics-sections"></div>
+    </div>
+  </dialog>
+
+  <script src="players-data.js?v=card-20260531-limpo-points"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="app.js?v=card-20260603-admin-real-album"></script>
+  <script src="nexo-tutorial-popup.js?v=card-20260603-rounded-play"></script>
+  <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-card" data-site-name="NEXO Card" defer></script>
+</body>
+</html>

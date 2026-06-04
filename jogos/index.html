@@ -1,0 +1,125 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXO Jogos</title>
+  <link rel="canonical" href="https://primusdf.com.br/jogos">
+  <meta property="og:url" content="https://primusdf.com.br/jogos">
+  <meta property="og:title" content="NEXO Jogos">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=League+Spartan:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar" aria-label="Topo">
+      <a class="brand" href="https://primusdf.com.br/jogos" aria-label="NEXO Jogos">
+        <span class="brand-cube" aria-hidden="true">
+          <canvas id="cubeCanvas" width="220" height="220"></canvas>
+        </span>
+        <span>
+          <strong>NEXO Jogos</strong>
+          <small>Conferidor simples</small>
+        </span>
+      </a>
+      <button class="ghost-button" id="refreshButton" type="button">Atualizar</button>
+    </header>
+
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="hero-copy">
+        <p class="eyebrow">Mega-Sena</p>
+        <h1 id="pageTitle">Confira seus jogos sem complicar.</h1>
+        <p class="hero-text">Cole seus jogos do jeito que estiverem. O NEXO Jogos reconhece os numeros, compara com o resultado e mostra o que importa primeiro.</p>
+      </div>
+      <aside class="result-panel" aria-live="polite">
+        <div class="panel-head">
+          <div>
+            <span class="muted-label" id="resultModeLabel">Resultado mais recente</span>
+            <h2 id="contestTitle">Carregando...</h2>
+          </div>
+          <span class="status-pill" id="sourceStatus">Buscando</span>
+        </div>
+        <div class="draw-balls" id="drawBalls" aria-label="Dezenas sorteadas"></div>
+        <div class="contest-tools">
+          <label for="contestInput">Concurso para conferir</label>
+          <div class="contest-controls">
+            <input id="contestInput" type="number" min="1" step="1" inputmode="numeric" placeholder="Atual">
+            <button class="ghost-button compact-button" id="loadContestButton" type="button">Ver</button>
+            <button class="ghost-button compact-button" id="latestButton" type="button">Atual</button>
+          </div>
+        </div>
+        <div class="next-draw">
+          <span>Proximo sorteio</span>
+          <strong id="nextDraw">-</strong>
+        </div>
+        <p class="small-note" id="updatedAt">Fonte: Portal Loterias Caixa.</p>
+      </aside>
+    </section>
+
+    <section class="checker-grid">
+      <article class="checker-panel">
+        <div class="section-title">
+          <span class="muted-label">Conferidor</span>
+          <h2>Cole um ou varios jogos</h2>
+        </div>
+        <textarea id="gamesInput" spellcheck="false">04 12 18 23 35 59
+01-07-22-33-44-60
+5, 9, 10, 31, 48, 52</textarea>
+        <div class="actions">
+          <button class="primary-button" id="checkButton" type="button">Conferir jogos</button>
+          <button class="ghost-button" id="sampleButton" type="button">Exemplo</button>
+          <button class="ghost-button" id="clearButton" type="button">Limpar</button>
+        </div>
+        <p class="helper-text">Pode usar espaco, virgula, hifen, texto solto ou quebras de linha. Para Mega-Sena, cada jogo precisa ter de 6 a 20 dezenas entre 1 e 60.</p>
+      </article>
+
+      <article class="summary-panel" id="summaryPanel">
+        <div class="section-title">
+          <div class="label-row">
+            <span class="muted-label">Resultado da conferencia</span>
+            <span class="site-credit">pelo site de resultados primusdf.com.br/jogos</span>
+          </div>
+          <div class="summary-meta" id="summaryMeta">Concurso aguardando resultado</div>
+          <h2 id="summaryTitle">Pronto para conferir</h2>
+          <button class="ghost-button share-button" id="shareButton" type="button">Compartilhar resultado</button>
+          <div class="share-links" id="shareLinks" aria-label="Opcoes de compartilhamento"></div>
+          <p class="share-status" id="shareStatus" aria-live="polite"></p>
+        </div>
+        <div class="summary-list" id="summaryList">
+          <p class="empty-state">Cole seus jogos e toque em conferir.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="details-zone" aria-label="Detalhes recolhidos">
+      <details>
+        <summary>Ver detalhes do premio</summary>
+        <div class="details-content" id="prizeDetails">
+          <p>Aguardando dados do concurso.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Ver ganhadores e cidades</summary>
+        <div class="details-content" id="winnerDetails">
+          <p>Aguardando dados do concurso.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Ver fonte e dados tecnicos</summary>
+        <div class="details-content technical">
+          <p>Resultado buscado em API publica de loterias, com link para conferencia oficial na Caixa. A conferencia acontece somente no seu navegador.</p>
+          <p id="rawStatus">Nenhum dado carregado ainda.</p>
+          <a href="https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx" target="_blank" rel="noreferrer">Abrir resultado oficial da Caixa</a>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-jogos" data-site-name="NEXO Jogos" defer></script>
+</body>
+</html>
