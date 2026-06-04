@@ -26,7 +26,7 @@ jobs:
       - name: Baixar arquivos do repositorio
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Aguardar configuracao dos secrets FTP
         if: ${{ env.FTP_SERVER == '' || env.FTP_USERNAME == '' || env.FTP_PASSWORD == '' }}
@@ -93,10 +93,25 @@ jobs:
               if before and not before.startswith("0000000"):
                   result = subprocess.run(
                       ["git", "diff", "--name-status", before, current],
-                      check=True,
+                      check=False,
                       text=True,
                       stdout=subprocess.PIPE,
+                      stderr=subprocess.STDOUT,
                   )
+                  if result.returncode != 0:
+                      print("Diff pelo SHA anterior falhou; seguindo com arquivos-chave.")
+                      print(result.stdout)
+                      result = subprocess.run(
+                          ["git", "diff", "--name-status", "HEAD~1", "HEAD"],
+                          check=False,
+                          text=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT,
+                      )
+                  if result.returncode != 0:
+                      print("Diff local tambem falhou; seguindo apenas com arquivos-chave.")
+                      print(result.stdout)
+                      return force_upload, set(Path(p) for p in obsolete_files)
                   for line in result.stdout.splitlines():
                       parts = line.split("\t")
                       if not parts:
