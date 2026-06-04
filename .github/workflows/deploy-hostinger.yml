@@ -205,15 +205,6 @@ jobs:
 
               uploaded += upload_file(rel_path, file_path)
 
-          ftp.cwd(remote_root)
-          for name in list(ftp.nlst()):
-              if name.startswith("deploy-probe-"):
-                  try:
-                      ftp.delete(name)
-                      print(f"remove {name}")
-                  except Exception:
-                      pass
-
           for rel_path in sorted(delete_paths, key=lambda item: item.as_posix()):
               if should_skip(rel_path):
                   continue
