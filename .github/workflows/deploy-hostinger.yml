@@ -41,36 +41,28 @@ jobs:
           fi
           echo "Host FTP sem prefixo de protocolo."
 
-      - name: Instalar cliente FTP
-        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lftp
-
       - name: Enviar publicar para Hostinger via FTP
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
-        shell: bash
-        run: |
-          REMOTE_DIR="${FTP_SERVER_DIR:-public_html/}"
-          REMOTE_DIR="${REMOTE_DIR%/}/"
-          echo "Destino FTP: $REMOTE_DIR"
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<LFTP
-          set cmd:fail-exit yes
-          set ftp:ssl-allow no
-          set ftp:passive-mode yes
-          set net:timeout 120
-          set net:max-retries 4
-          set net:reconnect-interval-base 5
-          mkdir -p "$REMOTE_DIR"
-          mirror --reverse --only-newer --verbose \
-            --exclude-glob ".git*" \
-            --exclude-glob ".git/**" \
-            --exclude-glob ".github/**" \
-            --exclude-glob "node_modules/**" \
-            --exclude-glob ".env" \
-            --exclude-glob ".env.*" \
-            --exclude-glob "*.md" \
-            --exclude-glob "README*" \
-            ./ "$REMOTE_DIR"
-          bye
-          LFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          server-dir: ${{ env.FTP_SERVER_DIR }}
+          local-dir: ./
+          state-name: .ftp-deploy-sync-state-publicar-v2.json
+          port: 21
+          protocol: ftp
+          timeout: 120000
+          log-level: verbose
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.github*/**
+            **/node_modules/**
+            **/.env
+            **/.env.*
+            **/*.md
+            README*
