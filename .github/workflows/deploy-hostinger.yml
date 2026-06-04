@@ -54,6 +54,7 @@ jobs:
           import os
           import posixpath
           import subprocess
+          import time
 
           server = (os.environ["FTP_SERVER"] or "").replace("ftp://", "").replace("ftps://", "").strip().strip("/")
           username = os.environ["FTP_USERNAME"]
@@ -144,11 +145,28 @@ jobs:
                       ftp.mkd(part)
                       ftp.cwd(part)
 
-          ftp = FTP()
-          ftp.connect(server, 21, timeout=120)
-          ftp.login(username, password)
-          ftp.set_pasv(True)
-          ftp.cwd(remote_root)
+          def connect_ftp() -> FTP:
+              last_error = None
+              for attempt in range(1, 6):
+                  ftp = FTP()
+                  try:
+                      print(f"Conectando no FTP, tentativa {attempt}/5...")
+                      ftp.connect(server, 21, timeout=30)
+                      ftp.login(username, password)
+                      ftp.set_pasv(True)
+                      ftp.cwd(remote_root)
+                      return ftp
+                  except Exception as exc:
+                      last_error = exc
+                      try:
+                          ftp.close()
+                      except Exception:
+                          pass
+                      print(f"Tentativa {attempt}/5 falhou: {type(exc).__name__}: {exc}")
+                      time.sleep(8)
+              raise last_error
+
+          ftp = connect_ftp()
 
           upload_paths, delete_paths = changed_paths()
           uploaded = 0
