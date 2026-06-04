@@ -1,13 +1,21 @@
 # Deploy automatico para Hostinger
 
-Esta pasta `publicar` e a raiz do site que sera enviada para a Hostinger.
+O deploy envia somente a pasta `card` para a Hostinger.
+
+No computador, a pasta correta do site e:
+
+```text
+G:\O meu disco\Meus Sites\NEXO primus - limpo\publicar\card
+```
+
+No servidor, o conteudo de `card` entra como raiz do site em `public_html/`.
 
 ## Fluxo
 
 1. Editar localmente no Codex/VS Code.
 2. Fazer commit.
 3. Fazer push para o GitHub na branch `main`.
-4. O GitHub Actions envia tudo desta pasta para a Hostinger por FTP.
+4. O GitHub Actions envia a pasta `card` para a Hostinger por FTP.
 
 ## Segredos no GitHub
 

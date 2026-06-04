@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Enviar publicar para Hostinger
+    name: Enviar NEXO Card para Hostinger
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -31,7 +31,7 @@ jobs:
           echo "Secrets FTP ainda nao configurados."
           echo "Crie FTP_SERVER, FTP_USERNAME, FTP_PASSWORD e FTP_SERVER_DIR em Settings > Secrets and variables > Actions."
 
-      - name: Enviar para Hostinger via FTP
+      - name: Enviar NEXO Card para Hostinger via FTP
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' && env.FTP_SERVER_DIR != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -39,7 +39,7 @@ jobs:
           username: ${{ env.FTP_USERNAME }}
           password: ${{ env.FTP_PASSWORD }}
           server-dir: ${{ env.FTP_SERVER_DIR }}
-          local-dir: ./
+          local-dir: ./card/
           port: 21
           dangerous-clean-slate: false
           exclude: |
