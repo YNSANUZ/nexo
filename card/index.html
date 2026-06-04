@@ -14,7 +14,7 @@
   <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="apple-touch-icon" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=card-20260604-avatar-fit">
+  <link rel="stylesheet" href="styles.css?v=card-20260604-search-dropdown-groups-scroll">
   <link rel="stylesheet" href="nexo-tutorial-popup.css?v=card-20260603-rounded-play">
 </head>
 <body>
@@ -127,6 +127,7 @@
           <span>Buscar</span>
           <input id="search-input" type="search" placeholder="Pais, codigo, numero ou usuario">
         </label>
+        <section class="user-search-results" id="user-search-results" aria-label="Usuarios encontrados" hidden></section>
         <div class="segmented" role="tablist" aria-label="Filtro">
           <button type="button" class="active" data-filter="all">Todas</button>
           <button type="button" data-filter="owned">Tenho</button>
@@ -136,7 +137,6 @@
       </section>
 
       <section class="group-strip" id="group-strip" aria-label="Grupos"></section>
-      <section class="user-search-results" id="user-search-results" aria-label="Usuarios encontrados" hidden></section>
 
       <section class="view active map-view" id="view-map">
         <div class="section-head">

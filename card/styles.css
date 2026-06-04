@@ -569,10 +569,13 @@ h1 {
 }
 
 .toolbar {
+  position: relative;
+  z-index: 120;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   padding: 0 16px 14px;
+  overflow: visible;
 }
 
 .search-box {
@@ -706,19 +709,33 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 
 .group-strip {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
-  overflow: visible;
-  padding: 0 16px 16px;
-  scrollbar-width: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 16px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(19, 33, 42, .28) transparent;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
 }
 
 .group-strip::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+
+.group-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.group-strip::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(19, 33, 42, .24);
 }
 
 .group-chip {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   width: fit-content;
   min-width: 0;
   min-height: 38px;
@@ -739,9 +756,25 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 }
 
 .user-search-results {
+  position: absolute;
+  top: 64px;
+  left: 16px;
+  right: 16px;
+  z-index: 1400;
   display: grid;
   gap: 8px;
-  padding: 0 16px 12px;
+  max-height: min(360px, calc(100vh - 150px));
+  padding: 10px;
+  overflow-y: auto;
+  border: 1px solid rgba(19, 33, 42, .14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, .2);
+  backdrop-filter: blur(16px);
+}
+
+.user-search-results[hidden] {
+  display: none;
 }
 
 .user-search-head {
@@ -1987,7 +2020,6 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 .stats-grid,
 .toolbar,
 .group-strip,
-.user-search-results,
 .view:not(.map-view) {
   max-width: 1012px;
   margin-left: auto;
