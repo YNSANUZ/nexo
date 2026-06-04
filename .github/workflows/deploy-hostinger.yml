@@ -30,6 +30,16 @@ jobs:
           echo "Secrets FTP ainda nao configurados."
           echo "Crie FTP_SERVER, FTP_USERNAME e FTP_PASSWORD em Settings > Secrets and variables > Actions."
 
+      - name: Validar host FTP
+        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
+        shell: bash
+        run: |
+          if [[ "$FTP_SERVER" == ftp://* || "$FTP_SERVER" == ftps://* ]]; then
+            echo "::error title=FTP_SERVER invalido::Use somente o host, sem ftp://. Exemplo correto: 45.132.157.108"
+            exit 1
+          fi
+          echo "Host FTP sem prefixo de protocolo."
+
       - name: Enviar publicar para Hostinger via FTP
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
@@ -40,6 +50,9 @@ jobs:
           server-dir: public_html/
           local-dir: ./
           port: 21
+          protocol: ftp
+          timeout: 120000
+          log-level: verbose
           dangerous-clean-slate: false
           exclude: |
             **/.git*
