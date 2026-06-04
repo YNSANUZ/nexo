@@ -29,22 +29,9 @@ Crie estes secrets:
 FTP_SERVER
 FTP_USERNAME
 FTP_PASSWORD
-FTP_SERVER_DIR
 ```
 
-Exemplo comum do destino na Hostinger:
-
-```text
-public_html/
-```
-
-Se este projeto ficar em uma subpasta do dominio:
-
-```text
-public_html/nexo/
-```
-
-Importante: `FTP_SERVER_DIR` deve terminar com `/`.
+O destino da Hostinger ja esta fixado no workflow como `public_html/`, para publicar o NEXO Card direto na raiz do dominio.
 
 ## Primeiro envio
 
