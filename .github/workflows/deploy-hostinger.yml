@@ -19,10 +19,14 @@ jobs:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      BEFORE_SHA: ${{ github.event.before }}
+      CURRENT_SHA: ${{ github.sha }}
 
     steps:
       - name: Baixar arquivos do repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Aguardar configuracao dos secrets FTP
         if: ${{ env.FTP_SERVER == '' || env.FTP_USERNAME == '' || env.FTP_PASSWORD == '' }}
@@ -49,6 +53,7 @@ jobs:
           from pathlib import Path
           import os
           import posixpath
+          import subprocess
 
           server = (os.environ["FTP_SERVER"] or "").replace("ftp://", "").replace("ftps://", "").strip().strip("/")
           username = os.environ["FTP_USERNAME"]
@@ -56,6 +61,14 @@ jobs:
           remote_root = "/domains/primusdf.com.br/public_html"
           local_root = Path(".").resolve()
           skip_dirs = {".git", ".github", "node_modules"}
+          force_upload = {
+              Path("deploy-check.txt"),
+              Path("card/index.html"),
+              Path("card/app.js"),
+              Path("card/nexo-tutorial-popup.js"),
+              Path("card/nexo-tutorial-popup.css"),
+          }
+          obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
 
           def should_skip(path: Path) -> bool:
               parts = set(path.parts)
@@ -63,11 +76,45 @@ jobs:
                   return True
               name = path.name
               lower = name.lower()
+              if lower.startswith(".") and lower != ".htaccess":
+                  return True
               if lower == ".ds_store" or lower.startswith(".env"):
                   return True
               if lower.endswith(".md") or lower.startswith("readme"):
                   return True
               return False
+
+          def changed_paths():
+              before = (os.environ.get("BEFORE_SHA") or "").strip()
+              current = (os.environ.get("CURRENT_SHA") or "HEAD").strip()
+              upload = set()
+              delete = set()
+
+              if before and not before.startswith("0000000"):
+                  result = subprocess.run(
+                      ["git", "diff", "--name-status", before, current],
+                      check=True,
+                      text=True,
+                      stdout=subprocess.PIPE,
+                  )
+                  for line in result.stdout.splitlines():
+                      parts = line.split("\t")
+                      if not parts:
+                          continue
+                      status = parts[0]
+                      if status.startswith("D") and len(parts) >= 2:
+                          delete.add(Path(parts[1]))
+                      elif status.startswith("R") and len(parts) >= 3:
+                          delete.add(Path(parts[1]))
+                          upload.add(Path(parts[2]))
+                      elif len(parts) >= 2:
+                          upload.add(Path(parts[-1]))
+              else:
+                  upload.update(p.relative_to(local_root) for p in local_root.rglob("*") if p.is_file())
+
+              upload.update(force_upload)
+              delete.update(Path(p) for p in obsolete_files)
+              return upload, delete
 
           def ensure_remote_dir(ftp: FTP, rel_dir: str) -> None:
               ftp.cwd(remote_root)
@@ -88,10 +135,13 @@ jobs:
           ftp.set_pasv(True)
           ftp.cwd(remote_root)
 
+          upload_paths, delete_paths = changed_paths()
           uploaded = 0
-          for file_path in sorted(p for p in local_root.rglob("*") if p.is_file()):
-              rel_path = file_path.relative_to(local_root)
+          for rel_path in sorted(upload_paths, key=lambda item: item.as_posix()):
               if should_skip(rel_path):
+                  continue
+              file_path = local_root / rel_path
+              if not file_path.is_file():
                   continue
 
               rel_posix = rel_path.as_posix()
@@ -114,7 +164,10 @@ jobs:
                   except Exception:
                       pass
 
-          for obsolete_file in ["card/assets/nexo-card-tutorial.mp4"]:
+          for rel_path in sorted(delete_paths, key=lambda item: item.as_posix()):
+              if should_skip(rel_path):
+                  continue
+              obsolete_file = rel_path.as_posix()
               try:
                   ftp.cwd(remote_root)
                   ftp.delete(obsolete_file)
