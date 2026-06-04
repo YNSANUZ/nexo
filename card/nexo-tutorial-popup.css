@@ -18,12 +18,22 @@
 .nexo-tutorial-dialog {
   position: relative;
   width: min(390px, 92vw);
-  aspect-ratio: 9 / 16;
-  max-height: min(82vh, 720px);
+  max-height: min(92vh, 820px);
+  display: grid;
+  grid-template-rows: minmax(0, auto) auto;
   overflow: hidden;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 16px;
+  background: #071016;
+  box-shadow: 0 26px 80px rgba(0,0,0,.42);
+}
+
+.nexo-tutorial-video-shell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  max-height: min(68vh, 640px);
+  overflow: hidden;
+  background: #000;
 }
 
 .nexo-tutorial-dialog::before {
@@ -47,6 +57,100 @@
   background: transparent;
   object-fit: cover;
   pointer-events: none;
+}
+
+.nexo-tutorial-feedback {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff, #eef6f7);
+  color: #13212a;
+  cursor: default;
+}
+
+.nexo-tutorial-feedback-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.nexo-tutorial-feedback-head strong {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.nexo-tutorial-feedback-head span {
+  color: #5c6b74;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.nexo-tutorial-stars {
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 4px;
+}
+
+.nexo-tutorial-stars button {
+  width: 34px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(19,33,42,.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.nexo-tutorial-stars button.is-active {
+  color: #f0c84b;
+  border-color: rgba(240,200,75,.56);
+  background: #fff9db;
+  text-shadow: 0 2px 9px rgba(240,200,75,.28);
+}
+
+.nexo-tutorial-feedback textarea {
+  width: 100%;
+  min-height: 58px;
+  resize: vertical;
+  padding: 9px 10px;
+  border: 1px solid rgba(19,33,42,.14);
+  border-radius: 8px;
+  background: #fff;
+  color: #13212a;
+  font: 800 12px/1.35 Arial, sans-serif;
+}
+
+.nexo-tutorial-feedback-actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.nexo-tutorial-feedback-actions button {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #10b36b;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.nexo-tutorial-feedback-actions span {
+  min-width: 0;
+  color: #0f7a4e;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .nexo-tutorial-dialog {
@@ -166,8 +270,12 @@
 
   .nexo-tutorial-dialog {
     width: min(360px, 94vw);
-    max-height: 78vh;
-    border-radius: 0;
+    max-height: 92vh;
+    border-radius: 14px;
+  }
+
+  .nexo-tutorial-video-shell {
+    max-height: 58vh;
   }
 
   .nexo-tutorial-mute {
@@ -184,10 +292,19 @@
     width: 66px;
     height: 66px;
   }
+
+  .nexo-tutorial-feedback {
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .nexo-tutorial-feedback textarea {
+    min-height: 46px;
+  }
 }
 
 @supports not (aspect-ratio: 9 / 16) {
-  .nexo-tutorial-dialog {
+  .nexo-tutorial-video-shell {
     height: min(82vh, 690px);
   }
 }

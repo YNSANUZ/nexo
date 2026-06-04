@@ -238,6 +238,7 @@ jobs:
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
               ("versao nova do index do card", "card-20260604-event-summary-challenges" in index),
+              ("feedback do tutorial no index", "card-20260604-tutorial-feedback" in index),
               ("premio do evento no index", "event-reward" in index),
               ("botao de desafios no index", "challenge-gift-open" in index),
               ("sistema de XP no app", "profileXpSummary" in app),
@@ -247,6 +248,8 @@ jobs:
               ("busca de usuarios no app", "renderUserSearchResults" in app),
               ("remove album admin congelado", "completeAlbumMap" not in app),
               ("tutorial usa Cloudinary", "https://res.cloudinary.com/dzcjew9ns/video/upload/v1780541095/NEXO_card_xyqefp.mp4?_s=public-apps" in tutorial),
+              ("feedback do tutorial no js", "nexoTutorialFeedback" in tutorial),
+              ("agradecimento do feedback", "Obrigado pelo feedback." in tutorial),
               ("tutorial nao usa MP4 local", "assets/nexo-card-tutorial.mp4" not in tutorial),
           ]
 
