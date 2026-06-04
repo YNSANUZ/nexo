@@ -24,16 +24,16 @@ FTP_PASSWORD
 FTP_SERVER_DIR
 ```
 
-Exemplo comum do destino:
+Exemplo comum do destino na Hostinger:
 
 ```text
-/public_html/
+public_html/
 ```
 
 Se este projeto ficar em uma subpasta do dominio:
 
 ```text
-/public_html/nexo/
+public_html/nexo/
 ```
 
 Importante: `FTP_SERVER_DIR` deve terminar com `/`.
@@ -58,4 +58,3 @@ git add .
 git commit -m "Atualiza site"
 git push
 ```
-
