@@ -19,6 +19,7 @@ jobs:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR }}
 
     steps:
       - name: Baixar arquivos do repositorio
@@ -50,13 +51,17 @@ jobs:
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
         shell: bash
         run: |
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
+          REMOTE_DIR="${FTP_SERVER_DIR:-public_html/}"
+          REMOTE_DIR="${REMOTE_DIR%/}/"
+          echo "Destino FTP: $REMOTE_DIR"
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<LFTP
+          set cmd:fail-exit yes
           set ftp:ssl-allow no
           set ftp:passive-mode yes
           set net:timeout 120
           set net:max-retries 4
           set net:reconnect-interval-base 5
-          mkdir -p public_html
+          mkdir -p "$REMOTE_DIR"
           mirror --reverse --only-newer --verbose \
             --exclude-glob ".git*" \
             --exclude-glob ".git/**" \
@@ -66,6 +71,6 @@ jobs:
             --exclude-glob ".env.*" \
             --exclude-glob "*.md" \
             --exclude-glob "README*" \
-            ./ public_html/
+            ./ "$REMOTE_DIR"
           bye
           LFTP
