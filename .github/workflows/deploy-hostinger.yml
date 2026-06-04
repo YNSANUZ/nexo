@@ -40,28 +40,32 @@ jobs:
           fi
           echo "Host FTP sem prefixo de protocolo."
 
+      - name: Instalar cliente FTP
+        if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
       - name: Enviar publicar para Hostinger via FTP
         if: ${{ env.FTP_SERVER != '' && env.FTP_USERNAME != '' && env.FTP_PASSWORD != '' }}
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ env.FTP_SERVER }}
-          username: ${{ env.FTP_USERNAME }}
-          password: ${{ env.FTP_PASSWORD }}
-          server-dir: public_html/
-          local-dir: ./
-          state-name: .ftp-deploy-sync-state-publicar.json
-          port: 21
-          protocol: ftp
-          timeout: 120000
-          log-level: verbose
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/.github*/**
-            **/node_modules/**
-            **/.env
-            **/.env.*
-            **/*.md
-            README*
+        shell: bash
+        run: |
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
+          set ftp:ssl-allow no
+          set ftp:passive-mode yes
+          set net:timeout 120
+          set net:max-retries 4
+          set net:reconnect-interval-base 5
+          mkdir -p public_html
+          mirror --reverse --only-newer --verbose \
+            --exclude-glob ".git*" \
+            --exclude-glob ".git/**" \
+            --exclude-glob ".github/**" \
+            --exclude-glob "node_modules/**" \
+            --exclude-glob ".env" \
+            --exclude-glob ".env.*" \
+            --exclude-glob "*.md" \
+            --exclude-glob "README*" \
+            ./ public_html/
+          bye
+          LFTP
