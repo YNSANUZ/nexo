@@ -1,0 +1,129 @@
+name: Diagnostico FTP Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ftp-diagnose.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    name: Testar pastas FTP
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+
+    steps:
+      - name: Baixar arquivos do repositorio
+        uses: actions/checkout@v4
+
+      - name: Testar diretorios FTP e dominio
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from ftplib import FTP
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          import datetime
+          import os
+          import time
+          import traceback
+
+          server = (os.environ.get("FTP_SERVER") or "").replace("ftp://", "").replace("ftps://", "").strip().strip("/")
+          username = os.environ.get("FTP_USERNAME") or ""
+          password = os.environ.get("FTP_PASSWORD") or ""
+          now = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+          stamp = str(int(time.time()))
+          report = [
+              "Diagnostico FTP Hostinger",
+              f"Gerado em UTC: {now}",
+              f"Servidor: {server}",
+              f"Usuario: {username}",
+              "",
+          ]
+
+          candidates = [
+              ("ftp-root", "."),
+              ("public-html", "public_html"),
+              ("slash-public-html", "/public_html"),
+              ("domain-public-html", "domains/primusdf.com.br/public_html"),
+              ("slash-domain-public-html", "/domains/primusdf.com.br/public_html"),
+              ("home-domain-public-html", "/home/u769736401/domains/primusdf.com.br/public_html"),
+              ("card-folder", "card"),
+          ]
+
+          def http_check(filename):
+              url = f"https://primusdf.com.br/{filename}?v={stamp}"
+              try:
+                  req = Request(url, headers={"Cache-Control": "no-cache", "Pragma": "no-cache"})
+                  with urlopen(req, timeout=20) as res:
+                      body = res.read(200).decode("utf-8", "replace").strip()
+                      return f"HTTP {res.status} {url} body={body!r}"
+              except HTTPError as exc:
+                  return f"HTTP {exc.code} {url}"
+              except URLError as exc:
+                  return f"HTTP erro {url}: {exc.reason}"
+              except Exception as exc:
+                  return f"HTTP erro {url}: {exc}"
+
+          try:
+              ftp = FTP()
+              ftp.connect(server, 21, timeout=60)
+              ftp.login(username, password)
+              ftp.set_pasv(True)
+              start_pwd = ftp.pwd()
+              report.append(f"PWD inicial: {start_pwd}")
+              report.append("")
+
+              for label, path in candidates:
+                  filename = f"deploy-probe-{label}-{stamp}.txt"
+                  payload = f"{label} {path} {stamp}\n".encode("utf-8")
+                  report.append(f"## {label}")
+                  report.append(f"Candidato: {path}")
+                  try:
+                      ftp.cwd(start_pwd)
+                      ftp.cwd(path)
+                      current = ftp.pwd()
+                      report.append(f"CWD OK: {current}")
+                      names = []
+                      try:
+                          names = ftp.nlst()
+                      except Exception as exc:
+                          names = [f"NLST erro: {exc}"]
+                      report.append("Itens antes: " + ", ".join(names[:30]))
+                      from io import BytesIO
+                      ftp.storbinary(f"STOR {filename}", BytesIO(payload))
+                      report.append(f"Upload OK: {filename}")
+                      report.append(http_check(filename))
+                  except Exception as exc:
+                      report.append(f"ERRO: {type(exc).__name__}: {exc}")
+                  report.append("")
+
+              try:
+                  ftp.quit()
+              except Exception:
+                  ftp.close()
+          except Exception:
+              report.append("ERRO GERAL:")
+              report.append(traceback.format_exc())
+
+          with open("ftp-diagnostics.txt", "w", encoding="utf-8") as f:
+              f.write("\n".join(report).rstrip() + "\n")
+          PY
+
+      - name: Salvar diagnostico no repositorio
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ftp-diagnostics.txt
+          git commit -m "Atualiza diagnostico FTP [skip ci]" || exit 0
+          git push
