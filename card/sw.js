@@ -1,4 +1,4 @@
-const PWA_VERSION = "nexo-card-pwa-20260604-profile-foil";
+const PWA_VERSION = "nexo-card-pwa-20260604-message-inbox";
 
 self.addEventListener("install", event => {
   event.waitUntil(self.skipWaiting());

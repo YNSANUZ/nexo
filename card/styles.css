@@ -134,6 +134,7 @@ button {
 }
 
 .nav-btn {
+  position: relative;
   width: 100%;
   min-height: 50px;
   display: grid;
@@ -149,6 +150,29 @@ button {
   cursor: pointer;
   font-size: 11px;
   font-weight: 800;
+}
+
+.message-count-badge,
+.account-message-badge {
+  position: absolute;
+  z-index: 2;
+  min-width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 0 8px 16px rgba(239, 68, 68, .26);
+}
+
+.message-count-badge {
+  right: 12px;
+  top: 5px;
 }
 
 .nav-btn span:last-child {
@@ -362,6 +386,7 @@ h1 {
 }
 
 .account-chip {
+  position: relative;
   min-height: 42px;
   display: grid;
   grid-template-columns: 36px minmax(0, auto);
@@ -376,6 +401,16 @@ h1 {
   font-weight: 950;
   white-space: nowrap;
   box-shadow: 0 8px 18px rgba(15, 23, 42, .08);
+}
+
+.account-message-badge {
+  right: -7px;
+  top: -7px;
+}
+
+.message-count-badge[hidden],
+.account-message-badge[hidden] {
+  display: none;
 }
 
 .account-photo {
@@ -1728,7 +1763,7 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: 1fr auto auto auto auto;
+  grid-template-rows: 1fr;
   justify-items: center;
   gap: 3px;
   padding: 9px 7px;
@@ -1745,6 +1780,10 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   transform-style: flat;
   backface-visibility: hidden;
   opacity: 1;
+}
+
+.collector-card-pin .pin-card-face > * {
+  display: none !important;
 }
 
 .pin-card-face::after {
@@ -2074,6 +2113,15 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
 
 .collector-location-marker.zoom-detail .pin-summary {
   display: grid;
+}
+
+.collector-location-marker .pin-rank-emblem,
+.collector-location-marker .pin-avatar,
+.collector-location-marker .pin-card-face strong,
+.collector-location-marker .pin-card-face em,
+.collector-location-marker .pin-card-face small,
+.collector-location-marker .pin-summary {
+  display: none !important;
 }
 
 @keyframes pinCardSpin {
@@ -3431,6 +3479,16 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   font-weight: 950;
 }
 
+.message-send-status {
+  padding: 9px 10px;
+  border: 1px solid rgba(16,179,107,.28);
+  border-radius: 8px;
+  background: rgba(220, 252, 231, .86);
+  color: #07543f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .nearby-shell {
   clear: both;
   display: grid;
@@ -3942,6 +4000,187 @@ body.sticker-mode-remove .sticker-mode-toggle::before {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.settings-messages {
+  display: grid;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(19,33,42,.1);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(19,200,163,.13), transparent 34%),
+    rgba(255,255,255,.74);
+}
+
+.settings-messages header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settings-messages strong,
+.settings-messages span {
+  display: block;
+}
+
+.settings-messages header strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.settings-messages header span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.profile-message-list {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-message-empty,
+.profile-message-sent-head {
+  padding: 9px;
+  border-radius: 8px;
+  background: rgba(237,246,247,.92);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.profile-message-sent-head {
+  padding-bottom: 2px;
+  background: transparent;
+  color: #0b6b57;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.profile-message-row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 9px;
+  padding: 9px;
+  border: 1px solid rgba(19,33,42,.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,.86);
+  box-shadow: 0 8px 18px rgba(15,23,42,.05);
+}
+
+.profile-message-row.sent {
+  background: rgba(237,246,247,.9);
+}
+
+.profile-message-row.answered {
+  border-color: rgba(16,179,107,.24);
+}
+
+.profile-message-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #13c8a3, #2563eb);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 950;
+  box-shadow: 0 0 0 3px rgba(19,200,163,.12);
+}
+
+.profile-message-avatar::before {
+  grid-area: 1 / 1;
+  content: attr(data-initials);
+}
+
+.profile-message-avatar img {
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.profile-message-avatar img + * {
+  display: none;
+}
+
+.profile-message-body {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.profile-message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.profile-message-meta strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-message-meta small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.profile-message-text,
+.profile-message-response {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.profile-message-response {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(220,252,231,.78);
+  color: #07543f;
+}
+
+.profile-message-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-message-actions button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: #10b36b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.profile-message-actions em {
+  flex: 1 1 110px;
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: right;
 }
 
 .dialog-close {

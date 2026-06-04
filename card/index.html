@@ -14,7 +14,7 @@
   <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="apple-touch-icon" href="https://i.ibb.co/VYCm5HZ4/vidro.png?v=nexo-card-favicon-20260604">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="styles.css?v=card-20260604-profile-foil">
+  <link rel="stylesheet" href="styles.css?v=card-20260604-message-inbox">
   <link rel="stylesheet" href="nexo-tutorial-popup.css?v=card-20260604-tutorial-feedback">
 </head>
 <body>
@@ -68,6 +68,7 @@
             </svg>
           </span>
           <span>Perfil</span>
+          <span class="message-count-badge" id="nav-message-count" hidden>0</span>
         </button>
       </nav>
 
@@ -86,6 +87,7 @@
               <img id="account-photo-img" alt="" hidden>
             </span>
             <span id="account-name-label"></span>
+            <span class="account-message-badge" id="account-message-count" hidden>0</span>
           </button>
           <div>
             <span class="eyebrow" id="view-eyebrow" hidden></span>
@@ -376,6 +378,7 @@
         Combine trocas em locais publicos. Nunca envie dados pessoais, endereco, PIX ou pagamento antecipado.
       </div>
       <div class="message-options" id="message-options"></div>
+      <div class="message-send-status" id="message-send-status" hidden></div>
     </div>
   </dialog>
 
@@ -412,6 +415,15 @@
         <button class="ghost-btn admin-settings-btn" type="button" id="admin-event-account-open" hidden>Encontro</button>
         <button class="primary-btn" type="button" id="profile-save-settings">Salvar</button>
       </div>
+      <section class="settings-messages" aria-label="Mensagens do perfil">
+        <header>
+          <div>
+            <strong>Mensagens</strong>
+            <span id="profile-message-status">As mensagens recebidas aparecem aqui.</span>
+          </div>
+        </header>
+        <div class="profile-message-list" id="profile-message-list"></div>
+      </section>
     </div>
   </dialog>
 
@@ -472,7 +484,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="app.js?v=card-20260604-profile-foil"></script>
+  <script src="app.js?v=card-20260604-message-inbox"></script>
   <script src="nexo-tutorial-popup.js?v=card-20260604-tutorial-feedback"></script>
   <script src="https://primusdf.com.br/analytics/track.js" data-site-id="primus-card" data-site-name="NEXO Card" defer></script>
 </body>

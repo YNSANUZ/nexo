@@ -65,6 +65,7 @@ jobs:
           force_upload = {
               Path("deploy-check.txt"),
               Path("card/index.html"),
+              Path("card/app.js"),
               Path("card/styles.css"),
               Path("card/sw.js"),
           }
@@ -250,8 +251,10 @@ jobs:
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
-              ("versao nova do index do card", "card-20260604-profile-foil" in index),
+              ("versao nova do index do card", "card-20260604-message-inbox" in index),
               ("perfil vitrine no app", "profileDashboardNavHtml" in app),
+              ("caixa de mensagens no app", "startMessageRealtimeSync" in app and "profile-message-list" in index),
+              ("pins do mapa limpos", "pin-card-face\" aria-hidden=\"true" in app),
               ("simbolos de missoes no css", "Profile dashboard and mission symbols" in styles),
               ("perfil 9:16 premium no css", "Profile portrait 9:16 premium card" in styles),
               ("mapa limpo sem bolha do presente", "Clean map overlay stack" in styles),

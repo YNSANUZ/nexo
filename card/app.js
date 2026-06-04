@@ -15,6 +15,7 @@
   const ONLINE_NOW_WINDOW_MS = 15 * 60 * 1000;
   const PWA_INSTALL_REMINDER_INTERVAL_MS = 60 * 60 * 1000;
   const MESSAGE_COOLDOWN_MS = 10 * 60 * 1000;
+  const MESSAGE_INBOX_LIMIT = 40;
   const POINT_PLAYER_LIMIT = 8;
   const POINT_PLAYER_RADIUS_M = 200;
   const APPROX_LOCATION_GRID = 0.002;
@@ -189,6 +190,7 @@
   let albumStorageTimer = null;
   let publicProfileTimer = null;
   let publicUsersUnsubscribe = null;
+  let messageUnsubscribes = [];
   let meetingEventUnsubscribe = null;
   let locationSyncTimer = null;
   let eventCountdownTimer = null;
@@ -222,7 +224,11 @@
     adminAnalyticsEvents: [],
     adminMetricsMode: "hour",
     nearbyFilter: "trade",
-    messageTargetUserId: ""
+    messageTargetUserId: "",
+    messageReplyToId: "",
+    messageTargetFallback: null,
+    profileMessages: [],
+    sentProfileMessages: []
   };
 
   const els = {};
@@ -267,7 +273,8 @@
       "admin-event-date", "admin-event-time", "admin-event-preview",
       "admin-event-save", "admin-event-clear",
       "nearby-collectors-open", "nearby-dialog", "nearby-list", "nearby-summary",
-      "message-dialog", "message-options", "message-target-name",
+      "message-dialog", "message-options", "message-target-name", "message-send-status",
+      "profile-message-list", "profile-message-status", "nav-message-count", "account-message-count",
       "admin-metrics-dialog", "admin-metrics-grid", "admin-metrics-chart",
       "admin-metrics-note", "admin-metrics-sections", "event-countdown",
       "event-status", "event-timer", "event-detail", "event-reward-status",
@@ -359,7 +366,7 @@
     });
 
     document.querySelectorAll("[data-close-message]").forEach(button => {
-      button.addEventListener("click", () => els["message-dialog"] && els["message-dialog"].close());
+      button.addEventListener("click", () => closeMessageDialog());
     });
 
     document.querySelectorAll("[data-close-badge-reveal]").forEach(button => {
@@ -403,6 +410,9 @@
 
     if (els["message-options"]) {
       els["message-options"].addEventListener("click", onMessageOptionClick);
+    }
+    if (els["profile-message-list"]) {
+      els["profile-message-list"].addEventListener("click", onProfileMessageClick);
     }
 
     ["admin-event-date", "admin-event-time"].forEach(id => {
@@ -1263,11 +1273,15 @@
 
   async function onFirebaseUserChanged(user) {
     stopAlbumRealtimeSync();
+    stopMessageRealtimeSync();
     if (!user) {
       currentUser = null;
       saveProfile(null);
       stopLocationSync();
+      state.profileMessages = [];
+      state.sentProfileMessages = [];
       updateAccountUi();
+      renderProfileMessages();
       clearAdminAnalyticsMarkers();
       return;
     }
@@ -1297,6 +1311,7 @@
     await loadAlbumFromFirebase();
     await syncAlbumToFirebase();
     startAlbumRealtimeSync();
+    startMessageRealtimeSync();
     startLocationSync();
     loadAdminMapAnalytics();
   }
@@ -1398,6 +1413,85 @@
       console.warn("Nao foi possivel parar sync em tempo real.", error);
     }
     albumUnsubscribe = null;
+  }
+
+  function startMessageRealtimeSync() {
+    if (!firebaseReady || !db || !currentUser || !currentUser.uid) return;
+    stopMessageRealtimeSync();
+    const watchedUid = currentUser.uid;
+    const applyIncoming = snapshot => {
+      if (!currentUser || currentUser.uid !== watchedUid) return;
+      state.profileMessages = sortProfileMessages(snapshot.docs.map(normalizeNotificationDoc).filter(Boolean));
+      updateMessageBadges();
+      renderProfileMessages();
+    };
+    const applySent = snapshot => {
+      if (!currentUser || currentUser.uid !== watchedUid) return;
+      state.sentProfileMessages = sortProfileMessages(snapshot.docs.map(normalizeNotificationDoc).filter(Boolean));
+      renderProfileMessages();
+    };
+    try {
+      messageUnsubscribes.push(
+        db.collection(FIREBASE_COLLECTIONS.notifications)
+          .where("targetUserId", "==", watchedUid)
+          .onSnapshot(applyIncoming, error => {
+            console.warn("Nao foi possivel acompanhar mensagens recebidas.", error);
+          })
+      );
+      messageUnsubscribes.push(
+        db.collection(FIREBASE_COLLECTIONS.notifications)
+          .where("fromUid", "==", watchedUid)
+          .onSnapshot(applySent, error => {
+            console.warn("Nao foi possivel acompanhar mensagens enviadas.", error);
+          })
+      );
+    } catch (error) {
+      console.warn("Mensagens em tempo real indisponiveis.", error);
+    }
+  }
+
+  function stopMessageRealtimeSync() {
+    messageUnsubscribes.forEach(unsubscribe => {
+      try {
+        unsubscribe();
+      } catch (error) {
+        console.warn("Nao foi possivel parar sync de mensagens.", error);
+      }
+    });
+    messageUnsubscribes = [];
+  }
+
+  function normalizeNotificationDoc(doc) {
+    if (!doc || !doc.exists) return null;
+    const data = doc.data() || {};
+    const targetUserId = String(data.targetUserId || "").trim();
+    const fromUid = String(data.fromUid || "").trim();
+    if (!targetUserId || !fromUid) return null;
+    return {
+      id: doc.id,
+      fromUid,
+      fromName: data.fromName || "Colecionador",
+      fromPhoto: data.fromPhoto || "",
+      targetUserId,
+      targetName: data.targetName || "Colecionador",
+      type: data.type || "preset_message",
+      messageKey: data.messageKey || "",
+      messageText: data.messageText || data.message || "",
+      status: data.status || "pending",
+      responseKey: data.responseKey || "",
+      responseText: data.responseText || data.response || "",
+      replyToId: data.replyToId || "",
+      createdAtMs: timestampToMillis(data.createdAt) || Number(data.createdAtClient || 0),
+      respondedAtMs: timestampToMillis(data.respondedAt),
+      updatedAtMs: timestampToMillis(data.updatedAt) || Number(data.createdAtClient || 0)
+    };
+  }
+
+  function sortProfileMessages(messages) {
+    return (messages || [])
+      .slice()
+      .sort((a, b) => Math.max(b.createdAtMs, b.updatedAtMs) - Math.max(a.createdAtMs, a.updatedAtMs))
+      .slice(0, MESSAGE_INBOX_LIMIT);
   }
 
   function albumSnapshotFromFirebaseData(data) {
@@ -1557,11 +1651,15 @@
   async function logoutGoogle() {
     try {
       stopAlbumRealtimeSync();
+      stopMessageRealtimeSync();
       if (auth) await auth.signOut();
       currentUser = null;
       guestAddClicks = 0;
       saveProfile(null);
+      state.profileMessages = [];
+      state.sentProfileMessages = [];
       updateAccountUi();
+      renderProfileMessages();
       clearAdminAnalyticsMarkers();
       toast("Conta desconectada.");
     } catch (error) {
@@ -1605,6 +1703,7 @@
       settingsLoginButton.textContent = "Entrar com Google";
       settingsLoginButton.classList.toggle("connected", connected);
     }
+    updateMessageBadges();
     updateAdminUi();
   }
 
@@ -2104,6 +2203,7 @@
         els["profile-photo-preview"].removeAttribute("src");
       }
     }
+    renderProfileMessages();
     if (els["account-dialog"] && !els["account-dialog"].open) els["account-dialog"].showModal();
   }
 
@@ -2499,13 +2599,11 @@
     });
 
     users.forEach(user => {
-      const statsForUser = albumStats(user.album);
-      const comparison = compareAlbums(user.album);
       const latlng = userLatLng(user);
       const marker = L.marker(latlng, {
         icon: L.divIcon({
           className: "collector-location-marker",
-          html: collectorMarkerHtml(user, statsForUser, comparison),
+          html: collectorMarkerHtml(user),
           iconSize: [1, 1],
           iconAnchor: [0, 0]
         }),
@@ -2706,25 +2804,11 @@
     );
   }
 
-  function collectorMarkerHtml(user, statsForUser, comparison) {
-    const markerName = user.id === "me" ? "Voce" : shortMarkerName(user.name);
+  function collectorMarkerHtml(user) {
     const tier = tradeRankTier(user);
-    const statusLine = user.id === "me"
-      ? "Seu card"
-      : userOnlineLabel(user);
     return (
       '<button class="collector-card-pin leaflet-pin' + (user.id === "me" ? " mine" : "") + '" type="button" data-user="' + escapeHtml(user.id) + '" data-tier="' + tier.id + '" aria-label="Abrir album de ' + escapeHtml(user.name) + '" style="--card-a:' + tier.colors[0] + ';--card-b:' + tier.colors[1] + ';--tier-accent:' + tier.accent + '">' +
-        '<span class="pin-card-face">' +
-          '<span class="pin-rank-emblem">' + tierEmblemHtml(tier, "pin") + '</span>' +
-          '<span class="pin-avatar">' + pinAvatarHtml(user, tier) + '</span>' +
-          '<strong>' + escapeHtml(markerName) + '</strong>' +
-          '<em>' + escapeHtml(tier.label) + '</em>' +
-          '<small>' + escapeHtml(statusLine) + '</small>' +
-          '<span class="pin-summary">' +
-            '<b>' + statsForUser.duplicates + '</b><span>rep.</span>' +
-            '<b>' + comparison.total + '</b><span>trocas</span>' +
-          '</span>' +
-        '</span>' +
+        '<span class="pin-card-face" aria-hidden="true"></span>' +
       '</button>'
     );
   }
@@ -4056,9 +4140,12 @@
     const targetUser = getMapUser(targetUserId);
     if (!targetUser || targetUser.id === "me") return;
     state.messageTargetUserId = targetUser.id;
+    state.messageReplyToId = "";
+    state.messageTargetFallback = null;
     if (els["message-target-name"]) {
       els["message-target-name"].textContent = "Para " + profileDisplayName(targetUser);
     }
+    setMessageSendStatus("");
     renderPresetMessageOptions(targetUser.id);
     if (els["message-dialog"] && !els["message-dialog"].open) els["message-dialog"].showModal();
   }
@@ -4082,6 +4169,18 @@
     const option = event.target.closest("[data-message-choice]");
     if (!option) return;
     sendPresetMessage(state.messageTargetUserId, option.dataset.messageChoice || "trade_interest");
+  }
+
+  function onProfileMessageClick(event) {
+    const reply = event.target.closest("[data-reply-message]");
+    if (reply) {
+      openReplyMessageDialog(reply.dataset.replyMessage);
+      return;
+    }
+    const openSender = event.target.closest("[data-open-message-user]");
+    if (openSender) {
+      openProfile(openSender.dataset.openMessageUser);
+    }
   }
 
   function syncProfileViews(user) {
@@ -4192,13 +4291,18 @@
   }
 
   async function sendPresetMessage(targetUserId, type) {
-    const targetUser = getMapUser(targetUserId);
+    const fallback = state.messageTargetFallback && state.messageTargetFallback.id === targetUserId
+      ? state.messageTargetFallback
+      : null;
+    const targetUser = getMapUser(targetUserId) || fallback;
     if (!targetUser || targetUser.id === "me") return;
     const key = PRESET_MESSAGES[type] ? type : "trade_interest";
     const preset = presetMessage(key);
     const text = preset.text;
-    const remaining = messageCooldownRemaining(targetUser.id, key);
-    if (remaining > 0) {
+    const replyToId = els["message-dialog"] && els["message-dialog"].open ? state.messageReplyToId || "" : "";
+    const isReply = Boolean(replyToId);
+    const remaining = isReply ? 0 : messageCooldownRemaining(targetUser.id, key);
+    if (!isReply && remaining > 0) {
       toast("Aguarde " + formatCooldown(remaining) + " para repetir esta mensagem.");
       renderPresetMessageOptions(targetUser.id);
       return;
@@ -4212,13 +4316,17 @@
       return;
     }
     try {
+      setMessageSendStatus("Enviando mensagem...");
       const bucket = messageCooldownBucket();
-      const notificationId = notificationDocId(currentUser.uid, targetUser.id, key, bucket);
+      const docKey = isReply ? key + "_reply_" + replyToId : key;
+      const notificationId = notificationDocId(currentUser.uid, targetUser.id, docKey, bucket);
       const ref = db.collection(FIREBASE_COLLECTIONS.notifications).doc(notificationId);
       const existing = await ref.get();
       if (existing.exists) {
-        rememberMessageCooldown(targetUser.id, key);
-        toast("Esta mensagem ja foi enviada. Aguarde 10 minutos.");
+        if (!isReply) rememberMessageCooldown(targetUser.id, key);
+        const sentMessage = isReply ? "Resposta ja enviada." : "Esta mensagem ja foi enviada. Aguarde 10 minutos.";
+        setMessageSendStatus(sentMessage);
+        toast(sentMessage);
         renderPresetMessageOptions(targetUser.id);
         return;
       }
@@ -4232,20 +4340,172 @@
         messageKey: key,
         messageText: text,
         message: text,
+        replyToId,
         cooldownBucket: bucket,
         status: "pending",
         response: "",
+        createdAtClient: Date.now(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      rememberMessageCooldown(targetUser.id, key);
+      if (isReply) {
+        await markMessageResponded(replyToId, key, text);
+      } else {
+        rememberMessageCooldown(targetUser.id, key);
+      }
       renderPresetMessageOptions(targetUser.id);
-      if (els["message-dialog"] && els["message-dialog"].open) els["message-dialog"].close();
-      toast(key === "trade_interest" ? "Interesse enviado para resposta." : "Mensagem enviada.");
+      const successText = isReply
+        ? "Resposta enviada para " + profileDisplayName(targetUser) + "."
+        : key === "trade_interest"
+          ? "Interesse enviado para " + profileDisplayName(targetUser) + "."
+          : "Mensagem enviada para " + profileDisplayName(targetUser) + ".";
+      setMessageSendStatus(successText);
+      toast(successText);
+      setTimeout(() => {
+        if (els["message-dialog"] && els["message-dialog"].open) els["message-dialog"].close();
+        state.messageReplyToId = "";
+        state.messageTargetFallback = null;
+        setMessageSendStatus("");
+      }, 900);
     } catch (error) {
       console.warn("Nao foi possivel enviar notificacao.", error);
+      setMessageSendStatus("Nao consegui enviar agora. Tente novamente.");
       toast("Nao consegui enviar a notificacao agora.");
     }
+  }
+
+  function setMessageSendStatus(message) {
+    if (!els["message-send-status"]) return;
+    const text = String(message || "").trim();
+    els["message-send-status"].hidden = !text;
+    els["message-send-status"].textContent = text;
+  }
+
+  function closeMessageDialog() {
+    state.messageReplyToId = "";
+    state.messageTargetFallback = null;
+    setMessageSendStatus("");
+    if (els["message-dialog"]) els["message-dialog"].close();
+  }
+
+  async function markMessageResponded(notificationId, key, text) {
+    if (!notificationId || !db || !firebaseReady) return;
+    try {
+      await db.collection(FIREBASE_COLLECTIONS.notifications).doc(notificationId).set({
+        status: "responded",
+        responseKey: key,
+        responseText: text,
+        response: text,
+        responseFromUid: currentUser && currentUser.uid ? currentUser.uid : "",
+        respondedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.warn("Resposta enviada, mas nao consegui marcar a mensagem original.", error);
+    }
+  }
+
+  function openReplyMessageDialog(notificationId) {
+    const message = state.profileMessages.find(item => item.id === notificationId);
+    if (!message || !message.fromUid) {
+      toast("Mensagem indisponivel para responder.");
+      return;
+    }
+    const targetUser = getMapUser(message.fromUid) || {
+      id: message.fromUid,
+      name: message.fromName || "Colecionador",
+      nickname: message.fromName || "",
+      photo: message.fromPhoto || "",
+      demo: false
+    };
+    state.messageTargetUserId = targetUser.id;
+    state.messageReplyToId = message.id;
+    state.messageTargetFallback = targetUser;
+    if (els["message-target-name"]) {
+      els["message-target-name"].textContent = "Responder para " + profileDisplayName(targetUser);
+    }
+    setMessageSendStatus("");
+    renderPresetMessageOptions(targetUser.id);
+    if (els["message-dialog"] && !els["message-dialog"].open) els["message-dialog"].showModal();
+  }
+
+  function pendingMessageCount() {
+    return state.profileMessages.filter(message => message.status !== "responded").length;
+  }
+
+  function updateMessageBadges() {
+    const count = pendingMessageCount();
+    ["nav-message-count", "account-message-count"].forEach(id => {
+      const node = els[id] || document.getElementById(id);
+      if (!node) return;
+      node.hidden = !count;
+      node.textContent = count > 9 ? "9+" : String(count);
+    });
+  }
+
+  function renderProfileMessages() {
+    if (!els["profile-message-list"]) return;
+    const connected = Boolean(currentUser && currentUser.uid);
+    if (!connected) {
+      if (els["profile-message-status"]) els["profile-message-status"].textContent = "Entre com Google para receber mensagens.";
+      els["profile-message-list"].innerHTML = '<div class="profile-message-empty">Entre com Google para ver suas mensagens.</div>';
+      updateMessageBadges();
+      return;
+    }
+    const incoming = state.profileMessages.slice(0, MESSAGE_INBOX_LIMIT);
+    const sent = state.sentProfileMessages.slice(0, 6);
+    const pending = pendingMessageCount();
+    if (els["profile-message-status"]) {
+      els["profile-message-status"].textContent = incoming.length
+        ? pending + " aguardando resposta de " + incoming.length + " recebida" + (incoming.length === 1 ? "" : "s") + "."
+        : "Nenhuma mensagem recebida ainda.";
+    }
+    const incomingHtml = incoming.length
+      ? incoming.map(message => profileMessageHtml(message, "incoming")).join("")
+      : '<div class="profile-message-empty">Nenhuma mensagem recebida ainda.</div>';
+    const sentHtml = sent.length
+      ? '<div class="profile-message-sent-head">Enviadas recentes</div>' + sent.map(message => profileMessageHtml(message, "sent")).join("")
+      : "";
+    els["profile-message-list"].innerHTML = incomingHtml + sentHtml;
+    updateMessageBadges();
+  }
+
+  function profileMessageHtml(message, mode) {
+    const incoming = mode !== "sent";
+    const displayName = incoming ? message.fromName : message.targetName;
+    const photo = incoming ? message.fromPhoto : "";
+    const answered = message.status === "responded" || Boolean(message.responseText);
+    const time = formatMessageTime(message.createdAtMs || message.updatedAtMs);
+    return (
+      '<article class="profile-message-row ' + (incoming ? "incoming" : "sent") + (answered ? " answered" : "") + '">' +
+        '<span class="profile-message-avatar" data-initials="' + escapeHtml(initialsFromName(displayName)) + '">' +
+          (photo ? '<img src="' + escapeHtml(photo) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : "") +
+        '</span>' +
+        '<span class="profile-message-body">' +
+          '<span class="profile-message-meta">' +
+            '<strong>' + escapeHtml(incoming ? displayName : "Para " + displayName) + '</strong>' +
+            '<small>' + escapeHtml(time) + '</small>' +
+          '</span>' +
+          '<span class="profile-message-text">' + escapeHtml(message.messageText || "Mensagem segura") + '</span>' +
+          (message.responseText ? '<span class="profile-message-response">Resposta: ' + escapeHtml(message.responseText) + '</span>' : "") +
+          '<span class="profile-message-actions">' +
+            (incoming && !answered ? '<button type="button" data-reply-message="' + escapeHtml(message.id) + '">Responder</button>' : "") +
+            '<em>' + escapeHtml(answered ? "Respondida" : incoming ? "Aguardando resposta" : "Enviada") + '</em>' +
+          '</span>' +
+        '</span>' +
+      '</article>'
+    );
+  }
+
+  function formatMessageTime(ms) {
+    const value = Math.max(0, Number(ms) || 0);
+    if (!value) return "agora";
+    const diff = Date.now() - value;
+    if (diff < 60000) return "agora";
+    if (diff < 3600000) return Math.floor(diff / 60000) + " min";
+    if (diff < 86400000) return Math.floor(diff / 3600000) + " h";
+    const date = new Date(value);
+    return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
   }
 
   function albumStats(albumMap) {
