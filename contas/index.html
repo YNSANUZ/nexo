@@ -8,7 +8,7 @@
   <meta property="og:title" content="NEXO Contas">
   <meta property="og:description" content="Melhor site para organizar suas contas">
   <meta property="og:image" content="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
-  <meta name="nexo-contas-build" content="main-flow-20260605">
+  <meta name="nexo-contas-build" content="grid-filters-20260605">
   <meta name="theme-color" content="#151b62">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -35,6 +35,10 @@
       --muted: #c9e7ff;
       --danger: #ff8d7a;
       --ok: #7effd7;
+      --app-bg-start: #3378c3;
+      --app-bg-mid: #2f86cf;
+      --app-bg-end: #2675bd;
+      --app-bg-glow: rgba(114, 255, 232, 0.34);
       --shadow: 0 18px 40px rgba(5, 9, 52, 0.36);
       --glow: 0 0 0 1px rgba(64, 224, 208, 0.28), 0 8px 24px rgba(64, 224, 208, 0.2);
     }
@@ -50,6 +54,10 @@
       --muted: #ffe2f4;
       --ok: #ffc1ec;
       --danger: #ffb36b;
+      --app-bg-start: #d64aa7;
+      --app-bg-mid: #a541a5;
+      --app-bg-end: #65308a;
+      --app-bg-glow: rgba(255, 193, 236, 0.36);
       background:
         radial-gradient(circle at 18% 14%, rgba(255, 124, 207, 0.24), transparent 28%),
         radial-gradient(circle at 82% 18%, rgba(122, 73, 210, 0.28), transparent 32%),
@@ -67,6 +75,10 @@
       --muted: #c1d9ee;
       --ok: #7effd7;
       --danger: #ff8d7a;
+      --app-bg-start: #18283a;
+      --app-bg-mid: #101b2a;
+      --app-bg-end: #07101d;
+      --app-bg-glow: rgba(57, 212, 200, 0.22);
       background:
         radial-gradient(circle at 18% 14%, rgba(57, 212, 200, 0.18), transparent 28%),
         radial-gradient(circle at 82% 18%, rgba(83, 126, 170, 0.22), transparent 32%),
@@ -84,6 +96,10 @@
       --muted: #edf6fb;
       --ok: #9ce7dd;
       --danger: #ff9c86;
+      --app-bg-start: #738b9d;
+      --app-bg-mid: #52687a;
+      --app-bg-end: #344553;
+      --app-bg-glow: rgba(237, 246, 251, 0.28);
       background:
         radial-gradient(circle at 18% 14%, rgba(32, 199, 184, 0.18), transparent 28%),
         radial-gradient(circle at 82% 18%, rgba(111, 132, 152, 0.22), transparent 32%),
@@ -101,6 +117,10 @@
       --muted: #efffd8;
       --ok: #dff86b;
       --danger: #ffb15e;
+      --app-bg-start: #168b52;
+      --app-bg-mid: #0d7d5f;
+      --app-bg-end: #073b82;
+      --app-bg-glow: rgba(245, 214, 76, 0.32);
       background:
         radial-gradient(circle at 18% 14%, rgba(40, 214, 111, 0.24), transparent 28%),
         radial-gradient(circle at 82% 18%, rgba(245, 214, 76, 0.26), transparent 32%),
@@ -151,8 +171,8 @@
       border-radius: 34px;
       padding: 18px 16px 86px;
       background:
-        radial-gradient(circle at 25% 5%, rgba(114, 255, 232, 0.34), transparent 26%),
-        linear-gradient(180deg, #3378c3 0%, #2f86cf 45%, #2675bd 100%);
+        radial-gradient(circle at 25% 5%, var(--app-bg-glow), transparent 26%),
+        linear-gradient(180deg, var(--app-bg-start) 0%, var(--app-bg-mid) 45%, var(--app-bg-end) 100%);
       box-shadow: var(--shadow);
       border: 1px solid rgba(114, 255, 232, 0.34);
       scrollbar-width: none;
@@ -1132,6 +1152,52 @@
       background: var(--aqua);
     }
 
+    .account-filter-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .account-search {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid rgba(160, 238, 255, 0.24);
+      border-radius: 10px;
+      padding: 0 12px;
+      color: #fff;
+      outline-color: var(--aqua);
+      background: rgba(16, 44, 124, 0.38);
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .account-search::placeholder {
+      color: #b7d6f1;
+    }
+
+    .account-filter-selects {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .account-filter-selects select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid rgba(160, 238, 255, 0.24);
+      border-radius: 10px;
+      padding: 0 8px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.44);
+      font-size: 0.76rem;
+      font-weight: 1000;
+      outline-color: var(--aqua);
+    }
+
+    .account-filter-selects option {
+      color: #10204d;
+    }
+
     .bill-sheet {
       display: none;
       gap: 10px;
@@ -1512,6 +1578,97 @@
       position: relative;
       overflow: hidden;
       border-radius: 13px;
+    }
+
+    #monthlyCardsList {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    #monthlyCardsList .bill-list-hint,
+    #monthlyCardsList .empty-filter {
+      grid-column: 1 / -1;
+    }
+
+    #monthlyCardsList .bill-swipe {
+      min-width: 0;
+      height: 100%;
+    }
+
+    #monthlyCardsList .bill-delete-reveal {
+      display: none;
+    }
+
+    #monthlyCardsList .bill {
+      min-height: 136px;
+      height: 100%;
+      grid-template-columns: minmax(0, 1fr) 62px;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 5px 8px;
+      padding: 10px;
+      border-radius: 10px;
+      touch-action: manipulation;
+    }
+
+    #monthlyCardsList .bill-day {
+      grid-column: 1;
+      grid-row: 1;
+      width: 44px;
+      min-height: 34px;
+      border-radius: 9px;
+      font-size: 0.9rem;
+    }
+
+    #monthlyCardsList .bill-meta {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    #monthlyCardsList .bill-name {
+      min-height: 0;
+      font-size: 0.82rem;
+    }
+
+    #monthlyCardsList .bill-name span {
+      -webkit-line-clamp: 2;
+    }
+
+    #monthlyCardsList .bill-value {
+      font-size: 0.72rem;
+    }
+
+    #monthlyCardsList .bill-side {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      display: grid;
+      align-content: end;
+      gap: 3px;
+      font-size: 0.66rem;
+    }
+
+    #monthlyCardsList .bill-status {
+      grid-column: 2;
+      grid-row: 1;
+      width: 62px;
+      height: 30px;
+      grid-template-columns: 15px 1fr 15px;
+      font-size: 0.74rem;
+      justify-self: end;
+    }
+
+    .bill-category {
+      width: fit-content;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 3px 6px;
+      border-radius: 999px;
+      color: #074a8b;
+      background: rgba(64, 224, 208, 0.18);
+      font-size: 0.62rem;
+      font-weight: 1000;
     }
 
     .bill-delete-reveal {
@@ -2605,7 +2762,7 @@
       }
 
       #monthlyCardsList {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
       }
 
       #billSheet {
@@ -2861,6 +3018,32 @@
           <div class="view-switch" aria-label="Formato de visualização">
             <button class="active" type="button" data-month-view="cards">Grade</button>
             <button type="button" data-month-view="sheet">Lista</button>
+          </div>
+
+          <div class="account-filter-bar" aria-label="Filtros de contas">
+            <input class="account-search" id="billSearchInput" type="search" placeholder="Buscar conta, categoria ou valor">
+            <div class="account-filter-selects">
+              <select id="billDueRangeFilter" aria-label="Filtrar por vencimento">
+                <option value="all">Vencimento: todos</option>
+                <option value="1-5">Dia 1 a 5</option>
+                <option value="6-10">Dia 6 a 10</option>
+                <option value="11-15">Dia 11 a 15</option>
+                <option value="16-20">Dia 16 a 20</option>
+                <option value="21-31">Dia 21 a 31</option>
+              </select>
+              <select id="billCategoryFilter" aria-label="Filtrar por categoria">
+                <option value="all">Categoria: todas</option>
+                <option value="credito">Crédito</option>
+                <option value="casa">Casa</option>
+                <option value="telefone">Telefone</option>
+                <option value="internet">Internet</option>
+                <option value="streaming">Streaming</option>
+                <option value="mercado">Mercado</option>
+                <option value="saude">Saúde</option>
+                <option value="transporte">Transporte</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
           </div>
 
           <div class="item-list" id="monthlyCardsList"></div>
@@ -3285,6 +3468,9 @@
     let adminVisits = [];
     let monthlyView = "cards";
     let billFilter = "all";
+    let billDueRangeFilter = "all";
+    let billCategoryFilter = "all";
+    let billSearchQuery = "";
     let deferredInstallPrompt = null;
     let needsDataMigration = false;
     let setupComplete = true;
@@ -4068,13 +4254,64 @@
       return { icon: "🥉", title: "Bronze", note, className: "bad", score };
     }
 
+    function normalizeFilterText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    }
+
+    function billCategoryId(bill) {
+      const text = normalizeFilterText(bill.name);
+      if (text.includes("credito") || text.includes("cartao") || text.includes("picpay") || text.includes("nubank") || text.includes("shopee")) return "credito";
+      if (text.includes("casa") || text.includes("aluguel") || text.includes("iptu") || text.includes("luz") || text.includes("energia") || text.includes("agua")) return "casa";
+      if (text.includes("telefone") || text.includes("celular") || text.includes("claro") || text.includes("tim") || text.includes("vivo")) return "telefone";
+      if (text.includes("internet") || text.includes("net") || text.includes("google")) return "internet";
+      if (text.includes("spotify") || text.includes("netflix") || text.includes("crunch") || text.includes("capcut")) return "streaming";
+      if (text.includes("mercado") || text.includes("supermercado") || text.includes("primor")) return "mercado";
+      if (text.includes("odonto") || text.includes("saude") || text.includes("farm") || text.includes("academia")) return "saude";
+      if (text.includes("carro") || text.includes("uber") || text.includes("99") || text.includes("transporte")) return "transporte";
+      return "outro";
+    }
+
+    function billCategoryLabel(bill) {
+      return {
+        credito: "Crédito",
+        casa: "Casa",
+        telefone: "Telefone",
+        internet: "Internet",
+        streaming: "Streaming",
+        mercado: "Mercado",
+        saude: "Saúde",
+        transporte: "Transporte",
+        outro: "Outro"
+      }[billCategoryId(bill)] || "Outro";
+    }
+
+    function billDueRangeMatches(bill) {
+      if (billDueRangeFilter === "all") return true;
+      const [start, end] = billDueRangeFilter.split("-").map(Number);
+      return bill.dueDay >= start && bill.dueDay <= end;
+    }
+
+    function billSearchMatches(bill, status) {
+      const query = normalizeFilterText(billSearchQuery);
+      if (!query) return true;
+      const text = normalizeFilterText(`${bill.name} ${billCategoryLabel(bill)} ${bill.value} ${bill.dueDay} ${status.label}`);
+      return text.includes(query);
+    }
+
     function billMatchesFilter(bill, status, debitCount) {
-      if (billFilter === "settled") return debitCount === 0;
-      if (billFilter === "debit") return debitCount > 0;
-      if (billFilter === "today") return debitCount > 0 && bill.dueDay === currentDay;
-      if (billFilter === "overdue") return debitCount > 0 && status.className === "overdue";
-      if (billFilter === "upcoming") return debitCount > 0 && bill.dueDay > currentDay && status.className !== "overdue";
-      return true;
+      let statusMatch = true;
+      if (billFilter === "settled") statusMatch = debitCount === 0;
+      if (billFilter === "debit") statusMatch = debitCount > 0;
+      if (billFilter === "today") statusMatch = debitCount > 0 && bill.dueDay === currentDay;
+      if (billFilter === "overdue") statusMatch = debitCount > 0 && status.className === "overdue";
+      if (billFilter === "upcoming") statusMatch = debitCount > 0 && bill.dueDay > currentDay && status.className !== "overdue";
+      return statusMatch &&
+        billDueRangeMatches(bill) &&
+        (billCategoryFilter === "all" || billCategoryId(bill) === billCategoryFilter) &&
+        billSearchMatches(bill, status);
     }
 
     function filterLabel() {
@@ -4204,6 +4441,7 @@
         const billDueTotal = getBillDueTotalThroughCurrentMonth(bill);
         const openMonthCount = getDebitMonthCount(bill);
         const isSettled = billDueTotal <= 0;
+        const categoryLabel = billCategoryLabel(bill);
         return `
         <div class="bill-swipe" data-swipe-bill="${bill.id}">
           <button class="bill-delete-reveal" type="button" data-delete-bill="${bill.id}">Excluir</button>
@@ -4214,6 +4452,7 @@
               <span class="bill-value">${brl.format(Number(bill.value || 0))}</span>
             </div>
             <div class="bill-side">
+              <span class="bill-category">${escapeHtml(categoryLabel)}</span>
               <span class="bill-state-text">${status.label}</span>
               <span class="bill-debt-text">· ${getDebtLabel(openMonthCount).toLowerCase()}</span>
             </div>
@@ -4228,7 +4467,7 @@
       }).join("") || `<p class="empty-filter">Nenhuma conta encontrada em ${filterLabel().toLowerCase()}.</p>`;
       const fixedList = qs("#fixedList");
       if (fixedList) fixedList.innerHTML = billMarkup;
-      qs("#monthlyCardsList").innerHTML = `${billMarkup}<p class="bill-list-hint">Arraste um card para a esquerda para excluir.</p>`;
+      qs("#monthlyCardsList").innerHTML = `${billMarkup}<p class="bill-list-hint">Mostrando ${visibleBills.length} de ${bills.length} contas</p>`;
       qs("#desktopBills").innerHTML = billMarkup.replaceAll("data-bill=", "data-preview-bill=");
       renderBillSheet(sortedBills);
       qs("#fixedTotal").textContent = brl.format(fixedMonthTotal);
@@ -5423,6 +5662,21 @@
       billFilter = button.dataset.billFilter || "all";
       qs("#billFilterMenu").classList.remove("open");
       qs("#billFilterButton").setAttribute("aria-expanded", "false");
+      renderBills();
+    });
+
+    qs("#billDueRangeFilter").addEventListener("change", (event) => {
+      billDueRangeFilter = event.target.value || "all";
+      renderBills();
+    });
+
+    qs("#billCategoryFilter").addEventListener("change", (event) => {
+      billCategoryFilter = event.target.value || "all";
+      renderBills();
+    });
+
+    qs("#billSearchInput").addEventListener("input", (event) => {
+      billSearchQuery = event.target.value || "";
       renderBills();
     });
 
