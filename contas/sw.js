@@ -1,4 +1,4 @@
-const CACHE_NAME = "nexo-contas-v16";
+const CACHE_NAME = "nexo-contas-v17";
 const RUNTIME_CACHE = "nexo-contas-runtime-v2";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./manifest.webmanifest"];
 const NETWORK_ONLY_HOSTS = [

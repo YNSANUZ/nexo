@@ -8,7 +8,7 @@
   <meta property="og:title" content="NEXO Contas">
   <meta property="og:description" content="Melhor site para organizar suas contas">
   <meta property="og:image" content="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
-  <meta name="nexo-contas-build" content="admin-map-20260605">
+  <meta name="nexo-contas-build" content="main-flow-20260605">
   <meta name="theme-color" content="#151b62">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -37,6 +37,74 @@
       --ok: #7effd7;
       --shadow: 0 18px 40px rgba(5, 9, 52, 0.36);
       --glow: 0 0 0 1px rgba(64, 224, 208, 0.28), 0 8px 24px rgba(64, 224, 208, 0.2);
+    }
+
+    body[data-color-theme="rosa"] {
+      --aqua: #ff7ccf;
+      --aqua-2: #ffc1ec;
+      --blue-950: #33144a;
+      --blue-900: #4a1e68;
+      --blue-800: #8f3e9d;
+      --blue-700: #b64ca4;
+      --blue-600: #d85ba9;
+      --muted: #ffe2f4;
+      --ok: #ffc1ec;
+      --danger: #ffb36b;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(255, 124, 207, 0.24), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(122, 73, 210, 0.28), transparent 32%),
+        linear-gradient(135deg, #26164e 0%, #4b1b70 52%, #241341 100%);
+    }
+
+    body[data-color-theme="dark"] {
+      --aqua: #39d4c8;
+      --aqua-2: #8ff7ef;
+      --blue-950: #09121f;
+      --blue-900: #111c2c;
+      --blue-800: #1b2c42;
+      --blue-700: #243c58;
+      --blue-600: #2f516f;
+      --muted: #c1d9ee;
+      --ok: #7effd7;
+      --danger: #ff8d7a;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(57, 212, 200, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(83, 126, 170, 0.22), transparent 32%),
+        linear-gradient(135deg, #060b13 0%, #111c2c 52%, #050912 100%);
+    }
+
+    body[data-color-theme="cinza"] {
+      --aqua: #20c7b8;
+      --aqua-2: #8be7df;
+      --blue-950: #1d2731;
+      --blue-900: #2b3845;
+      --blue-800: #52687a;
+      --blue-700: #60798d;
+      --blue-600: #7690a3;
+      --muted: #edf6fb;
+      --ok: #9ce7dd;
+      --danger: #ff9c86;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(32, 199, 184, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(111, 132, 152, 0.22), transparent 32%),
+        linear-gradient(135deg, #202933 0%, #435464 52%, #18212a 100%);
+    }
+
+    body[data-color-theme="brasil"] {
+      --aqua: #28d66f;
+      --aqua-2: #f5d64c;
+      --blue-950: #07295f;
+      --blue-900: #0b3b83;
+      --blue-800: #1462ad;
+      --blue-700: #178752;
+      --blue-600: #22a86a;
+      --muted: #efffd8;
+      --ok: #dff86b;
+      --danger: #ffb15e;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(40, 214, 111, 0.24), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(245, 214, 76, 0.26), transparent 32%),
+        linear-gradient(135deg, #082b6f 0%, #0f8b55 52%, #06295c 100%);
     }
 
     * {
@@ -237,7 +305,7 @@
     }
 
     .tabs {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-top: 2px;
@@ -267,6 +335,69 @@
     .screen.active {
       display: grid;
     }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .overview-grid .mini-card {
+      min-height: 84px;
+    }
+
+    .overview-grid .mini-card strong {
+      font-size: 1.16rem;
+      white-space: normal;
+    }
+
+    .config-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .config-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .theme-choice {
+      min-height: 56px;
+      border: 1px solid rgba(160, 238, 255, 0.28);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.32);
+      font-size: 0.64rem;
+      font-weight: 1000;
+    }
+
+    .theme-choice.active {
+      color: var(--blue-950);
+      background: var(--aqua);
+    }
+
+    .theme-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.62);
+    }
+
+    .theme-swatch.blue { background: linear-gradient(135deg, #40e0d0, #2360a9); }
+    .theme-swatch.pink { background: linear-gradient(135deg, #ff7ccf, #4a1e68); }
+    .theme-swatch.dark { background: linear-gradient(135deg, #39d4c8, #09121f); }
+    .theme-swatch.gray { background: linear-gradient(135deg, #20c7b8, #52687a); }
+    .theme-swatch.brazil { background: linear-gradient(135deg, #28d66f, #f5d64c 55%, #0b3b83); }
 
     .balance-card,
     .card,
@@ -546,6 +677,21 @@
       display: grid;
     }
 
+    .bill-detail-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      display: none;
+      place-items: center;
+      padding: 26px 14px 86px;
+      background: rgba(10, 19, 74, 0.48);
+      backdrop-filter: blur(12px);
+    }
+
+    .bill-detail-modal.open {
+      display: grid;
+    }
+
     .add-panel {
       width: min(430px, 100%);
       max-height: min(760px, calc(100vh - 118px));
@@ -557,6 +703,94 @@
       background: linear-gradient(180deg, rgba(51, 137, 211, 0.9), rgba(28, 78, 148, 0.88));
       box-shadow: var(--shadow);
       border: 1px solid rgba(114, 255, 232, 0.36);
+    }
+
+    .bill-detail-panel {
+      width: min(430px, 100%);
+      max-height: min(760px, calc(100vh - 118px));
+      overflow: auto;
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      color: var(--blue-950);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(232, 248, 255, 0.94));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(114, 255, 232, 0.5);
+    }
+
+    .bill-detail-panel .label {
+      color: #245f94;
+    }
+
+    .bill-detail-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .bill-detail-summary div,
+    .bill-detail-stepper,
+    .bill-month-grid {
+      border-radius: 10px;
+      background: rgba(42, 105, 181, 0.1);
+      border: 1px solid rgba(36, 95, 148, 0.14);
+      padding: 10px;
+    }
+
+    .bill-detail-summary strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--blue-950);
+      font-size: 1.2rem;
+    }
+
+    .bill-detail-stepper {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bill-detail-stepper button,
+    .month-pill {
+      min-height: 40px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-weight: 1000;
+    }
+
+    .bill-detail-stepper strong {
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    .bill-month-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .month-pill {
+      background: rgba(36, 95, 148, 0.12);
+      border: 1px solid rgba(36, 95, 148, 0.16);
+      font-size: 0.72rem;
+    }
+
+    .month-pill.paid {
+      color: #075548;
+      background: rgba(126, 255, 215, 0.78);
+    }
+
+    .month-pill.open {
+      color: #8c2519;
+      background: rgba(255, 141, 122, 0.24);
+    }
+
+    .month-pill.current {
+      box-shadow: 0 0 0 2px rgba(64, 224, 208, 0.8);
     }
 
     .modal-head {
@@ -1355,63 +1589,63 @@
       left: 50%;
       bottom: 0;
       width: min(430px, 100%);
-      height: 68px;
+      height: 72px;
       z-index: 2;
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       transform: translateX(-50%);
-      justify-content: center;
+      justify-content: stretch;
       align-items: center;
-      padding: 8px 18px;
+      gap: 3px;
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
       background: linear-gradient(180deg, rgba(36, 108, 185, 0.7), rgba(20, 62, 139, 0.94));
       border-top: 1px solid rgba(160, 238, 255, 0.2);
     }
 
     .bottom-nav button {
+      min-width: 0;
+      min-height: 50px;
       border: 0;
+      border-radius: 10px;
       background: transparent;
-      color: #fff;
-      font-size: 1.5rem;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 2px;
+      font-size: 1.15rem;
       font-weight: 900;
+    }
+
+    .bottom-nav button small {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: inherit;
+      font-size: 0.58rem;
+      font-weight: 1000;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .bottom-nav button.active {
       color: var(--aqua);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .bottom-nav .main-add {
-      width: 66px;
-      height: 66px;
+      width: 62px;
+      height: 62px;
+      min-height: 62px;
       justify-self: center;
       align-self: start;
-      margin-top: -26px;
+      margin-top: -25px;
       border-radius: 50%;
       color: var(--blue-950);
       background: var(--aqua);
       box-shadow: 0 16px 28px rgba(64, 224, 208, 0.34);
       font-size: 2.2rem;
       line-height: 1;
-    }
-
-    .bottom-nav .voice-add {
-      width: 58px;
-      height: 58px;
-      margin-top: -22px;
-      margin-left: 16px;
-      border-radius: 50%;
-      color: var(--blue-950);
-      background: #ffcf6a;
-      border: 3px solid #fff;
-      box-shadow: 0 16px 28px rgba(255, 207, 106, 0.28);
-      font-size: 0.78rem;
-      letter-spacing: 0;
-      line-height: 1;
-    }
-
-    .bottom-nav .voice-add::before {
-      content: "MIC";
-      display: block;
-      font-size: 0.86rem;
-      font-weight: 1000;
     }
 
     .bottom-nav .voice-add.listening,
@@ -2338,10 +2572,44 @@
 
     @media (min-width: 980px) {
       .workspace {
-        width: min(760px, 100%);
-        grid-template-columns: minmax(360px, 430px);
+        width: min(1160px, 100%);
+        grid-template-columns: minmax(760px, 1040px);
         align-items: center;
         justify-content: center;
+      }
+
+      .phone:not(.secondary) {
+        width: min(1040px, calc(100vw - 48px));
+        min-height: min(860px, calc(100vh - 48px));
+        border-radius: 28px;
+      }
+
+      .bottom-nav {
+        width: min(1040px, calc(100vw - 48px));
+      }
+
+      #screen-diarios.active,
+      #screen-mensais.active,
+      #screen-resumo.active,
+      #screen-config.active {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+
+      #screen-diarios .due-card,
+      #screen-mensais .due-card,
+      #screen-resumo .category-card,
+      #screen-config .config-panel,
+      #adminConfigMount {
+        grid-column: 1 / -1;
+      }
+
+      #monthlyCardsList {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #billSheet {
+        grid-column: 1 / -1;
       }
 
       .phone.secondary {
@@ -2463,14 +2731,14 @@
         </header>
 
         <nav class="tabs" aria-label="Abas principais">
-          <button class="tab active" type="button" data-tab="diarios">Hoje</button>
-          <button class="tab" type="button" data-tab="mensais">Fixos</button>
-          <button class="tab" type="button" data-tab="resumo">Entradas</button>
+          <button class="tab active" type="button" data-tab="diarios">Resumo</button>
+          <button class="tab" type="button" data-tab="mensais">Contas</button>
+          <button class="tab" type="button" data-tab="resumo">Relatórios</button>
         </nav>
 
         <section class="screen active" id="screen-diarios">
           <article class="balance-card due-card">
-            <p class="label">Para resolver hoje</p>
+            <p class="label">Para ficar em dia</p>
             <div class="due-main">
               <strong id="todayTotal" class="privacy-value">R$ 401,00</strong>
               <button class="sync-cube-wrap" id="syncRefreshButton" type="button" aria-label="Atualizar aplicativo" aria-live="polite">
@@ -2478,8 +2746,27 @@
                 <small id="syncCubeText">sincronizando...</small>
               </button>
             </div>
-            <span id="homeStatusText">Contas pendentes e pagas do mês</span>
+            <span id="homeStatusText">pendente neste mês</span>
           </article>
+
+          <div class="overview-grid">
+            <div class="mini-card">
+              <p class="label">Pagos</p>
+              <strong id="paidTotal" class="privacy-value">R$ 0,00</strong>
+            </div>
+            <div class="mini-card">
+              <p class="label">Pendentes</p>
+              <strong id="pendingTotal" class="privacy-value">R$ 0,00</strong>
+            </div>
+            <div class="mini-card">
+              <p class="label">Próximo vence</p>
+              <strong id="nextDueText">--</strong>
+            </div>
+            <div class="mini-card">
+              <p class="label">Saldo previsto</p>
+              <strong id="forecastBalance" class="privacy-value">R$ 0,00</strong>
+            </div>
+          </div>
 
           <div class="quick-actions">
             <button class="quick-action" type="button" id="typeButton"><b>+</b>Digitar</button>
@@ -2494,7 +2781,7 @@
           <div class="item-list" id="dailyList"></div>
 
           <div class="section-title">
-            <h2>Contas fixas</h2>
+            <h2>Próximos vencimentos</h2>
             <span id="homeFixedCount">0 cadastradas</span>
           </div>
           <div class="item-list" id="homeBillsList"></div>
@@ -2538,16 +2825,16 @@
 
         <section class="screen" id="screen-mensais">
           <div class="monthly-head">
-            <p class="label">Contas fixas</p>
+            <p class="label">Contas</p>
             <div class="monthly-tools">
               <div class="filter-wrap">
                 <button class="filter-button" id="billFilterButton" type="button" aria-expanded="false">Filtrar</button>
                 <div class="filter-menu" id="billFilterMenu" aria-label="Filtros de contas fixas">
                   <button class="active" type="button" data-bill-filter="all">Todas</button>
-                  <button type="button" data-bill-filter="settled">Em dia</button>
-                  <button type="button" data-bill-filter="debit">Em débito</button>
-                  <button type="button" data-bill-filter="today">Vencendo hoje</button>
-                  <button type="button" data-bill-filter="overdue">Vencidas</button>
+                  <button type="button" data-bill-filter="overdue">Atrasadas</button>
+                  <button type="button" data-bill-filter="today">Vence hoje</button>
+                  <button type="button" data-bill-filter="upcoming">Próximas</button>
+                  <button type="button" data-bill-filter="settled">Pagas</button>
                 </div>
               </div>
               <button class="mass-edit-button" id="massEditButton" type="button">Ajuste em massa</button>
@@ -2555,9 +2842,9 @@
           </div>
 
           <article class="balance-card due-card">
-            <p class="label">Falta pagar nos fixos</p>
+            <p class="label">Para ficar em dia</p>
             <strong id="dueNowTotal" class="privacy-value">R$ 278,00</strong>
-            <span id="dueNowText">Contas abertas ficam destacadas até pagar</span>
+            <span id="dueNowText">pendente neste mês</span>
           </article>
 
           <div class="month-grid">
@@ -2571,13 +2858,18 @@
             </div>
           </div>
 
+          <div class="view-switch" aria-label="Formato de visualização">
+            <button class="active" type="button" data-month-view="cards">Grade</button>
+            <button type="button" data-month-view="sheet">Lista</button>
+          </div>
+
           <div class="item-list" id="monthlyCardsList"></div>
 
           <article class="bill-sheet" id="billSheet">
             <div class="sheet-actions">
-              <p class="label">Tabela de fixos</p>
+              <p class="label">Lista de contas</p>
               <button type="button" id="addBillRow">Nova conta</button>
-              <p class="sheet-hint">Escolha o último mês quitado. Os meses seguintes contam como débito.</p>
+              <p class="sheet-hint">Escolha o último mês pago. Os meses seguintes contam como pendentes.</p>
             </div>
             <div class="sheet-scroll">
               <table class="sheet-table" aria-label="Tabela de contas fixas">
@@ -2677,13 +2969,33 @@
 
           <div class="summary-list" id="summaryList"></div>
         </section>
+
+        <section class="screen" id="screen-config">
+          <article class="card config-panel">
+            <div>
+              <p class="label">Configurações</p>
+              <strong>Preferências do app</strong>
+            </div>
+            <div class="theme-grid" aria-label="Temas de cor">
+              <button class="theme-choice active" type="button" data-theme-choice="azul"><span class="theme-swatch blue"></span>Azul</button>
+              <button class="theme-choice" type="button" data-theme-choice="rosa"><span class="theme-swatch pink"></span>Rosa</button>
+              <button class="theme-choice" type="button" data-theme-choice="dark"><span class="theme-swatch dark"></span>Dark</button>
+              <button class="theme-choice" type="button" data-theme-choice="cinza"><span class="theme-swatch gray"></span>Cinza</button>
+              <button class="theme-choice" type="button" data-theme-choice="brasil"><span class="theme-swatch brazil"></span>Brasil</button>
+            </div>
+            <button class="secondary-save" id="configPrivacyButton" type="button">Ocultar / mostrar valores</button>
+            <button class="secondary-save" id="configAccountButton" type="button">Conta Google</button>
+          </article>
+
+          <div id="adminConfigMount"></div>
+        </section>
       </div>
 
       <section class="add-modal" id="addModal" aria-label="Adicionar lançamento">
         <div class="add-panel" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
           <div class="modal-head">
             <div>
-              <p class="label">Novo lançamento</p>
+              <p class="label" id="addModalLabel">Novo lançamento</p>
               <h2 id="addModalTitle">O que quer cadastrar?</h2>
             </div>
             <button class="modal-close" id="closeAddModal" type="button" aria-label="Fechar">x</button>
@@ -2730,7 +3042,7 @@
           <form class="modal-pane" id="quickBillForm" data-pane="fixed">
             <div class="bulk-edit" id="bulkEditPanel">
               <button class="save" id="addBillModalRow" type="button">Nova conta fixa</button>
-              <p class="sheet-hint">Escolha o último mês quitado. Os meses seguintes contam como débito.</p>
+            <p class="sheet-hint">Escolha o último mês pago. Os meses seguintes contam como pendentes.</p>
               <div class="sheet-scroll">
                 <table class="sheet-table" aria-label="Editar contas fixas">
                   <thead id="bulkEditHead"></thead>
@@ -2741,7 +3053,7 @@
                 <p class="label">Preencher automaticamente</p>
                 <textarea class="bulk-input" id="fixedImportInput" placeholder="Vencimento, conta, valor&#10;2, Netflix, 90&#10;2, Spotify, 22&#10;7, Celular, 72"></textarea>
                 <button class="secondary-save" id="importFixedBills" type="button">Preencher automaticamente</button>
-                <p class="sheet-hint">Cole uma conta por linha. Aceita vírgula, ponto e vírgula, tab ou colunas copiadas da planilha.</p>
+              <p class="sheet-hint">Cole uma lista ou planilha. O app entende vírgula, ponto e vírgula, tab e colunas copiadas.</p>
               </div>
             </div>
           </form>
@@ -2789,9 +3101,41 @@
         </div>
       </section>
 
+      <section class="bill-detail-modal" id="billDetailModal" aria-label="Detalhe da conta">
+        <div class="bill-detail-panel" role="dialog" aria-modal="true" aria-labelledby="billDetailTitle">
+          <div class="modal-head">
+            <div>
+              <p class="label">Detalhe da conta</p>
+              <h2 id="billDetailTitle">Conta</h2>
+            </div>
+            <button class="modal-close" id="closeBillDetail" type="button" aria-label="Fechar">x</button>
+          </div>
+          <div class="bill-detail-summary">
+            <div>
+              <p class="label">Valor mensal</p>
+              <strong id="billDetailValue">R$ 0,00</strong>
+            </div>
+            <div>
+              <p class="label">Vence dia</p>
+              <strong id="billDetailDue">--</strong>
+            </div>
+          </div>
+          <div class="bill-detail-stepper" aria-label="Meses pendentes">
+            <button type="button" data-detail-debit-step="-1" aria-label="Diminuir meses pendentes">-</button>
+            <strong id="billDetailDebitCount">0 meses pendentes</strong>
+            <button type="button" data-detail-debit-step="1" aria-label="Aumentar meses pendentes">+</button>
+          </div>
+          <div class="bill-month-grid" id="billDetailMonthGrid"></div>
+          <button class="secondary-save" id="editBillFieldsButton" type="button">Editar nome, valor e vencimento</button>
+        </div>
+      </section>
+
       <nav class="bottom-nav" aria-label="Menu inferior">
-        <button class="main-add" type="button" id="addNav" aria-label="Adicionar nova compra">+</button>
-        <button class="voice-add" type="button" id="voiceNav" aria-label="Adicionar gasto por voz"></button>
+        <button class="active" type="button" data-tab="diarios" aria-label="Resumo"><span>⌂</span><small>Resumo</small></button>
+        <button type="button" data-tab="mensais" aria-label="Contas"><span>▣</span><small>Contas</small></button>
+        <button class="main-add" type="button" id="addNav" aria-label="Adicionar">+</button>
+        <button type="button" data-tab="resumo" aria-label="Relatórios"><span>▥</span><small>Relatórios</small></button>
+        <button type="button" data-tab="config" aria-label="Configurações"><span>⚙</span><small>Config.</small></button>
       </nav>
     </section>
     </section>
@@ -3007,6 +3351,7 @@
     let expenses = [];
     let bills = [];
     let adminPeriod = "month";
+    let detailBillId = null;
 
     const demoObligations = [
       { id: 1, name: "Frank", value: 350, type: "owed", status: "unpaid", date: "2026-05-06", email: "" },
@@ -3469,15 +3814,33 @@
     function renderExpenses() {
       bills.forEach(ensureBillMonths);
       const today = getTotalDueThroughCurrentMonth();
+      const paidFixedMonth = bills.reduce((sum, bill) => {
+        const months = ensureBillMonths(bill);
+        return sum + (months[currentMonthKey] ? Number(bill.value || 0) : 0);
+      }, 0);
+      const receiveOpen = obligations
+        .filter((item) => item.status !== "paid" && item.type === "receive")
+        .reduce((sum, item) => sum + Number(item.value || 0), 0);
+      const payableOpen = obligations
+        .filter((item) => item.status !== "paid" && ["pay", "standby"].includes(item.type))
+        .reduce((sum, item) => sum + Number(item.value || 0), 0);
+      const forecast = receiveOpen - today - payableOpen;
+      const nextBill = [...bills]
+        .filter((bill) => getDebitMonthCount(bill) > 0)
+        .sort((a, b) => a.dueDay - b.dueDay || a.name.localeCompare(b.name))[0];
       const month = expenses
         .filter((item) => !item.autoFixed && isCurrentMonthExpense(item))
         .reduce((sum, item) => sum + Number(item.value || 0), 0);
       qs("#todayTotal").textContent = brl.format(today);
+      qs("#paidTotal").textContent = brl.format(paidFixedMonth);
+      qs("#pendingTotal").textContent = brl.format(today);
+      qs("#nextDueText").textContent = nextBill ? `${nextBill.name}, ${pad2(nextBill.dueDay)}/${pad2(currentMonthNumber)}` : "Em dia";
+      qs("#forecastBalance").textContent = brl.format(forecast);
       qs("#monthTotal").textContent = brl.format(month);
       const dueCard = qs("#todayTotal").closest(".due-card");
       qs("#homeStatusText").textContent = syncing
         ? "sincronizando..."
-        : today > 0 ? "Contas em aberto até hoje" : "Tudo resolvido até o mês atual";
+        : today > 0 ? "pendente neste mês" : "tudo em dia";
       dueCard?.classList.toggle("settled", today <= 0);
       dueCard?.classList.toggle("syncing", syncing);
       qs("#dailyList").innerHTML = renderExpenseHistory();
@@ -3498,7 +3861,7 @@
         .sort((a, b) => Number(a.paid) - Number(b.paid) || a.dueDay - b.dueDay)
         .slice(0, 8);
       if (!important.length) {
-        return `<article class="item"><div class="item-icon">$</div><div><h3>Sem contas fixas</h3><p>Use Fixos para cadastrar suas contas mensais.</p></div></article>`;
+        return `<article class="item"><div class="item-icon">$</div><div><h3>Sem contas fixas</h3><p>Use Contas para cadastrar suas contas mensais.</p></div></article>`;
       }
       return important.map((bill) => {
         const status = getBillStatus(bill);
@@ -3710,16 +4073,18 @@
       if (billFilter === "debit") return debitCount > 0;
       if (billFilter === "today") return debitCount > 0 && bill.dueDay === currentDay;
       if (billFilter === "overdue") return debitCount > 0 && status.className === "overdue";
+      if (billFilter === "upcoming") return debitCount > 0 && bill.dueDay > currentDay && status.className !== "overdue";
       return true;
     }
 
     function filterLabel() {
       return {
         all: "Todas",
-        settled: "Em dia",
-        debit: "Em débito",
-        today: "Vencendo hoje",
-        overdue: "Vencidas"
+        settled: "Pagas",
+        debit: "Pendentes",
+        today: "Vence hoje",
+        upcoming: "Próximas",
+        overdue: "Atrasadas"
       }[billFilter] || "Todas";
     }
 
@@ -3758,7 +4123,7 @@
           <td class="sheet-name"><input type="text" data-new-bill-field="name" aria-label="Nome da conta"></td>
           <td class="sheet-value"><input type="text" inputmode="decimal" data-new-bill-field="value" aria-label="Valor"></td>
           <td class="sheet-paid-through">
-            <select data-new-bill-field="lastPaidMonth" aria-label="Último mês quitado">
+            <select data-new-bill-field="lastPaidMonth" aria-label="Último mês pago">
               <option value="${currentMonthIndex}" selected>EM DIA</option>
               <option value="-1">NENHUM</option>
               ${monthKeys.map((month, index) => `<option value="${index}">${month.toUpperCase()}</option>`).join("")}
@@ -3889,10 +4254,10 @@
       qs("#billSheetHead").innerHTML = `
         <tr>
           <th class="sheet-delete"><button class="sheet-reset" id="resetDataButton" type="button">ZERAR</button></th>
-          <th class="sheet-day">DIA</th>
+          <th class="sheet-day">VENCE<br>DIA</th>
           <th class="sheet-name">CONTA</th>
-          <th class="sheet-value">VALOR<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
-          <th class="sheet-paid-through">PAGO ATÉ</th>
+          <th class="sheet-value">VALOR<br>MENSAL<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
+          <th class="sheet-paid-through">ÚLTIMO<br>MÊS PAGO</th>
         </tr>
       `;
 
@@ -3905,7 +4270,7 @@
             <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bill-field="name" aria-label="Nome da conta"></td>
             <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bill-field="value" aria-label="Valor"></td>
             <td class="sheet-paid-through">
-              <select data-bill-field="lastPaidMonth" aria-label="Último mês quitado">
+              <select data-bill-field="lastPaidMonth" aria-label="Último mês pago">
                 <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
                 <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
                 ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
@@ -3921,10 +4286,10 @@
       qs("#bulkEditHead").innerHTML = `
         <tr>
           <th class="sheet-delete">🗑</th>
-          <th class="sheet-day">DIA</th>
+          <th class="sheet-day">VENCE<br>DIA</th>
           <th class="sheet-name">CONTA</th>
-          <th class="sheet-value">VALOR<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
-          <th class="sheet-paid-through">PAGO ATÉ</th>
+          <th class="sheet-value">VALOR<br>MENSAL<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
+          <th class="sheet-paid-through">ÚLTIMO<br>MÊS PAGO</th>
         </tr>
       `;
 
@@ -3937,7 +4302,7 @@
             <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bulk-field="name" aria-label="Nome da conta"></td>
             <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bulk-field="value" aria-label="Valor"></td>
             <td class="sheet-paid-through">
-              <select data-bulk-field="lastPaidMonth" aria-label="Último mês quitado">
+              <select data-bulk-field="lastPaidMonth" aria-label="Último mês pago">
                 <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
                 <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
                 ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
@@ -4441,7 +4806,7 @@
         const today = getTotalDueThroughCurrentMonth();
         homeStatus.textContent = syncing
           ? "sincronizando..."
-          : today > 0 ? "Contas em aberto até hoje" : "Tudo resolvido até o mês atual";
+          : today > 0 ? "pendente neste mês" : "tudo em dia";
       }
     }
 
@@ -4703,6 +5068,9 @@
       qsa(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === tabName));
       qsa(".screen").forEach((screen) => screen.classList.toggle("active", screen.id === `screen-${tabName}`));
       qsa(".bottom-nav [data-tab]").forEach((button) => button.classList.toggle("active", button.dataset.tab === tabName));
+      if (tabName === "config" && adminMap) {
+        window.setTimeout(() => adminMap.invalidateSize(), 80);
+      }
     }
 
     function escapeHtml(value) {
@@ -4774,6 +5142,76 @@
       showToast("Gasto salvo.");
     });
 
+    function currentDetailBill() {
+      return bills.find((item) => item.id === detailBillId) || null;
+    }
+
+    function openBillDetail(bill) {
+      detailBillId = bill.id;
+      renderBillDetail();
+      qs("#billDetailModal").classList.add("open");
+    }
+
+    function closeBillDetail() {
+      qs("#billDetailModal").classList.remove("open");
+      detailBillId = null;
+    }
+
+    function renderBillDetail() {
+      const bill = currentDetailBill();
+      if (!bill) return;
+      const months = ensureBillMonths(bill);
+      const debitCount = getDebitMonthCount(bill);
+      qs("#billDetailTitle").textContent = bill.name;
+      qs("#billDetailValue").textContent = brl.format(Number(bill.value || 0));
+      qs("#billDetailDue").textContent = pad2(bill.dueDay);
+      qs("#billDetailDebitCount").textContent = debitCount === 1 ? "1 mês pendente" : `${debitCount} meses pendentes`;
+      qs("#billDetailMonthGrid").innerHTML = monthKeys.map((month, index) => {
+        const paid = Boolean(months[month]);
+        const className = `${paid ? "paid" : "open"} ${index === currentMonthIndex ? "current" : ""}`;
+        return `<button class="month-pill ${className}" type="button" data-detail-month="${month}">${month.toUpperCase()}</button>`;
+      }).join("");
+    }
+
+    qs("#closeBillDetail").addEventListener("click", closeBillDetail);
+    qs("#billDetailModal").addEventListener("click", (event) => {
+      if (event.target.id === "billDetailModal") closeBillDetail();
+    });
+    qs("#billDetailModal").addEventListener("click", async (event) => {
+      const bill = currentDetailBill();
+      if (!bill) return;
+      const stepButton = event.target.closest("[data-detail-debit-step]");
+      if (stepButton) {
+        setBillDebitMonths(bill, getDebitMonthCount(bill) + Number(stepButton.dataset.detailDebitStep || 0));
+        renderBillDetail();
+        renderBills();
+        renderExpenses();
+        await saveUserData({ immediate: true });
+        return;
+      }
+      const monthButton = event.target.closest("[data-detail-month]");
+      if (monthButton) {
+        const month = monthButton.dataset.detailMonth;
+        const months = ensureBillMonths(bill);
+        months[month] = !months[month];
+        if (month === currentMonthKey) {
+          bill.paid = Boolean(months[month]);
+          syncBillPaymentExpense(bill);
+        }
+        touchBill(bill);
+        renderBillDetail();
+        renderBills();
+        renderExpenses();
+        await saveUserData({ immediate: true });
+      }
+    });
+    qs("#editBillFieldsButton").addEventListener("click", () => {
+      const bill = currentDetailBill();
+      if (!bill) return;
+      editBill(bill);
+      renderBillDetail();
+    });
+
     function handleBillCardClick(event) {
       const deleteButton = event.target.closest("[data-delete-bill]");
       if (deleteButton) {
@@ -4790,7 +5228,7 @@
 
       const action = button.dataset.billAction || "paid";
       if (action === "edit") {
-        editBill(bill);
+        openBillDetail(bill);
         return;
       }
 
@@ -4855,10 +5293,7 @@
         if (control.dataset.debitReady === "true") return;
         control.dataset.debitReady = "true";
         const valueLabel = control.querySelector("strong");
-        let startX = 0;
-        let startValue = 0;
         let lastValue = 0;
-        let dragging = false;
 
         const applyValue = (value, shouldRender = false) => {
           const bill = bills.find((item) => item.id === Number(control.dataset.debitControl));
@@ -4879,38 +5314,6 @@
           const currentValue = Number(valueLabel?.textContent || 0);
           applyValue(currentValue + Number(stepButton.dataset.debitStep || 0), true);
         });
-
-        control.addEventListener("pointerdown", (event) => {
-          if (event.target.closest("button")) return;
-          dragging = true;
-          startX = event.clientX;
-          startValue = Number(valueLabel?.textContent || 0);
-          lastValue = startValue;
-          control.setPointerCapture?.(event.pointerId);
-        });
-
-        control.addEventListener("pointermove", (event) => {
-          if (!dragging) return;
-          const steps = Math.round((event.clientX - startX) / 16);
-          applyValue(startValue + steps);
-        });
-
-        control.addEventListener("pointerup", () => {
-          if (!dragging) return;
-          dragging = false;
-          applyValue(lastValue, true);
-        });
-
-        control.addEventListener("pointercancel", () => {
-          dragging = false;
-          applyValue(lastValue, true);
-        });
-
-        control.addEventListener("wheel", (event) => {
-          event.preventDefault();
-          const delta = event.deltaY > 0 || event.deltaX > 0 ? 1 : -1;
-          applyValue(Number(valueLabel?.textContent || 0) + delta, true);
-        }, { passive: false });
       });
     }
 
@@ -5048,9 +5451,10 @@
       });
       qs("#addModalTitle").textContent = {
         daily: "Adicionar gasto",
-        fixed: "Editar contas fixas",
+        fixed: "Ajuste em massa",
         entry: "Entrada ou pendência"
       }[target];
+      qs("#addModalLabel").textContent = target === "fixed" ? "Contas fixas" : "Novo lançamento";
       const bulkEditPanel = qs("#bulkEditPanel");
       if (target === "fixed") {
         bulkEditPanel.classList.add("open");
@@ -5393,6 +5797,25 @@
       document.body.classList.toggle("value-hidden");
       showToast(document.body.classList.contains("value-hidden") ? "Valores ocultos." : "Valores visíveis.");
     });
+    function applyColorTheme(theme) {
+      const selected = ["rosa", "dark", "cinza", "brasil"].includes(theme) ? theme : "azul";
+      if (selected === "azul") {
+        document.body.removeAttribute("data-color-theme");
+      } else {
+        document.body.dataset.colorTheme = selected;
+      }
+      qsa("[data-theme-choice]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.themeChoice === selected);
+      });
+      localStorage.setItem("nexo-contas-theme", selected);
+    }
+    applyColorTheme(localStorage.getItem("nexo-contas-theme") || "azul");
+    qsa("[data-theme-choice]").forEach((button) => {
+      button.addEventListener("click", () => applyColorTheme(button.dataset.themeChoice));
+    });
+    qs("#configPrivacyButton")?.addEventListener("click", () => qs("#privacyToggle").click());
+    qs("#configAccountButton")?.addEventListener("click", openAppMenu);
+    qs("#adminConfigMount")?.appendChild(qs("#adminPanel"));
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
       deferredInstallPrompt = event;
@@ -5430,7 +5853,7 @@
     }, 1400);
     setupSplashCube();
     qs("#voiceButton").addEventListener("click", startVoiceExpense);
-    qs("#voiceNav").addEventListener("click", startVoiceExpense);
+    qs("#voiceNav")?.addEventListener("click", startVoiceExpense);
     qs("#cameraButton").addEventListener("click", () => showToast("Leitura de notinha entra na próxima fase."));
     qs("#infoButton")?.addEventListener("click", () => showToast("Entradas, pessoas que devem e pendências."));
 
