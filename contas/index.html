@@ -8,7 +8,7 @@
   <meta property="og:title" content="NEXO Contas">
   <meta property="og:description" content="Melhor site para organizar suas contas">
   <meta property="og:image" content="https://i.ibb.co/KczGYz6v/11-layout-primus-1.png">
-  <meta name="nexo-contas-build" content="grid-filters-20260605">
+  <meta name="nexo-contas-build" content="bill-editor-filters-20260605">
   <meta name="theme-color" content="#151b62">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -813,6 +813,35 @@
       box-shadow: 0 0 0 2px rgba(64, 224, 208, 0.8);
     }
 
+    .bill-detail-fields {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(42, 105, 181, 0.1);
+      border: 1px solid rgba(36, 95, 148, 0.14);
+    }
+
+    .bill-detail-fields .compact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .bill-detail-fields label {
+      color: #245f94;
+    }
+
+    .bill-detail-fields input,
+    .bill-detail-fields select {
+      min-height: 40px;
+      border: 1px solid rgba(36, 95, 148, 0.18);
+      border-radius: 9px;
+      color: var(--blue-950);
+      background: rgba(255, 255, 255, 0.84);
+      font-weight: 900;
+    }
+
     .modal-head {
       display: flex;
       align-items: center;
@@ -1062,17 +1091,11 @@
     .monthly-tools {
       flex: 1 1 230px;
       display: grid;
-      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 10px;
       align-items: center;
     }
 
-    .filter-wrap {
-      position: relative;
-      min-width: 0;
-    }
-
-    .filter-button,
     .mass-edit-button {
       width: 100%;
       min-height: 42px;
@@ -1088,42 +1111,6 @@
     .mass-edit-button {
       color: var(--blue-950);
       background: linear-gradient(135deg, var(--aqua), #7effd7);
-    }
-
-    .filter-menu {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      z-index: 8;
-      display: none;
-      gap: 6px;
-      padding: 8px;
-      border-radius: 12px;
-      background: rgba(16, 44, 124, 0.96);
-      border: 1px solid rgba(160, 238, 255, 0.28);
-      box-shadow: 0 18px 28px rgba(5, 9, 52, 0.28);
-    }
-
-    .filter-menu.open {
-      display: grid;
-    }
-
-    .filter-menu button {
-      min-height: 34px;
-      border: 0;
-      border-radius: 9px;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-align: left;
-      padding: 0 10px;
-    }
-
-    .filter-menu button.active {
-      color: var(--blue-950);
-      background: var(--aqua);
     }
 
     .view-switch {
@@ -1177,11 +1164,12 @@
 
     .account-filter-selects {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
     }
 
-    .account-filter-selects select {
+    .account-filter-selects select,
+    .account-filter-selects button {
       width: 100%;
       min-height: 38px;
       border: 1px solid rgba(160, 238, 255, 0.24);
@@ -1192,6 +1180,12 @@
       font-size: 0.76rem;
       font-weight: 1000;
       outline-color: var(--aqua);
+    }
+
+    .account-filter-selects button {
+      color: var(--blue-950);
+      background: var(--aqua);
+      cursor: pointer;
     }
 
     .account-filter-selects option {
@@ -1287,12 +1281,16 @@
       width: 42px;
     }
 
-    .sheet-table .sheet-delete {
-      width: 34px;
+    .sheet-table .sheet-actions-col {
+      width: 74px;
     }
 
     .sheet-table .sheet-value {
       width: 78px;
+    }
+
+    .sheet-table .sheet-category {
+      width: 88px;
     }
 
     .sheet-table .sheet-paid-through {
@@ -1317,15 +1315,29 @@
       text-transform: uppercase;
     }
 
-    .sheet-delete button {
-      width: 24px;
+    .sheet-actions-cell {
+      white-space: nowrap;
+    }
+
+    .sheet-actions-cell button {
+      min-width: 0;
       height: 24px;
+      margin: 0 1px;
       border: 0;
       border-radius: 6px;
-      color: #fff;
-      background: #c94f42;
       font-weight: 1000;
       line-height: 1;
+    }
+
+    .sheet-actions-cell [data-bill-action="edit"] {
+      color: var(--blue-950);
+      background: var(--aqua);
+      font-size: 0.58rem;
+    }
+
+    .sheet-actions-cell [data-delete-bill] {
+      color: #fff;
+      background: #c94f42;
     }
 
     .sheet-reset {
@@ -1337,6 +1349,13 @@
       background: #c94f42;
       font-size: 0.64rem;
       font-weight: 1000;
+    }
+
+    .sheet-empty {
+      padding: 14px !important;
+      color: #174f9b;
+      font-weight: 1000;
+      text-align: center !important;
     }
 
     .sheet-table input[type="checkbox"] {
@@ -1502,6 +1521,7 @@
       grid-row: 2;
       display: inline-flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 5px;
       color: #0346a5;
       font-size: 0.72rem;
@@ -1517,6 +1537,17 @@
 
     .bill-actions {
       display: none;
+    }
+
+    .bill-edit-button {
+      min-height: 22px;
+      border-radius: 999px;
+      padding: 0 8px;
+      color: var(--blue-950);
+      background: rgba(64, 224, 208, 0.26);
+      font-size: 0.62rem;
+      font-weight: 1000;
+      line-height: 1;
     }
 
     .bill button {
@@ -1645,6 +1676,12 @@
       align-content: end;
       gap: 3px;
       font-size: 0.66rem;
+    }
+
+    #monthlyCardsList .bill-edit-button {
+      justify-self: start;
+      min-height: 24px;
+      padding: 0 9px;
     }
 
     #monthlyCardsList .bill-status {
@@ -2753,6 +2790,10 @@
         align-items: start;
       }
 
+      #screen-mensais.active {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
       #screen-diarios .due-card,
       #screen-mensais .due-card,
       #screen-resumo .category-card,
@@ -2762,6 +2803,10 @@
       }
 
       #monthlyCardsList {
+        grid-template-columns: repeat(auto-fill, minmax(142px, 1fr));
+      }
+
+      .account-filter-selects {
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
 
@@ -2984,16 +3029,6 @@
           <div class="monthly-head">
             <p class="label">Contas</p>
             <div class="monthly-tools">
-              <div class="filter-wrap">
-                <button class="filter-button" id="billFilterButton" type="button" aria-expanded="false">Filtrar</button>
-                <div class="filter-menu" id="billFilterMenu" aria-label="Filtros de contas fixas">
-                  <button class="active" type="button" data-bill-filter="all">Todas</button>
-                  <button type="button" data-bill-filter="overdue">Atrasadas</button>
-                  <button type="button" data-bill-filter="today">Vence hoje</button>
-                  <button type="button" data-bill-filter="upcoming">Próximas</button>
-                  <button type="button" data-bill-filter="settled">Pagas</button>
-                </div>
-              </div>
               <button class="mass-edit-button" id="massEditButton" type="button">Ajuste em massa</button>
             </div>
           </div>
@@ -3023,6 +3058,14 @@
           <div class="account-filter-bar" aria-label="Filtros de contas">
             <input class="account-search" id="billSearchInput" type="search" placeholder="Buscar conta, categoria ou valor">
             <div class="account-filter-selects">
+              <select id="billStatusFilter" aria-label="Filtrar por status">
+                <option value="all">Status: todas</option>
+                <option value="overdue">Atrasadas</option>
+                <option value="today">Vence hoje</option>
+                <option value="upcoming">Próximas</option>
+                <option value="debit">Pendentes</option>
+                <option value="settled">Pagas</option>
+              </select>
               <select id="billDueRangeFilter" aria-label="Filtrar por vencimento">
                 <option value="all">Vencimento: todos</option>
                 <option value="1-5">Dia 1 a 5</option>
@@ -3043,6 +3086,7 @@
                 <option value="transporte">Transporte</option>
                 <option value="outro">Outro</option>
               </select>
+              <button id="billClearFilters" type="button">Limpar filtros</button>
             </div>
           </div>
 
@@ -3052,7 +3096,7 @@
             <div class="sheet-actions">
               <p class="label">Lista de contas</p>
               <button type="button" id="addBillRow">Nova conta</button>
-              <p class="sheet-hint">Escolha o último mês pago. Os meses seguintes contam como pendentes.</p>
+              <p class="sheet-hint">Vence dia é o vencimento. Quitado até define quais meses já foram pagos.</p>
             </div>
             <div class="sheet-scroll">
               <table class="sheet-table" aria-label="Tabela de contas fixas">
@@ -3225,7 +3269,7 @@
           <form class="modal-pane" id="quickBillForm" data-pane="fixed">
             <div class="bulk-edit" id="bulkEditPanel">
               <button class="save" id="addBillModalRow" type="button">Nova conta fixa</button>
-            <p class="sheet-hint">Escolha o último mês pago. Os meses seguintes contam como pendentes.</p>
+            <p class="sheet-hint">Vence dia é o vencimento. Quitado até define quais meses já foram pagos.</p>
               <div class="sheet-scroll">
                 <table class="sheet-table" aria-label="Editar contas fixas">
                   <thead id="bulkEditHead"></thead>
@@ -3309,7 +3353,27 @@
             <button type="button" data-detail-debit-step="1" aria-label="Aumentar meses pendentes">+</button>
           </div>
           <div class="bill-month-grid" id="billDetailMonthGrid"></div>
-          <button class="secondary-save" id="editBillFieldsButton" type="button">Editar nome, valor e vencimento</button>
+          <form class="bill-detail-fields" id="billDetailFields">
+            <div class="field">
+              <label for="billDetailNameInput">Nome</label>
+              <input id="billDetailNameInput" autocomplete="off">
+            </div>
+            <div class="compact-grid">
+              <div class="field">
+                <label for="billDetailValueInput">Valor</label>
+                <input id="billDetailValueInput" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="billDetailDueInput">Vence dia</label>
+                <input id="billDetailDueInput" inputmode="numeric" maxlength="2">
+              </div>
+            </div>
+            <div class="field">
+              <label for="billDetailCategoryInput">Categoria</label>
+              <select id="billDetailCategoryInput"></select>
+            </div>
+            <button class="secondary-save" type="submit">Salvar ajustes</button>
+          </form>
         </div>
       </section>
 
@@ -3485,6 +3549,17 @@
     const currentMonthIndex = new Date().getMonth();
     const currentMonthKey = monthKeys[currentMonthIndex];
     const currentMonthNumber = currentMonthIndex + 1;
+    const fixedBillCategories = [
+      { id: "credito", label: "Crédito", terms: ["credito", "crédito", "cartao", "cartão", "picpay", "nubank", "shopee"] },
+      { id: "casa", label: "Casa", terms: ["casa", "aluguel", "iptu", "luz", "energia", "agua", "água"] },
+      { id: "telefone", label: "Telefone", terms: ["telefone", "celular", "claro", "tim", "vivo"] },
+      { id: "internet", label: "Internet", terms: ["internet", "net", "google"] },
+      { id: "streaming", label: "Streaming", terms: ["spotify", "netflix", "crunch", "capcut"] },
+      { id: "mercado", label: "Mercado", terms: ["mercado", "supermercado", "primor"] },
+      { id: "saude", label: "Saúde", terms: ["odonto", "saude", "saúde", "farm", "academia"] },
+      { id: "transporte", label: "Transporte", terms: ["carro", "uber", "99", "transporte"] },
+      { id: "outro", label: "Outro", terms: [] }
+    ];
 
     const demoExpenses = [
       { id: 1, name: "plano claro Jane", value: 20, category: "Telefone", date: "12/05 · 13:19", icon: "$" },
@@ -3684,12 +3759,13 @@
       return "$";
     }
 
-    function addFixedBill(name, value, dueDay) {
+    function addFixedBill(name, value, dueDay, category = "") {
       bills.unshift(markChanged({
         id: makeId(),
         name,
         value,
         dueDay: parseDueDay(dueDay),
+        category: coerceBillCategoryId(category) || guessBillCategoryId({ name }),
         paid: true,
         focus: true,
         months: defaultBillMonths(true)
@@ -4055,7 +4131,7 @@
         const isSettled = billDueTotal <= 0;
         return `
           <article class="item ${isSettled ? "status-paid" : status.className === "due-today" ? "status-today" : "status-unpaid"}">
-            <div class="item-icon">${categoryIcon(bill.name)}</div>
+            <div class="item-icon">${categoryIcon(billCategoryLabel(bill))}</div>
             <div>
               <h3>${escapeHtml(bill.name)}</h3>
               <p>vence dia ${bill.dueDay} · ${status.label}</p>
@@ -4261,31 +4337,91 @@
         .toLowerCase();
     }
 
-    function billCategoryId(bill) {
+    function coerceBillCategoryId(value) {
+      const normalized = normalizeFilterText(value);
+      if (!normalized) return "";
+      return fixedBillCategories.find((category) =>
+        category.id === normalized || normalizeFilterText(category.label) === normalized
+      )?.id || "";
+    }
+
+    function guessBillCategoryId(bill) {
       const text = normalizeFilterText(bill.name);
-      if (text.includes("credito") || text.includes("cartao") || text.includes("picpay") || text.includes("nubank") || text.includes("shopee")) return "credito";
-      if (text.includes("casa") || text.includes("aluguel") || text.includes("iptu") || text.includes("luz") || text.includes("energia") || text.includes("agua")) return "casa";
-      if (text.includes("telefone") || text.includes("celular") || text.includes("claro") || text.includes("tim") || text.includes("vivo")) return "telefone";
-      if (text.includes("internet") || text.includes("net") || text.includes("google")) return "internet";
-      if (text.includes("spotify") || text.includes("netflix") || text.includes("crunch") || text.includes("capcut")) return "streaming";
-      if (text.includes("mercado") || text.includes("supermercado") || text.includes("primor")) return "mercado";
-      if (text.includes("odonto") || text.includes("saude") || text.includes("farm") || text.includes("academia")) return "saude";
-      if (text.includes("carro") || text.includes("uber") || text.includes("99") || text.includes("transporte")) return "transporte";
-      return "outro";
+      return fixedBillCategories.find((category) =>
+        category.id !== "outro" && category.terms.some((term) => text.includes(normalizeFilterText(term)))
+      )?.id || "outro";
+    }
+
+    function billCategoryId(bill) {
+      return coerceBillCategoryId(bill.category) || guessBillCategoryId(bill);
+    }
+
+    function billCategorySelectMarkup(selectedId, fieldName) {
+      const selected = coerceBillCategoryId(selectedId) || "outro";
+      return `
+        <select data-${fieldName}="category" aria-label="Categoria">
+          ${fixedBillCategories.map((category) =>
+            `<option value="${category.id}" ${category.id === selected ? "selected" : ""}>${category.label}</option>`
+          ).join("")}
+        </select>
+      `;
+    }
+
+    function billCategoryOptionsMarkup(selectedId) {
+      const selected = coerceBillCategoryId(selectedId) || "outro";
+      return fixedBillCategories.map((category) =>
+        `<option value="${category.id}" ${category.id === selected ? "selected" : ""}>${category.label}</option>`
+      ).join("");
+    }
+
+    function billFiltersActive() {
+      return billFilter !== "all" || billDueRangeFilter !== "all" || billCategoryFilter !== "all" || Boolean(billSearchQuery.trim());
+    }
+
+    function clearBillFilters() {
+      billFilter = "all";
+      billDueRangeFilter = "all";
+      billCategoryFilter = "all";
+      billSearchQuery = "";
+      const status = qs("#billStatusFilter");
+      const due = qs("#billDueRangeFilter");
+      const category = qs("#billCategoryFilter");
+      const search = qs("#billSearchInput");
+      if (status) status.value = "all";
+      if (due) due.value = "all";
+      if (category) category.value = "all";
+      if (search) search.value = "";
+    }
+
+    function activeBillFilterLabel() {
+      const parts = [];
+      if (billFilter !== "all") parts.push(filterLabel().toLowerCase());
+      if (billDueRangeFilter !== "all") parts.push(`vencimento ${billDueRangeFilter.replace("-", " a ")}`);
+      if (billCategoryFilter !== "all") parts.push(billCategoryLabel({ category: billCategoryFilter }).toLowerCase());
+      if (billSearchQuery.trim()) parts.push(`busca "${billSearchQuery.trim()}"`);
+      return parts.length ? parts.join(", ") : "todos os filtros";
+    }
+
+    function ensureBillCategory(bill) {
+      const category = billCategoryId(bill);
+      bill.category = category;
+      return category;
+    }
+
+    function migrateBillCategories() {
+      let changed = false;
+      bills = bills.map((bill) => {
+        const category = billCategoryId(bill);
+        if (bill.category === category) return bill;
+        changed = true;
+        return { ...bill, category, _updatedAt: nowMs() };
+      });
+      return changed;
     }
 
     function billCategoryLabel(bill) {
-      return {
-        credito: "Crédito",
-        casa: "Casa",
-        telefone: "Telefone",
-        internet: "Internet",
-        streaming: "Streaming",
-        mercado: "Mercado",
-        saude: "Saúde",
-        transporte: "Transporte",
-        outro: "Outro"
-      }[billCategoryId(bill)] || "Outro";
+      const categoryId = billCategoryId(bill);
+      return fixedBillCategories.find((category) => category.id === categoryId)?.label || "Outro";
     }
 
     function billDueRangeMatches(bill) {
@@ -4355,12 +4491,13 @@
     function emptyBillRowMarkup(prefix) {
       return `
         <tr data-new-bill="${prefix}">
-          <td class="sheet-delete"></td>
+          <td class="sheet-actions-col"></td>
           <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" data-new-bill-field="dueDay" aria-label="Dia"></td>
           <td class="sheet-name"><input type="text" data-new-bill-field="name" aria-label="Nome da conta"></td>
+          <td class="sheet-category">${billCategorySelectMarkup("outro", "new-bill-field")}</td>
           <td class="sheet-value"><input type="text" inputmode="decimal" data-new-bill-field="value" aria-label="Valor"></td>
           <td class="sheet-paid-through">
-            <select data-new-bill-field="lastPaidMonth" aria-label="Último mês pago">
+            <select data-new-bill-field="lastPaidMonth" aria-label="Quitado até">
               <option value="${currentMonthIndex}" selected>EM DIA</option>
               <option value="-1">NENHUM</option>
               ${monthKeys.map((month, index) => `<option value="${index}">${month.toUpperCase()}</option>`).join("")}
@@ -4374,10 +4511,12 @@
       const name = row.querySelector('[data-new-bill-field="name"]')?.value.trim() || "";
       const value = parseMoney(row.querySelector('[data-new-bill-field="value"]')?.value);
       const dueDay = parseDueDay(row.querySelector('[data-new-bill-field="dueDay"]')?.value);
+      const selectedCategory = coerceBillCategoryId(row.querySelector('[data-new-bill-field="category"]')?.value);
+      const category = selectedCategory && selectedCategory !== "outro" ? selectedCategory : guessBillCategoryId({ name });
       const lastPaidIndex = Number(row.querySelector('[data-new-bill-field="lastPaidMonth"]')?.value || -1);
       if (!name && value <= 0) return false;
       if (!name || value <= 0) return false;
-      const bill = addFixedBill(name, value, dueDay);
+      const bill = addFixedBill(name, value, dueDay, category);
       setLastPaidMonth(bill, lastPaidIndex);
       showToast("Conta fixa criada.");
       return true;
@@ -4416,7 +4555,10 @@
     }
 
     function renderBills() {
-      bills.forEach(ensureBillMonths);
+      bills.forEach((bill) => {
+        ensureBillMonths(bill);
+        ensureBillCategory(bill);
+      });
       const fixedMonthTotal = bills.reduce((sum, bill) => sum + bill.value, 0);
       const dueNowTotal = getTotalDueThroughCurrentMonth();
       const dueNowEntries = bills.reduce((sum, bill) => sum + getDebitMonthCount(bill), 0);
@@ -4455,6 +4597,7 @@
               <span class="bill-category">${escapeHtml(categoryLabel)}</span>
               <span class="bill-state-text">${status.label}</span>
               <span class="bill-debt-text">· ${getDebtLabel(openMonthCount).toLowerCase()}</span>
+              <button class="bill-edit-button" type="button" data-bill-action="edit" data-bill="${bill.id}" aria-label="Editar ${escapeHtml(bill.name)}">Editar</button>
             </div>
             <div class="bill-status ${isSettled ? "bill-toggle-paid" : "bill-toggle-unpaid"}" data-debit-control="${bill.id}" role="group" aria-label="Ajustar meses em débito">
               <button type="button" data-debit-step="-1" aria-label="Diminuir débito">‹</button>
@@ -4464,12 +4607,13 @@
           </article>
         </div>
       `;
-      }).join("") || `<p class="empty-filter">Nenhuma conta encontrada em ${filterLabel().toLowerCase()}.</p>`;
+      }).join("") || `<p class="empty-filter">Nenhuma conta encontrada com ${activeBillFilterLabel()}.</p>`;
       const fixedList = qs("#fixedList");
       if (fixedList) fixedList.innerHTML = billMarkup;
-      qs("#monthlyCardsList").innerHTML = `${billMarkup}<p class="bill-list-hint">Mostrando ${visibleBills.length} de ${bills.length} contas</p>`;
+      const filterHint = billFiltersActive() ? ` · ${activeBillFilterLabel()}` : "";
+      qs("#monthlyCardsList").innerHTML = `${billMarkup}<p class="bill-list-hint">Mostrando ${visibleBills.length} de ${bills.length} contas${filterHint}</p>`;
       qs("#desktopBills").innerHTML = billMarkup.replaceAll("data-bill=", "data-preview-bill=");
-      renderBillSheet(sortedBills);
+      renderBillSheet(visibleBills);
       qs("#fixedTotal").textContent = brl.format(fixedMonthTotal);
       qs("#dueNowTotal").textContent = brl.format(dueNowTotal);
       qs("#dueNowTotal").closest(".due-card")?.classList.toggle("settled", dueNowTotal <= 0);
@@ -4477,10 +4621,8 @@
         ? `${dueNowEntries} conta(s) em débito até quitar`
         : "Todas as contas fixas estão em dia";
       renderScore(dueNowTotal, fixedMonthTotal);
-      qs("#billFilterButton").textContent = `Filtrar: ${filterLabel()}`;
-      qsa("[data-bill-filter]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.billFilter === billFilter);
-      });
+      const statusFilter = qs("#billStatusFilter");
+      if (statusFilter) statusFilter.value = billFilter;
       if (qs("#bulkEditPanel")?.classList.contains("open")) {
         renderBulkEditSheet();
       }
@@ -4488,28 +4630,33 @@
       initBillSwipe();
     }
 
-    function renderBillSheet(sortedBills) {
+    function renderBillSheet(visibleBills) {
       const fixedMonthTotal = bills.reduce((sum, bill) => sum + Number(bill.value || 0), 0);
       qs("#billSheetHead").innerHTML = `
         <tr>
-          <th class="sheet-delete"><button class="sheet-reset" id="resetDataButton" type="button">ZERAR</button></th>
+          <th class="sheet-actions-col"><button class="sheet-reset" id="resetDataButton" type="button">ZERAR</button></th>
           <th class="sheet-day">VENCE<br>DIA</th>
           <th class="sheet-name">CONTA</th>
+          <th class="sheet-category">CATEGORIA</th>
           <th class="sheet-value">VALOR<br>MENSAL<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
-          <th class="sheet-paid-through">ÚLTIMO<br>MÊS PAGO</th>
+          <th class="sheet-paid-through">QUITADO<br>ATÉ</th>
         </tr>
       `;
 
-      qs("#billSheetBody").innerHTML = sortedBills.map((bill) => {
+      const rows = visibleBills.map((bill) => {
         const lastPaidIndex = getLastPaidMonthIndex(bill);
         return `
           <tr data-sheet-bill="${bill.id}">
-            <td class="sheet-delete"><button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">🗑</button></td>
-            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bill-field="dueDay" aria-label="Dia"></td>
+            <td class="sheet-actions-col sheet-actions-cell">
+              <button type="button" data-bill-action="edit" data-bill="${bill.id}" aria-label="Editar ${escapeHtml(bill.name)}">Editar</button>
+              <button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">x</button>
+            </td>
+            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bill-field="dueDay" aria-label="Vence dia"></td>
             <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bill-field="name" aria-label="Nome da conta"></td>
+            <td class="sheet-category">${billCategorySelectMarkup(billCategoryId(bill), "bill-field")}</td>
             <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bill-field="value" aria-label="Valor"></td>
             <td class="sheet-paid-through">
-              <select data-bill-field="lastPaidMonth" aria-label="Último mês pago">
+              <select data-bill-field="lastPaidMonth" aria-label="Quitado até">
                 <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
                 <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
                 ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
@@ -4517,18 +4664,24 @@
             </td>
           </tr>
         `;
-      }).join("") + Array.from({ length: 5 }, () => emptyBillRowMarkup("sheet")).join("");
+      });
+      const emptyMessage = billFiltersActive()
+        ? `<tr><td class="sheet-empty" colspan="6">Nenhuma conta encontrada com ${activeBillFilterLabel()}.</td></tr>`
+        : "";
+      const newRows = billFiltersActive() ? "" : Array.from({ length: 5 }, () => emptyBillRowMarkup("sheet")).join("");
+      qs("#billSheetBody").innerHTML = (rows.join("") || emptyMessage) + newRows;
     }
 
     function renderBulkEditSheet() {
       const fixedMonthTotal = bills.reduce((sum, bill) => sum + Number(bill.value || 0), 0);
       qs("#bulkEditHead").innerHTML = `
         <tr>
-          <th class="sheet-delete">🗑</th>
+          <th class="sheet-actions-col">AÇÕES</th>
           <th class="sheet-day">VENCE<br>DIA</th>
           <th class="sheet-name">CONTA</th>
+          <th class="sheet-category">CATEGORIA</th>
           <th class="sheet-value">VALOR<br>MENSAL<br><small>${brl.format(fixedMonthTotal).replace("R$", "").trim()}</small></th>
-          <th class="sheet-paid-through">ÚLTIMO<br>MÊS PAGO</th>
+          <th class="sheet-paid-through">QUITADO<br>ATÉ</th>
         </tr>
       `;
 
@@ -4536,12 +4689,16 @@
         const lastPaidIndex = getLastPaidMonthIndex(bill);
         return `
           <tr data-bulk-bill="${bill.id}">
-            <td class="sheet-delete"><button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">🗑</button></td>
-            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bulk-field="dueDay" aria-label="Dia"></td>
+            <td class="sheet-actions-col sheet-actions-cell">
+              <button type="button" data-bill-action="edit" data-bill="${bill.id}" aria-label="Editar ${escapeHtml(bill.name)}">Editar</button>
+              <button type="button" data-delete-bill="${bill.id}" aria-label="Apagar conta">x</button>
+            </td>
+            <td class="sheet-day"><input type="text" inputmode="numeric" maxlength="2" value="${bill.dueDay}" data-bulk-field="dueDay" aria-label="Vence dia"></td>
             <td class="sheet-name"><input type="text" value="${escapeHtml(bill.name)}" data-bulk-field="name" aria-label="Nome da conta"></td>
+            <td class="sheet-category">${billCategorySelectMarkup(billCategoryId(bill), "bulk-field")}</td>
             <td class="sheet-value"><input type="text" inputmode="decimal" value="${moneyInputValue(bill.value)}" data-bulk-field="value" aria-label="Valor"></td>
             <td class="sheet-paid-through">
-              <select data-bulk-field="lastPaidMonth" aria-label="Último mês pago">
+              <select data-bulk-field="lastPaidMonth" aria-label="Quitado até">
                 <option value="${currentMonthIndex}" ${lastPaidIndex === currentMonthIndex ? "selected" : ""}>EM DIA</option>
                 <option value="-1" ${lastPaidIndex === -1 ? "selected" : ""}>NENHUM</option>
                 ${monthKeys.map((month, index) => `<option value="${index}" ${lastPaidIndex === index ? "selected" : ""}>${month.toUpperCase()}</option>`).join("")}
@@ -4978,7 +5135,7 @@
 
     function currentSnapshot(localUpdatedAt = Date.now()) {
       return {
-        schemaVersion: 5,
+        schemaVersion: 6,
         expenses,
         bills,
         obligations,
@@ -5106,7 +5263,7 @@
       return {
         ...remoteSnapshot,
         ...localSnapshot,
-        schemaVersion: 5,
+        schemaVersion: 6,
         expenses: mergeRecordList(localSnapshot.expenses, remoteSnapshot.expenses, mergedDeleted.expenses),
         bills: mergeRecordList(localSnapshot.bills, remoteSnapshot.bills, mergedDeleted.bills),
         obligations: mergeRecordList(localSnapshot.obligations, remoteSnapshot.obligations, mergedDeleted.obligations),
@@ -5131,7 +5288,8 @@
       deletedRecords = normalizeDeletedRecords(data.deletedRecords);
       profile = data.profile || {};
       setupComplete = true;
-      needsDataMigration = schemaVersion < 5 || bills.some((bill) => bill.debitMonths !== undefined && bill.debitMonths !== null);
+      const categoriesMigrated = migrateBillCategories();
+      needsDataMigration = schemaVersion < 6 || categoriesMigrated || bills.some((bill) => bill.debitMonths !== undefined && bill.debitMonths !== null);
       if (schemaVersion < 3) {
         bills = bills.map((bill) => ({
           ...bill,
@@ -5405,6 +5563,10 @@
       qs("#billDetailValue").textContent = brl.format(Number(bill.value || 0));
       qs("#billDetailDue").textContent = pad2(bill.dueDay);
       qs("#billDetailDebitCount").textContent = debitCount === 1 ? "1 mês pendente" : `${debitCount} meses pendentes`;
+      qs("#billDetailNameInput").value = bill.name;
+      qs("#billDetailValueInput").value = moneyInputValue(bill.value);
+      qs("#billDetailDueInput").value = bill.dueDay;
+      qs("#billDetailCategoryInput").innerHTML = billCategoryOptionsMarkup(billCategoryId(bill));
       qs("#billDetailMonthGrid").innerHTML = monthKeys.map((month, index) => {
         const paid = Boolean(months[month]);
         const className = `${paid ? "paid" : "open"} ${index === currentMonthIndex ? "current" : ""}`;
@@ -5444,11 +5606,22 @@
         await saveUserData({ immediate: true });
       }
     });
-    qs("#editBillFieldsButton").addEventListener("click", () => {
+    qs("#billDetailFields").addEventListener("submit", async (event) => {
+      event.preventDefault();
       const bill = currentDetailBill();
       if (!bill) return;
-      editBill(bill);
+      const name = qs("#billDetailNameInput").value.trim();
+      const value = parseMoney(qs("#billDetailValueInput").value);
+      bill.name = name || bill.name;
+      if (value > 0) bill.value = value;
+      bill.dueDay = parseDueDay(qs("#billDetailDueInput").value, bill.dueDay || currentDay);
+      bill.category = coerceBillCategoryId(qs("#billDetailCategoryInput").value) || "outro";
+      touchBill(bill);
       renderBillDetail();
+      renderBills();
+      renderExpenses();
+      await saveUserData({ immediate: true });
+      showToast("Conta editada.");
     });
 
     function handleBillCardClick(event) {
@@ -5556,27 +5729,16 @@
       });
     }
 
-    function editBill(bill) {
-      const name = window.prompt("Nome da conta", bill.name);
-      if (name === null) return;
-      const valueText = window.prompt("Valor da conta", String(bill.value).replace(".", ","));
-      if (valueText === null) return;
-      const dueText = window.prompt("Dia de vencimento", String(bill.dueDay));
-      if (dueText === null) return;
-
-      const value = parseMoney(valueText);
-      bill.name = name.trim() || bill.name;
-      if (value > 0) bill.value = value;
-      bill.dueDay = parseDueDay(dueText, bill.dueDay || currentDay);
-      touchBill(bill);
-      renderBills();
-      renderExpenses();
-      saveUserData({ immediate: true });
-      showToast("Conta editada.");
-    }
-
     qs("#fixedList")?.addEventListener("click", handleBillCardClick);
     qs("#monthlyCardsList").addEventListener("click", handleBillCardClick);
+
+    function handleBillEditClick(event) {
+      const button = event.target.closest('[data-bill-action="edit"][data-bill]');
+      if (!button) return;
+      event.preventDefault();
+      const bill = bills.find((item) => item.id === Number(button.dataset.bill));
+      if (bill) openBillDetail(bill);
+    }
 
     function handleBillDeleteClick(event) {
       const resetButton = event.target.closest("#resetDataButton");
@@ -5590,7 +5752,9 @@
     }
 
     qs("#billSheet").addEventListener("click", handleBillDeleteClick);
+    qs("#billSheet").addEventListener("click", handleBillEditClick);
     qs("#bulkEditBody").addEventListener("click", handleBillDeleteClick);
+    qs("#bulkEditBody").addEventListener("click", handleBillEditClick);
 
     qs("#billSheet").addEventListener("change", async (event) => {
 
@@ -5613,6 +5777,7 @@
         if (field === "name") bill.name = event.target.value.trim() || "Nova conta";
         if (field === "value") bill.value = Math.max(0, parseMoney(event.target.value));
         if (field === "dueDay") bill.dueDay = parseDueDay(event.target.value, bill.dueDay || currentDay);
+        if (field === "category") bill.category = coerceBillCategoryId(event.target.value) || "outro";
         if (field === "lastPaidMonth") {
           if (event.type !== "change") return;
           setLastPaidMonth(bill, Number(event.target.value));
@@ -5649,19 +5814,8 @@
       button.addEventListener("click", () => setMonthlyView(button.dataset.monthView));
     });
 
-    qs("#billFilterButton").addEventListener("click", () => {
-      const menu = qs("#billFilterMenu");
-      const isOpen = !menu.classList.contains("open");
-      menu.classList.toggle("open", isOpen);
-      qs("#billFilterButton").setAttribute("aria-expanded", String(isOpen));
-    });
-
-    qs("#billFilterMenu").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-bill-filter]");
-      if (!button) return;
-      billFilter = button.dataset.billFilter || "all";
-      qs("#billFilterMenu").classList.remove("open");
-      qs("#billFilterButton").setAttribute("aria-expanded", "false");
+    qs("#billStatusFilter").addEventListener("change", (event) => {
+      billFilter = event.target.value || "all";
       renderBills();
     });
 
@@ -5677,6 +5831,11 @@
 
     qs("#billSearchInput").addEventListener("input", (event) => {
       billSearchQuery = event.target.value || "";
+      renderBills();
+    });
+
+    qs("#billClearFilters").addEventListener("click", () => {
+      clearBillFilters();
       renderBills();
     });
 
@@ -5768,6 +5927,7 @@
         if (field === "name") bill.name = event.target.value.trim() || "Nova conta";
         if (field === "value") bill.value = Math.max(0, parseMoney(event.target.value));
         if (field === "dueDay") bill.dueDay = parseDueDay(event.target.value, bill.dueDay || currentDay);
+        if (field === "category") bill.category = coerceBillCategoryId(event.target.value) || "outro";
         if (field === "lastPaidMonth") {
           if (event.type !== "change") return;
           setLastPaidMonth(bill, Number(event.target.value));
@@ -5810,6 +5970,7 @@
         name: "Nova conta",
         value: 0,
         dueDay: currentDay,
+        category: "outro",
         paid: true,
         focus: true,
         months: defaultBillMonths(true)
