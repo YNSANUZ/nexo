@@ -1988,6 +1988,119 @@
       font-weight: 1000;
     }
 
+    .receivable-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(28, 78, 148, 0.58);
+      box-shadow: var(--glow);
+    }
+
+    .income-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .income-controls label {
+      display: grid;
+      gap: 5px;
+      color: #e8fbff;
+      font-size: 0.7rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+
+    .income-controls select,
+    .income-controls input {
+      min-height: 38px;
+      border: 1px solid rgba(160, 238, 255, 0.24);
+      border-radius: 10px;
+      padding: 0 9px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.44);
+      font-weight: 900;
+    }
+
+    .income-controls option {
+      color: #10204d;
+    }
+
+    .receivable-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .receivable-kpis div {
+      min-width: 0;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(16, 44, 124, 0.32);
+      border: 1px solid rgba(160, 238, 255, 0.18);
+    }
+
+    .receivable-kpis span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.64rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+
+    .receivable-kpis strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+
+    .receivable-columns {
+      display: grid;
+      gap: 10px;
+    }
+
+    .receivable-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .receivable-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 48px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(16, 44, 124, 0.3);
+      border: 1px solid rgba(160, 238, 255, 0.16);
+    }
+
+    .receivable-row h3 {
+      margin: 0;
+      font-size: 0.86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .receivable-row p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .receivable-row strong {
+      color: var(--ok);
+      white-space: nowrap;
+    }
+
+    .receivable-row.charge strong {
+      color: #ffcf6a;
+    }
+
     .admin-panel {
       display: none;
       gap: 12px;
@@ -2977,16 +3090,16 @@
           </div>
 
           <div class="section-title">
+            <h2>Boletos mensais</h2>
+            <span id="homeFixedCount">0 cadastradas</span>
+          </div>
+          <div class="item-list" id="homeBillsList"></div>
+
+          <div class="section-title">
             <h2>Gastos recentes</h2>
             <span>compras do mês</span>
           </div>
           <div class="item-list" id="dailyList"></div>
-
-          <div class="section-title">
-            <h2>Próximos vencimentos</h2>
-            <span id="homeFixedCount">0 cadastradas</span>
-          </div>
-          <div class="item-list" id="homeBillsList"></div>
 
           <form class="card form-card" id="expenseForm">
             <div class="field">
@@ -3132,6 +3245,40 @@
           <article class="mini-card">
             <p class="label">Pendências</p>
             <strong id="standbyTotal" class="private-value">R$ 5.222,00</strong>
+          </article>
+
+          <article class="receivable-panel" aria-label="Receber e cobrar">
+            <div>
+              <p class="label">Receber e cobrar</p>
+              <strong>Entradas previstas</strong>
+            </div>
+            <div class="income-controls">
+              <label for="incomeModeSelect">Perfil
+                <select id="incomeModeSelect">
+                  <option value="clt">CLT</option>
+                  <option value="autonomo">Autônomo</option>
+                  <option value="empresa">Empresa</option>
+                </select>
+              </label>
+              <label for="incomeBaseInput">Renda fixa
+                <input id="incomeBaseInput" inputmode="decimal" placeholder="0,00">
+              </label>
+            </div>
+            <div class="receivable-kpis">
+              <div><span>Previsto</span><strong id="incomeExpectedTotal" class="private-value">R$ 0,00</strong></div>
+              <div><span>A cobrar</span><strong id="incomeChargeTotal" class="private-value">R$ 0,00</strong></div>
+              <div><span>Livre após contas</span><strong id="incomeFreeTotal" class="private-value">R$ 0,00</strong></div>
+            </div>
+            <div class="receivable-columns">
+              <section>
+                <p class="label">Quem cobrar</p>
+                <div class="receivable-list" id="chargeList"></div>
+              </section>
+              <section>
+                <p class="label">Quando vou receber</p>
+                <div class="receivable-list" id="receiveScheduleList"></div>
+              </section>
+            </div>
           </article>
 
           <article class="card admin-panel" id="adminPanel">
@@ -4076,6 +4223,7 @@
     function renderExpenses() {
       bills.forEach(ensureBillMonths);
       const today = getTotalDueThroughCurrentMonth();
+      const dueBillCount = bills.filter((bill) => getDebitMonthCount(bill) > 0).length;
       const paidFixedMonth = bills.reduce((sum, bill) => {
         const months = ensureBillMonths(bill);
         return sum + (months[currentMonthKey] ? Number(bill.value || 0) : 0);
@@ -4102,11 +4250,11 @@
       const dueCard = qs("#todayTotal").closest(".due-card");
       qs("#homeStatusText").textContent = syncing
         ? "sincronizando..."
-        : today > 0 ? "pendente neste mês" : "tudo em dia";
+        : today > 0 ? `${dueBillCount} boleto(s) para fechar o mês` : "mês fechado";
       dueCard?.classList.toggle("settled", today <= 0);
       dueCard?.classList.toggle("syncing", syncing);
       qs("#dailyList").innerHTML = renderExpenseHistory();
-      qs("#homeFixedCount").textContent = `${bills.length} cadastrada(s)`;
+      qs("#homeFixedCount").textContent = dueBillCount ? `${dueBillCount} pendente(s)` : `${bills.length} cadastrada(s)`;
       qs("#homeBillsList").innerHTML = renderHomeBills();
       renderCategoryInsight();
     }
@@ -4120,7 +4268,11 @@
 
     function renderHomeBills() {
       const important = [...bills]
-        .sort((a, b) => Number(a.paid) - Number(b.paid) || a.dueDay - b.dueDay)
+        .sort((a, b) => {
+          const aOpen = getDebitMonthCount(a) > 0 ? 0 : 1;
+          const bOpen = getDebitMonthCount(b) > 0 ? 0 : 1;
+          return aOpen - bOpen || a.dueDay - b.dueDay || a.name.localeCompare(b.name);
+        })
         .slice(0, 8);
       if (!important.length) {
         return `<article class="item"><div class="item-icon">$</div><div><h3>Sem contas fixas</h3><p>Use Contas para cadastrar suas contas mensais.</p></div></article>`;
@@ -4735,6 +4887,32 @@
       return `pending ${status.className === "overdue" ? "overdue" : ""}`;
     }
 
+    function obligationDateValue(item) {
+      if (!item.date) return Number.MAX_SAFE_INTEGER;
+      const date = new Date(`${item.date}T12:00:00`);
+      const time = date.getTime();
+      return Number.isFinite(time) ? time : Number.MAX_SAFE_INTEGER;
+    }
+
+    function formatObligationDate(value) {
+      if (!value) return "sem data";
+      const [year, month, day] = String(value).split("-");
+      if (!year || !month || !day) return value;
+      return `${day}/${month}`;
+    }
+
+    function receivableRow(item, className = "") {
+      return `
+        <article class="receivable-row ${className}">
+          <div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${labelForType(item.type)} · ${formatObligationDate(item.date)} · ${labelForStatus(item.status)}</p>
+          </div>
+          <strong class="private-value">${brl.format(Number(item.value || 0))}</strong>
+        </article>
+      `;
+    }
+
     function renderSummary() {
       const totals = obligations.reduce((acc, item) => {
         if (item.status === "paid") return acc;
@@ -4746,11 +4924,30 @@
       qs("#owedTotal").textContent = brl.format(totals.owed);
       qs("#receiveTotal").textContent = brl.format(totals.receive);
       qs("#standbyTotal").textContent = brl.format(totals.standby);
+      const incomeBase = Number(profile.incomeBase || 0);
+      const expectedIncome = incomeBase + totals.receive + totals.owed;
+      const freeIncome = expectedIncome - getTotalDueThroughCurrentMonth();
+      qs("#incomeModeSelect").value = profile.incomeMode || "clt";
+      qs("#incomeBaseInput").value = incomeBase > 0 ? moneyInputValue(incomeBase) : "";
+      qs("#incomeExpectedTotal").textContent = brl.format(expectedIncome);
+      qs("#incomeChargeTotal").textContent = brl.format(totals.owed);
+      qs("#incomeFreeTotal").textContent = brl.format(freeIncome);
+      const openObligations = obligations
+        .filter((item) => item.status !== "paid")
+        .sort((a, b) => obligationDateValue(a) - obligationDateValue(b) || String(a.name).localeCompare(String(b.name)));
+      const charges = openObligations.filter((item) => item.type === "owed").slice(0, 5);
+      const receivables = openObligations.filter((item) => item.type === "receive").slice(0, 5);
+      qs("#chargeList").innerHTML = charges.length
+        ? charges.map((item) => receivableRow(item, "charge")).join("")
+        : `<article class="receivable-row"><div><h3>Ninguém para cobrar</h3><p>Cadastre em + Entrada como Pessoa me deve.</p></div><strong>R$ 0,00</strong></article>`;
+      qs("#receiveScheduleList").innerHTML = receivables.length
+        ? receivables.map((item) => receivableRow(item)).join("")
+        : `<article class="receivable-row"><div><h3>Sem recebimentos previstos</h3><p>Cadastre salário, cliente ou venda em + Entrada.</p></div><strong>R$ 0,00</strong></article>`;
       qs("#summaryList").innerHTML = obligations.map((item) => `
         <article class="item debt-row status-${item.status}">
           <div>
             <h3>${escapeHtml(item.name)}</h3>
-            <p>${labelForType(item.type)} · ${labelForStatus(item.status)}${item.date ? " · " + item.date : ""}${item.email ? " · " + item.email : ""}</p>
+            <p>${labelForType(item.type)} · ${labelForStatus(item.status)}${item.date ? " · " + formatObligationDate(item.date) : ""}${item.email ? " · " + item.email : ""}</p>
           </div>
           <div class="debt-actions">
             <strong class="amount private-value ${item.type === "receive" || item.type === "owed" ? "receive" : "high"}">${brl.format(item.value)}</strong>
@@ -6092,6 +6289,18 @@
       renderSummary();
       saveUserData();
       showToast("Entrada excluída.");
+    });
+
+    qs("#incomeModeSelect")?.addEventListener("change", (event) => {
+      profile.incomeMode = event.target.value || "clt";
+      saveUserData();
+      renderSummary();
+    });
+
+    qs("#incomeBaseInput")?.addEventListener("change", (event) => {
+      profile.incomeBase = Math.max(0, parseMoney(event.target.value));
+      saveUserData();
+      renderSummary();
     });
 
     function editObligation(item) {
