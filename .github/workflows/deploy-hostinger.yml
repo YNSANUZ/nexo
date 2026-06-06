@@ -64,10 +64,8 @@ jobs:
           skip_dirs = {".git", ".github", "node_modules"}
           force_upload = {
               Path("deploy-check.txt"),
-              Path("card/index.html"),
-              Path("card/app.js"),
-              Path("card/styles.css"),
-              Path("card/sw.js"),
+              Path("contas/index.html"),
+              Path("contas/sw.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
 
