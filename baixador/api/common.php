@@ -89,11 +89,44 @@ function ffmpeg_path(): ?string
     return ensure_executable(getenv('FFMPEG_PATH') ?: local_binary('ffmpeg'));
 }
 
+function process_tmp_dir(): string
+{
+    $dir = root_dir() . '/tmp';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+    return is_dir($dir) ? $dir : sys_get_temp_dir();
+}
+
 function command_available(?string $command): bool
 {
     if (!$command) return false;
     if ($command !== basename($command)) return is_file($command) && is_executable($command);
     return true;
+}
+
+function with_process_tmp_env(callable $callback)
+{
+    $tmp = process_tmp_dir();
+    $names = ['TMPDIR', 'TMP', 'TEMP', 'PYTHON_EGG_CACHE'];
+    $previous = [];
+    foreach ($names as $name) {
+        $value = getenv($name);
+        $previous[$name] = $value === false ? null : $value;
+        putenv("$name=$tmp");
+    }
+
+    try {
+        return $callback();
+    } finally {
+        foreach ($previous as $name => $value) {
+            if ($value === null) {
+                putenv($name);
+            } else {
+                putenv("$name=$value");
+            }
+        }
+    }
 }
 
 function run_command(array $args, int $timeout = 60): array
@@ -105,7 +138,10 @@ function run_command(array $args, int $timeout = 60): array
     ];
 
     $command = implode(' ', array_map('escapeshellarg', $args));
-    $process = proc_open($command, $descriptor, $pipes, root_dir());
+    $pipes = [];
+    $process = with_process_tmp_env(function () use ($command, $descriptor, &$pipes) {
+        return proc_open($command, $descriptor, $pipes, root_dir());
+    });
 
     if (!is_resource($process)) {
         throw new RuntimeException('Nao foi possivel iniciar o processo de extracao.');
