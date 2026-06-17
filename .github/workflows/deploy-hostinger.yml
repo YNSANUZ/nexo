@@ -70,11 +70,15 @@ jobs:
               Path("baixador/api/common.php"),
               Path("baixador/api/download.php"),
               Path("baixador/api/health.php"),
+              Path("baixador/cookies/.htaccess"),
+              Path("baixador/cookies/README.txt"),
               Path("baixador/public/app.js"),
               Path("baixar/api/analyze.php"),
               Path("baixar/api/common.php"),
               Path("baixar/api/download.php"),
               Path("baixar/api/health.php"),
+              Path("baixar/cookies/.htaccess"),
+              Path("baixar/cookies/README.txt"),
               Path("baixar/public/app.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}

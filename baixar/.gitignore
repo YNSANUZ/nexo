@@ -6,7 +6,7 @@ bin/*
 .env
 npm-debug.log*
 downloads/
-cookies/
+cookies/*.txt
 *.cookies.txt
 tmp/
 tmp-test/
