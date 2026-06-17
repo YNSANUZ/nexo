@@ -73,15 +73,9 @@ jobs:
               Path("baixador/cookies/.htaccess"),
               Path("baixador/cookies/README.txt"),
               Path("baixador/public/app.js"),
-              Path("baixar/api/analyze.php"),
-              Path("baixar/api/common.php"),
-              Path("baixar/api/download.php"),
-              Path("baixar/api/health.php"),
-              Path("baixar/cookies/.htaccess"),
-              Path("baixar/cookies/README.txt"),
-              Path("baixar/public/app.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
+          obsolete_dirs = {"baixar"}
 
           def should_skip(path: Path) -> bool:
               parts = set(path.parts)
@@ -228,6 +222,52 @@ jobs:
                   print(f"remove obsolete {obsolete_file}")
               except Exception:
                   pass
+
+          def remove_remote_tree(rel_dir: str) -> None:
+              rel_dir = rel_dir.strip("/")
+              if not rel_dir or rel_dir in {".", ".."}:
+                  return
+
+              def remove_dir(path: str) -> None:
+                  try:
+                      ftp.cwd(remote_root)
+                      ftp.cwd(path)
+                  except Exception:
+                      return
+
+                  try:
+                      entries = ftp.nlst()
+                  except Exception:
+                      entries = []
+
+                  for entry in entries:
+                      name = posixpath.basename(entry.rstrip("/"))
+                      if not name or name in {".", ".."}:
+                          continue
+                      child = posixpath.join(path, name)
+                      try:
+                          ftp.cwd(remote_root)
+                          ftp.cwd(child)
+                          remove_dir(child)
+                      except Exception:
+                          try:
+                              ftp.cwd(remote_root)
+                              ftp.delete(child)
+                              print(f"remove obsolete {child}")
+                          except Exception:
+                              pass
+
+                  try:
+                      ftp.cwd(remote_root)
+                      ftp.rmd(path)
+                      print(f"remove obsolete dir {path}")
+                  except Exception:
+                      pass
+
+              remove_dir(rel_dir)
+
+          for rel_dir in sorted(obsolete_dirs):
+              remove_remote_tree(rel_dir)
 
           try:
               ftp.quit()

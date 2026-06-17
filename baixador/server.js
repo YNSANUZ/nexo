@@ -806,7 +806,7 @@ function safeJoin(baseDir, pathname) {
 
 function serveStatic(requestUrl, res) {
   let pathname = decodeURIComponent(requestUrl.pathname);
-  pathname = pathname.replace(/^\/(?:baixar|baixador)(?=\/|$)/, "");
+  pathname = pathname.replace(/^\/baixador(?=\/|$)/, "");
   if (pathname === "" || pathname === "/") pathname = "/index.html";
 
   const rootFile = safeJoin(rootDir, pathname);
@@ -852,7 +852,7 @@ function serveStatic(requestUrl, res) {
 
 const server = http.createServer(async (req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-  const apiPathname = requestUrl.pathname.replace(/^\/(?:baixar|baixador)(?=\/api\/)/, "");
+  const apiPathname = requestUrl.pathname.replace(/^\/baixador(?=\/api\/)/, "");
 
   try {
     if (req.method === "POST" && apiPathname === "/api/analyze") {

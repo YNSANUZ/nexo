@@ -24,7 +24,6 @@ const supportedTypes = document.querySelector("[data-supported-types]");
 const apiBasePath = (() => {
   const path = window.location.pathname;
   if (path.includes("/baixador/")) return "/baixador/api";
-  if (path.includes("/baixar/")) return "/baixar/api";
   return "/api";
 })();
 

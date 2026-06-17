@@ -1,7 +1,6 @@
 RewriteEngine On
 AddType application/manifest+json .webmanifest
-RewriteRule ^baixador$ /baixar/ [R=301,L,QSA]
-RewriteRule ^baixador/(.*)$ /baixar/$1 [L,QSA]
+RewriteRule ^baixador$ /baixador/ [R=301,L,QSA]
 RewriteRule ^lembrete$ /lembrete/ [R=301,L,QSA]
 RewriteRule ^lembrete/$ /lembrete/index.html [L,QSA]
 RewriteRule ^card$ /card/ [R=301,L,QSA]

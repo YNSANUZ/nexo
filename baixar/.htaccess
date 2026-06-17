@@ -1,7 +1,0 @@
-RewriteEngine On
-AddType application/manifest+json .webmanifest
-RewriteRule ^api/analyze/?$ api/analyze.php [L,QSA]
-RewriteRule ^api/download/?$ api/download.php [L,QSA]
-RewriteRule ^api/health/?$ api/health.php [L,QSA]
-DirectoryIndex index.html
-Options -Indexes
