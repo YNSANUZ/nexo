@@ -8,6 +8,7 @@ try {
     }
 
     $body = read_json_body();
+    set_youtube_clients_override($body['youtubeClients'] ?? null);
     $url = validate_public_url((string) ($body['url'] ?? ''));
     $classifier = detect_source($url);
     $result = run_command(base_ytdlp_args($url), 70);

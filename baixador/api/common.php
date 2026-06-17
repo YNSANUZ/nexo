@@ -207,7 +207,41 @@ function command_probe(?string $command, array $args = [], int $timeout = 15): a
 
 function youtube_extractor_args(): array
 {
-    return ['-4', '--extractor-args', 'youtube:player_client=' . BAIXANEXO_YOUTUBE_CLIENTS];
+    return ['-4', '--extractor-args', 'youtube:player_client=' . youtube_clients()];
+}
+
+function normalize_youtube_clients($value): ?string
+{
+    $clean = preg_replace('/[^a-zA-Z0-9_,.-]+/', '', (string) $value);
+    $clean = trim((string) $clean, ',');
+    return $clean !== '' ? substr($clean, 0, 160) : null;
+}
+
+function set_youtube_clients_override($value): void
+{
+    $clean = normalize_youtube_clients($value);
+    if ($clean) {
+        $GLOBALS['BAIXANEXO_YOUTUBE_CLIENTS_OVERRIDE'] = $clean;
+    }
+}
+
+function youtube_clients(): string
+{
+    return $GLOBALS['BAIXANEXO_YOUTUBE_CLIENTS_OVERRIDE'] ?? BAIXANEXO_YOUTUBE_CLIENTS;
+}
+
+function is_youtube_url(string $url): bool
+{
+    $host = strtolower(preg_replace('/^www\./', '', parse_url($url, PHP_URL_HOST) ?: ''));
+    return $host === 'youtu.be' || str_ends_with($host, 'youtube.com') || str_ends_with($host, 'youtube-nocookie.com');
+}
+
+function with_youtube_client_param(array $params, string $url): array
+{
+    if (is_youtube_url($url)) {
+        $params['yc'] = youtube_clients();
+    }
+    return $params;
 }
 
 function is_private_ip(string $ip): bool
@@ -433,12 +467,12 @@ function normalize_formats(array $item, string $inputUrl, int $playlistIndex): a
         $seen[$key] = true;
 
         $downloadInputUrl = !empty($format['isDirectFallback']) ? (string) $directUrl : $inputUrl;
-        $params = http_build_query([
+        $params = http_build_query(with_youtube_client_param([
             'u' => encoded_url($downloadInputUrl),
             'formatId' => !empty($format['isDirectFallback']) ? '' : (string) $format['format_id'],
             'mode' => !empty($format['isDirectFallback']) ? 'direct' : ($type === 'audio' ? 'audio-original' : 'video'),
             'playlistIndex' => !empty($format['isDirectFallback']) ? '0' : (string) $playlistIndex,
-        ]);
+        ], $downloadInputUrl));
 
         $formats[] = [
             'id' => (string) $format['format_id'],
@@ -516,16 +550,16 @@ function normalize_item(array $item, string $inputUrl, array $classifier, int $i
         ] : ($thumbnail ? ['type' => 'image', 'url' => $thumbnail, 'label' => 'Imagem', 'ext' => 'jpg'] : null),
         'formats' => $formats,
         'primaryDownloadLabel' => $isImagePrimary ? 'Imagem' : 'MP4 melhor',
-        'bestVideoDownloadUrl' => '/api/download?' . http_build_query([
+        'bestVideoDownloadUrl' => '/api/download?' . http_build_query(with_youtube_client_param([
             'u' => encoded_url($primaryDownloadInput),
             'mode' => $isImagePrimary ? 'direct' : 'video',
             'playlistIndex' => $isImagePrimary ? '0' : (string) $playlistIndex,
-        ]),
-        'mp3DownloadUrl' => '/api/download?' . http_build_query([
+        ], $primaryDownloadInput)),
+        'mp3DownloadUrl' => '/api/download?' . http_build_query(with_youtube_client_param([
             'u' => encoded_url($inputUrl),
             'mode' => 'audio',
             'playlistIndex' => (string) $playlistIndex,
-        ]),
+        ], $inputUrl)),
     ];
 }
 

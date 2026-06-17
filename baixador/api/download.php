@@ -19,6 +19,7 @@ try {
     }
 
     $url = validate_public_url(decode_url_param($_GET['u'] ?? ''));
+    set_youtube_clients_override($_GET['yc'] ?? null);
     $mode = (string) ($_GET['mode'] ?? 'video');
     $formatId = trim((string) ($_GET['formatId'] ?? ''));
     $playlistIndex = (int) ($_GET['playlistIndex'] ?? 0);

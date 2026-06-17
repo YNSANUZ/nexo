@@ -11,7 +11,7 @@ json_response([
     'exec' => function_exists('proc_open'),
     'tmp' => process_tmp_dir(),
     'tmpWritable' => is_writable(process_tmp_dir()),
-    'youtubeClients' => BAIXANEXO_YOUTUBE_CLIENTS,
+    'youtubeClients' => youtube_clients(),
     'ytdlp' => $ytdlp,
     'ytdlpReady' => command_available($ytdlp),
     'ytdlpProbe' => command_probe($ytdlp, ['--version']),
