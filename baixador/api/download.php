@@ -73,6 +73,10 @@ try {
         $args[] = $arg;
     }
 
+    foreach (impersonate_args_for_url($url) as $arg) {
+        $args[] = $arg;
+    }
+
     foreach (cookie_args_for_url($url) as $arg) {
         $args[] = $arg;
     }
@@ -92,7 +96,15 @@ try {
     }
     $args[] = $url;
 
-    run_command($args, 300);
+    try {
+        run_command($args, 300);
+    } catch (Throwable $error) {
+        if (!is_impersonate_error($error)) throw $error;
+        $args = array_values(array_filter($args, function ($arg, $index) use ($args) {
+            return $arg !== '--impersonate' && ($index === 0 || $args[$index - 1] !== '--impersonate');
+        }, ARRAY_FILTER_USE_BOTH));
+        run_command($args, 300);
+    }
 
     $files = array_values(array_filter(glob($jobDir . '/*') ?: [], function ($file) {
         return is_file($file) && !str_ends_with($file, '.part');

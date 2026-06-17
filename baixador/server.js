@@ -291,6 +291,22 @@ function cookieArgsForUrl(url) {
   return match ? ["--cookies", cookiePath(match)] : [];
 }
 
+function impersonateTarget() {
+  const value = String(process.env.BAIXANEXO_IMPERSONATE || "chrome").trim();
+  if (!value || ["0", "false", "off", "none"].includes(value.toLowerCase())) return null;
+  return value.replace(/[^a-zA-Z0-9_:.-]+/g, "") || null;
+}
+
+function impersonateArgsForUrl(url, enabled = true) {
+  if (!enabled || (!isYoutubeUrl(url) && !isTiktokUrl(url))) return [];
+  const target = impersonateTarget();
+  return target ? ["--impersonate", target] : [];
+}
+
+function isImpersonateError(error) {
+  return /impersonat|curl_cffi|curl-?cffi/i.test(String(error?.message || ""));
+}
+
 function secondsToLabel(seconds) {
   if (!Number.isFinite(seconds) || seconds <= 0) return null;
   const value = Math.round(seconds);
@@ -575,7 +591,7 @@ function normalizeInfo(info, inputUrl, classifier) {
   };
 }
 
-function baseAnalyzeArgs(url) {
+function baseAnalyzeArgs(url, useImpersonate = true) {
   return [
     "--dump-single-json",
     "--no-warnings",
@@ -583,6 +599,7 @@ function baseAnalyzeArgs(url) {
     "--skip-download",
     "--socket-timeout", "20",
     "--no-check-certificates",
+    ...impersonateArgsForUrl(url, useImpersonate),
     ...cookieArgsForUrl(url),
     "-4",
     "--extractor-args", youtubeExtractorArgs,
@@ -592,7 +609,7 @@ function baseAnalyzeArgs(url) {
   ];
 }
 
-function baseDownloadArgs(url, outputTemplate, playlistIndex) {
+function baseDownloadArgs(url, outputTemplate, playlistIndex, useImpersonate = true) {
   const args = [
     "--no-warnings",
     "--no-check-certificates",
@@ -601,6 +618,7 @@ function baseDownloadArgs(url, outputTemplate, playlistIndex) {
     "--no-mtime",
     "--max-filesize", maxFileSize,
     "--socket-timeout", "20",
+    ...impersonateArgsForUrl(url, useImpersonate),
     ...cookieArgsForUrl(url),
     "-4",
     "--extractor-args", youtubeExtractorArgs,
@@ -695,7 +713,14 @@ async function handleAnalyze(req, res) {
     const body = await readJsonBody(req);
     const parsed = await validatePublicUrl(body.url);
     const classifier = detectSource(parsed);
-    const { stdout } = await runYtdlp(baseAnalyzeArgs(parsed.toString()), infoTimeout);
+    let result;
+    try {
+      result = await runYtdlp(baseAnalyzeArgs(parsed.toString()), infoTimeout);
+    } catch (error) {
+      if (!isImpersonateError(error)) throw error;
+      result = await runYtdlp(baseAnalyzeArgs(parsed.toString(), false), infoTimeout);
+    }
+    const { stdout } = result;
     const info = JSON.parse(stdout);
     sendJson(res, 200, normalizeInfo(info, parsed.toString(), classifier));
   } catch (error) {
@@ -725,7 +750,7 @@ async function handleDownload(requestUrl, res) {
     const formatId = String(requestUrl.searchParams.get("formatId") || "").trim();
     const playlistIndex = Number(requestUrl.searchParams.get("playlistIndex") || 0) || 0;
     const outputTemplate = path.join(jobDir, "%(title).120s-%(id)s.%(ext)s");
-    const baseArgs = baseDownloadArgs(parsed.toString(), outputTemplate, playlistIndex);
+    let baseArgs = baseDownloadArgs(parsed.toString(), outputTemplate, playlistIndex);
     let formatArgs;
 
     if (mode === "direct") {
@@ -745,7 +770,13 @@ async function handleDownload(requestUrl, res) {
         : ["-f", "best[ext=mp4]/best"];
     }
 
-    await runYtdlp([...formatArgs, ...baseArgs], downloadTimeout);
+    try {
+      await runYtdlp([...formatArgs, ...baseArgs], downloadTimeout);
+    } catch (error) {
+      if (!isImpersonateError(error)) throw error;
+      baseArgs = baseDownloadArgs(parsed.toString(), outputTemplate, playlistIndex, false);
+      await runYtdlp([...formatArgs, ...baseArgs], downloadTimeout);
+    }
 
     const files = fs.readdirSync(jobDir)
       .map((file) => path.join(jobDir, file))
@@ -870,6 +901,7 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         ytdlp: getYtdlpPath(),
         ffmpeg: hasFfmpeg(),
+        impersonate: impersonateTarget(),
         cookies: cookieStatus()
       });
       return;

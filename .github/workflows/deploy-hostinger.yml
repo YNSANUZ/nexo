@@ -63,6 +63,7 @@ jobs:
           local_root = Path(".").resolve()
           skip_dirs = {".git", ".github", "node_modules"}
           force_upload = {
+              Path(".htaccess"),
               Path("deploy-check.txt"),
               Path("contas/index.html"),
               Path("contas/sw.js"),
@@ -72,7 +73,10 @@ jobs:
               Path("baixador/api/health.php"),
               Path("baixador/cookies/.htaccess"),
               Path("baixador/cookies/README.txt"),
+              Path("baixador/index.html"),
               Path("baixador/public/app.js"),
+              Path("baixador/public/index.html"),
+              Path("baixador/server.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
           obsolete_dirs = {"baixar"}

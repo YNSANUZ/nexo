@@ -11,7 +11,12 @@ try {
     set_youtube_clients_override($body['youtubeClients'] ?? null);
     $url = validate_public_url((string) ($body['url'] ?? ''));
     $classifier = detect_source($url);
-    $result = run_command(base_ytdlp_args($url), 70);
+    try {
+        $result = run_command(base_ytdlp_args($url), 70);
+    } catch (Throwable $error) {
+        if (!is_impersonate_error($error)) throw $error;
+        $result = run_command(base_ytdlp_args($url, false), 70);
+    }
     $info = json_decode($result['stdout'], true);
 
     if (!is_array($info)) {

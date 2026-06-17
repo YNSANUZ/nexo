@@ -210,6 +210,27 @@ function youtube_extractor_args(): array
     return ['-4', '--extractor-args', 'youtube:player_client=' . youtube_clients()];
 }
 
+function impersonate_target(): ?string
+{
+    $value = trim((string) (getenv('BAIXANEXO_IMPERSONATE') ?: 'chrome'));
+    if ($value === '' || in_array(strtolower($value), ['0', 'false', 'off', 'none'], true)) {
+        return null;
+    }
+    return preg_replace('/[^a-zA-Z0-9_:.-]+/', '', $value) ?: null;
+}
+
+function impersonate_args_for_url(string $url, bool $enabled = true): array
+{
+    if (!$enabled || (!is_youtube_url($url) && !is_tiktok_url($url))) return [];
+    $target = impersonate_target();
+    return $target ? ['--impersonate', $target] : [];
+}
+
+function is_impersonate_error(Throwable $error): bool
+{
+    return (bool) preg_match('/impersonat|curl_cffi|curl-?cffi/i', $error->getMessage());
+}
+
 function normalize_youtube_clients($value): ?string
 {
     $clean = preg_replace('/[^a-zA-Z0-9_,.-]+/', '', (string) $value);
@@ -658,7 +679,7 @@ function normalize_info(array $info, string $inputUrl, array $classifier): array
     ];
 }
 
-function base_ytdlp_args(string $url): array
+function base_ytdlp_args(string $url, bool $useImpersonate = true): array
 {
     $ytdlp = ytdlp_path();
     if (!command_available($ytdlp)) {
@@ -673,6 +694,7 @@ function base_ytdlp_args(string $url): array
         '--skip-download',
         '--socket-timeout', '20',
         '--no-check-certificates',
+        ...impersonate_args_for_url($url, $useImpersonate),
         ...cookie_args_for_url($url),
         ...youtube_extractor_args(),
         '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
