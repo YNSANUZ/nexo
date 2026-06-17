@@ -232,6 +232,65 @@ function detectSource(parsed) {
   return { source: host, kind: "Site externo", accent: "#54f2c7" };
 }
 
+function isYoutubeUrl(value) {
+  try {
+    const host = cleanHostname(new URL(value).hostname);
+    return host === "youtu.be" || host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com");
+  } catch {
+    return false;
+  }
+}
+
+function isInstagramUrl(value) {
+  try {
+    return cleanHostname(new URL(value).hostname).endsWith("instagram.com");
+  } catch {
+    return false;
+  }
+}
+
+function isTiktokUrl(value) {
+  try {
+    const host = cleanHostname(new URL(value).hostname);
+    return host.endsWith("tiktok.com") || host.endsWith("tiktokv.com");
+  } catch {
+    return false;
+  }
+}
+
+function cookiePath(name) {
+  return path.join(rootDir, "cookies", `${name}.txt`);
+}
+
+function cookieFileExists(name) {
+  const filePath = cookiePath(name);
+  try {
+    return fs.statSync(filePath).isFile() && fs.statSync(filePath).size > 0;
+  } catch {
+    return false;
+  }
+}
+
+function cookieStatus() {
+  return {
+    youtube: cookieFileExists("youtube"),
+    instagram: cookieFileExists("instagram"),
+    tiktok: cookieFileExists("tiktok"),
+    generic: cookieFileExists("cookies")
+  };
+}
+
+function cookieArgsForUrl(url) {
+  const names = [];
+  if (isYoutubeUrl(url)) names.push("youtube");
+  if (isInstagramUrl(url)) names.push("instagram");
+  if (isTiktokUrl(url)) names.push("tiktok");
+  names.push("cookies");
+
+  const match = names.find((name) => cookieFileExists(name));
+  return match ? ["--cookies", cookiePath(match)] : [];
+}
+
 function secondsToLabel(seconds) {
   if (!Number.isFinite(seconds) || seconds <= 0) return null;
   const value = Math.round(seconds);
@@ -346,6 +405,23 @@ function choosePreview(formats) {
   return mp4 || playable.sort((a, b) => Number(b.height || 0) - Number(a.height || 0))[0] || image || null;
 }
 
+function emptyMediaReason(inputUrl, classifier, formats) {
+  if (formats.length > 0) return null;
+
+  try {
+    const pathName = new URL(inputUrl).pathname.toLowerCase();
+    if (classifier.source === "Instagram" && pathName.includes("/p/")) {
+      return cookieFileExists("instagram")
+        ? "O Instagram nao liberou as fotos ou videos desse post para o extrator."
+        : "Esse post ou carrossel precisa de cookies do Instagram no servidor para liberar fotos e videos.";
+    }
+  } catch {
+    return null;
+  }
+
+  return "Nenhum arquivo direto foi liberado pelo extrator para este link.";
+}
+
 function encodedUrl(value) {
   return Buffer.from(value).toString("base64url");
 }
@@ -431,6 +507,8 @@ function normalizeItem(item, inputUrl, classifier, index) {
   const primaryDownloadInput = isImagePrimary ? previewFormat.directUrl : inputUrl;
   const primaryDownloadMode = isImagePrimary ? "direct" : "video";
   const primaryPlaylistIndex = isImagePrimary ? 0 : playlistIndex;
+  const hasDownloads = formats.length > 0;
+  const emptyReason = emptyMediaReason(inputUrl, classifier, formats);
 
   return {
     index,
@@ -457,17 +535,19 @@ function normalizeItem(item, inputUrl, classifier, index) {
       ext: "jpg"
     } : null,
     formats,
+    hasDownloads,
+    emptyReason,
     primaryDownloadLabel: isImagePrimary ? "Imagem" : "MP4 melhor",
-    bestVideoDownloadUrl: `/api/download?${new URLSearchParams({
+    bestVideoDownloadUrl: hasDownloads ? `/api/download?${new URLSearchParams({
       u: encodedUrl(primaryDownloadInput),
       mode: primaryDownloadMode,
       playlistIndex: String(primaryPlaylistIndex)
-    }).toString()}`,
-    mp3DownloadUrl: `/api/download?${new URLSearchParams({
+    }).toString()}` : null,
+    mp3DownloadUrl: hasDownloads ? `/api/download?${new URLSearchParams({
       u: encodedUrl(inputUrl),
       mode: "audio",
       playlistIndex: String(playlistIndex)
-    }).toString()}`
+    }).toString()}` : null
   };
 }
 
@@ -503,6 +583,7 @@ function baseAnalyzeArgs(url) {
     "--skip-download",
     "--socket-timeout", "20",
     "--no-check-certificates",
+    ...cookieArgsForUrl(url),
     "-4",
     "--extractor-args", youtubeExtractorArgs,
     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
@@ -520,6 +601,7 @@ function baseDownloadArgs(url, outputTemplate, playlistIndex) {
     "--no-mtime",
     "--max-filesize", maxFileSize,
     "--socket-timeout", "20",
+    ...cookieArgsForUrl(url),
     "-4",
     "--extractor-args", youtubeExtractorArgs,
     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
@@ -618,11 +700,17 @@ async function handleAnalyze(req, res) {
     sendJson(res, 200, normalizeInfo(info, parsed.toString(), classifier));
   } catch (error) {
     const message = String(error.message || "Nao foi possivel analisar este link.");
+    let errorMessage = message;
+    if (message.includes("Sign in to confirm") || message.includes("--cookies")) {
+      errorMessage = "YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.";
+    } else if (message.includes("[TikTok]") && message.includes("Unexpected response")) {
+      errorMessage = "TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.";
+    } else if (message.includes("Unsupported URL")) {
+      errorMessage = "Ainda nao consegui extrair midia desse link.";
+    }
     sendJson(res, 400, {
       ok: false,
-      error: message.includes("Unsupported URL")
-        ? "Ainda nao consegui extrair midia desse link."
-        : message
+      error: errorMessage
     });
   }
 }
@@ -781,7 +869,8 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 200, {
         ok: true,
         ytdlp: getYtdlpPath(),
-        ffmpeg: hasFfmpeg()
+        ffmpeg: hasFfmpeg(),
+        cookies: cookieStatus()
       });
       return;
     }

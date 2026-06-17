@@ -23,6 +23,10 @@ try {
     $message = $error->getMessage();
     if (str_contains($message, 'Unsupported URL')) {
         $message = 'Ainda nao consegui extrair midia desse link.';
+    } elseif (str_contains($message, 'Sign in to confirm') || str_contains($message, '--cookies')) {
+        $message = 'YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.';
+    } elseif (str_contains($message, '[TikTok]') && str_contains($message, 'Unexpected response')) {
+        $message = 'TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.';
     }
     json_response(['ok' => false, 'error' => $message], 400);
 }

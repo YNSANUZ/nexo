@@ -66,12 +66,16 @@ jobs:
               Path("deploy-check.txt"),
               Path("contas/index.html"),
               Path("contas/sw.js"),
+              Path("baixador/api/analyze.php"),
               Path("baixador/api/common.php"),
               Path("baixador/api/download.php"),
               Path("baixador/api/health.php"),
+              Path("baixador/public/app.js"),
+              Path("baixar/api/analyze.php"),
               Path("baixar/api/common.php"),
               Path("baixar/api/download.php"),
               Path("baixar/api/health.php"),
+              Path("baixar/public/app.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
 

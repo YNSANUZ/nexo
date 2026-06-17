@@ -29,4 +29,4 @@ BAIXANEXO_YTDLP_TIMEOUT_MS=60000
 BAIXANEXO_DOWNLOAD_TIMEOUT_MS=240000
 ```
 
-Use apenas links publicos e conteudos que voce tem direito de baixar. O app nao usa login, cookies, DRM ou conteudo privado.
+Use apenas links publicos e conteudos que voce tem direito de baixar. O app nao baixa DRM ou conteudo privado; cookies opcionais podem ser usados no servidor apenas para liberar links publicos bloqueados por verificacao anti-bot.

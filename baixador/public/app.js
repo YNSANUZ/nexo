@@ -273,14 +273,12 @@ function renderFormats(item) {
     formatsList.innerHTML = `
       <div class="format-row">
         <div class="format-main">
-          <strong>Arquivo original</strong>
-          <em>O servidor tentara baixar a melhor opcao disponivel</em>
+          <strong>Midia nao liberada</strong>
+          <em>${escapeHtml(item.emptyReason || "Nenhum arquivo direto foi encontrado para este link.")}</em>
         </div>
-        <span>auto</span>
-        <span>auto</span>
-        <div class="format-actions">
-          <a class="mini-link primary" href="${escapeHtml(routeApiUrl(item.bestVideoDownloadUrl))}" download>Baixar</a>
-        </div>
+        <span>-</span>
+        <span>-</span>
+        <div class="format-actions"></div>
       </div>
     `;
     return;
@@ -338,10 +336,11 @@ function renderPayload() {
   sourceLabel.textContent = item.source || activePayload.source || "Fonte";
   mediaTitle.textContent = item.title || activePayload.title || "Midia encontrada";
   mediaMeta.textContent = [item.uploader, item.durationLabel].filter(Boolean).join(" / ") || "Opcoes prontas para download";
+  bestVideo.hidden = !item.bestVideoDownloadUrl;
   bestVideo.href = routeApiUrl(item.bestVideoDownloadUrl);
   primaryDownloadLabel.textContent = item.primaryDownloadLabel || "MP4 melhor";
   mp3Download.href = routeApiUrl(item.mp3DownloadUrl);
-  mp3Download.hidden = item.preview?.type === "image" && !(item.formats || []).some((format) => format.hasAudio);
+  mp3Download.hidden = !item.mp3DownloadUrl || (item.preview?.type === "image" && !(item.formats || []).some((format) => format.hasAudio));
   sourceOpen.href = item.webpageUrl || activePayload.webpageUrl || input.value.trim();
 
   renderPreview(item);

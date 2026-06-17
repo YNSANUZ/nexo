@@ -12,6 +12,7 @@ json_response([
     'tmp' => process_tmp_dir(),
     'tmpWritable' => is_writable(process_tmp_dir()),
     'youtubeClients' => youtube_clients(),
+    'cookies' => cookie_status(),
     'ytdlp' => $ytdlp,
     'ytdlpReady' => command_available($ytdlp),
     'ytdlpProbe' => command_probe($ytdlp, ['--version']),

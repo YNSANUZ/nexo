@@ -236,12 +236,65 @@ function is_youtube_url(string $url): bool
     return $host === 'youtu.be' || str_ends_with($host, 'youtube.com') || str_ends_with($host, 'youtube-nocookie.com');
 }
 
+function is_instagram_url(string $url): bool
+{
+    $host = strtolower(preg_replace('/^www\./', '', parse_url($url, PHP_URL_HOST) ?: ''));
+    return str_ends_with($host, 'instagram.com');
+}
+
+function is_tiktok_url(string $url): bool
+{
+    $host = strtolower(preg_replace('/^www\./', '', parse_url($url, PHP_URL_HOST) ?: ''));
+    return str_ends_with($host, 'tiktok.com') || str_ends_with($host, 'tiktokv.com');
+}
+
 function with_youtube_client_param(array $params, string $url): array
 {
     if (is_youtube_url($url)) {
         $params['yc'] = youtube_clients();
     }
     return $params;
+}
+
+function cookie_path(string $name): string
+{
+    return root_dir() . '/cookies/' . $name . '.txt';
+}
+
+function cookie_file_exists(string $name): bool
+{
+    $file = cookie_path($name);
+    return is_file($file) && is_readable($file) && filesize($file) > 0;
+}
+
+function cookie_status(): array
+{
+    return [
+        'youtube' => cookie_file_exists('youtube'),
+        'instagram' => cookie_file_exists('instagram'),
+        'tiktok' => cookie_file_exists('tiktok'),
+        'generic' => cookie_file_exists('cookies'),
+    ];
+}
+
+function cookie_file_for_url(string $url): ?string
+{
+    $names = [];
+    if (is_youtube_url($url)) $names[] = 'youtube';
+    if (is_instagram_url($url)) $names[] = 'instagram';
+    if (is_tiktok_url($url)) $names[] = 'tiktok';
+    $names[] = 'cookies';
+
+    foreach ($names as $name) {
+        if (cookie_file_exists($name)) return cookie_path($name);
+    }
+    return null;
+}
+
+function cookie_args_for_url(string $url): array
+{
+    $file = cookie_file_for_url($url);
+    return $file ? ['--cookies', $file] : [];
 }
 
 function is_private_ip(string $ip): bool
@@ -528,6 +581,8 @@ function normalize_item(array $item, string $inputUrl, array $classifier, int $i
     $title = safe_text($item['title'] ?? $item['fulltitle'] ?? $item['alt_title'] ?? null, $classifier['kind']);
     $isImagePrimary = ($previewFormat['type'] ?? '') === 'image';
     $primaryDownloadInput = $isImagePrimary ? (string) $previewFormat['directUrl'] : $inputUrl;
+    $emptyReason = empty_media_reason($inputUrl, $classifier, $formats);
+    $hasDownloads = count($formats) > 0;
 
     return [
         'index' => $index,
@@ -549,18 +604,33 @@ function normalize_item(array $item, string $inputUrl, array $classifier, int $i
             'ext' => $previewFormat['ext'],
         ] : ($thumbnail ? ['type' => 'image', 'url' => $thumbnail, 'label' => 'Imagem', 'ext' => 'jpg'] : null),
         'formats' => $formats,
+        'hasDownloads' => $hasDownloads,
+        'emptyReason' => $emptyReason,
         'primaryDownloadLabel' => $isImagePrimary ? 'Imagem' : 'MP4 melhor',
-        'bestVideoDownloadUrl' => '/api/download?' . http_build_query(with_youtube_client_param([
+        'bestVideoDownloadUrl' => $hasDownloads ? '/api/download?' . http_build_query(with_youtube_client_param([
             'u' => encoded_url($primaryDownloadInput),
             'mode' => $isImagePrimary ? 'direct' : 'video',
             'playlistIndex' => $isImagePrimary ? '0' : (string) $playlistIndex,
-        ], $primaryDownloadInput)),
-        'mp3DownloadUrl' => '/api/download?' . http_build_query(with_youtube_client_param([
+        ], $primaryDownloadInput)) : null,
+        'mp3DownloadUrl' => $hasDownloads ? '/api/download?' . http_build_query(with_youtube_client_param([
             'u' => encoded_url($inputUrl),
             'mode' => 'audio',
             'playlistIndex' => (string) $playlistIndex,
-        ], $inputUrl)),
+        ], $inputUrl)) : null,
     ];
+}
+
+function empty_media_reason(string $inputUrl, array $classifier, array $formats): ?string
+{
+    if ($formats) return null;
+
+    if (($classifier['source'] ?? '') === 'Instagram' && str_contains(strtolower(parse_url($inputUrl, PHP_URL_PATH) ?: ''), '/p/')) {
+        return cookie_file_exists('instagram')
+            ? 'O Instagram nao liberou as fotos ou videos desse post para o extrator.'
+            : 'Esse post ou carrossel precisa de cookies do Instagram no servidor para liberar fotos e videos.';
+    }
+
+    return 'Nenhum arquivo direto foi liberado pelo extrator para este link.';
 }
 
 function normalize_info(array $info, string $inputUrl, array $classifier): array
@@ -603,6 +673,7 @@ function base_ytdlp_args(string $url): array
         '--skip-download',
         '--socket-timeout', '20',
         '--no-check-certificates',
+        ...cookie_args_for_url($url),
         ...youtube_extractor_args(),
         '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
     ];

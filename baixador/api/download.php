@@ -73,6 +73,10 @@ try {
         $args[] = $arg;
     }
 
+    foreach (cookie_args_for_url($url) as $arg) {
+        $args[] = $arg;
+    }
+
     array_push(
         $args,
         '--user-agent',
