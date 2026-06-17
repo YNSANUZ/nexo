@@ -15,6 +15,10 @@ const maxFileSize = process.env.BAIXANEXO_MAX_FILESIZE || "1024M";
 const infoTimeout = Number(process.env.BAIXANEXO_YTDLP_TIMEOUT_MS || 60000);
 const downloadTimeout = Number(process.env.BAIXANEXO_DOWNLOAD_TIMEOUT_MS || 240000);
 const youtubeExtractorArgs = "youtube:player_client=web,mweb,android,web_safari,web_embedded";
+const vidSaveApiBase = "https://api.vidssave.com/api/contentsite_api";
+const vidSaveSseBase = "https://api.vidssave.com/sse/contentsite_api";
+const vidSaveAuth = "20250901majwlqo";
+const vidSaveDomain = "api-ak.vidssave.com";
 
 fs.mkdirSync(tempRoot, { recursive: true });
 
@@ -442,6 +446,200 @@ function encodedUrl(value) {
   return Buffer.from(value).toString("base64url");
 }
 
+function vidSaveBody(data) {
+  return new URLSearchParams({
+    auth: vidSaveAuth,
+    domain: vidSaveDomain,
+    ...data
+  });
+}
+
+async function postVidSave(pathname, data, timeoutMs = 35000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${vidSaveApiBase}/${pathname}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
+        "Accept": "application/json, text/plain, */*"
+      },
+      body: vidSaveBody(data),
+      signal: controller.signal
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || Number(payload.status || 0) !== 1) {
+      throw new Error(payload.message || payload.status_code || "Fallback de YouTube indisponivel agora.");
+    }
+    return payload.data || {};
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function waitVidSaveTask(taskId, timeoutMs = 90000) {
+  const params = new URLSearchParams({
+    auth: vidSaveAuth,
+    domain: vidSaveDomain,
+    task_id: taskId,
+    download_domain: "vidssave.com",
+    origin: "content_site"
+  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${vidSaveSseBase}/media/download_query?${params}`, {
+      headers: {
+        "Accept": "text/event-stream",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36"
+      },
+      signal: controller.signal
+    });
+    if (!response.ok || !response.body) throw new Error("Nao foi possivel preparar esse download agora.");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      if (/event:\s*failed/i.test(buffer)) {
+        throw new Error("Nao foi possivel preparar esse download agora.");
+      }
+      const match = buffer.match(/data:\s*(\{[^\n]+\})/i);
+      if (match) {
+        const data = JSON.parse(match[1]);
+        if (data.download_link) return data.download_link;
+      }
+    }
+  } finally {
+    clearTimeout(timer);
+  }
+  throw new Error("Tempo esgotado ao preparar esse download.");
+}
+
+async function prepareVidSaveDownload(request) {
+  if (!request || request.length < 20 || request.length > 20000) {
+    throw new Error("Pedido de download invalido.");
+  }
+  const data = await postVidSave("media/download", {
+    request,
+    no_encrypt: "1"
+  });
+  if (!data.task_id) throw new Error("Download nao retornou tarefa.");
+  const targetUrl = await waitVidSaveTask(data.task_id);
+  if (!isHttpUrl(targetUrl)) throw new Error("Link preparado invalido.");
+  return targetUrl;
+}
+
+function vidSaveQualityNumber(value) {
+  const match = String(value || "").match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+}
+
+function vidSaveDownloadUrl(directUrl, request) {
+  if (isHttpUrl(directUrl)) return directUrl;
+  if (!request) return null;
+  return `/api/download?vidsave=${encodedUrl(request)}`;
+}
+
+function vidSaveFormat(resource, index) {
+  const rawType = safeText(resource?.type || "file").toLowerCase();
+  if (!["video", "audio", "picture"].includes(rawType)) return null;
+  const directUrl = isHttpUrl(resource.download_url) ? resource.download_url : null;
+  const request = !directUrl && resource.resource_content ? String(resource.resource_content) : null;
+  const downloadUrl = vidSaveDownloadUrl(directUrl, request);
+  if (!downloadUrl) return null;
+  const type = rawType === "audio" ? "audio" : rawType === "picture" ? "image" : "video";
+  const label = safeText(resource.quality || "Original").toUpperCase();
+  const ext = safeText(resource.format || (type === "audio" ? "mp3" : "mp4")).toLowerCase();
+  const size = Number(resource.size || 0);
+
+  return {
+    id: safeText(resource.resource_id, `vidsave-${index}`),
+    label,
+    ext,
+    type,
+    height: type === "video" ? vidSaveQualityNumber(label) : null,
+    fps: null,
+    hasAudio: type === "audio" || type === "video",
+    hasVideo: type === "video",
+    size: size || null,
+    sizeLabel: bytesToLabel(size),
+    directUrl,
+    downloadUrl
+  };
+}
+
+async function analyzeWithVidSave(inputUrl, classifier) {
+  const data = await postVidSave("media/parse", {
+    origin: "source",
+    link: inputUrl
+  });
+  const formats = (Array.isArray(data.resources) ? data.resources : [])
+    .map(vidSaveFormat)
+    .filter(Boolean)
+    .sort((a, b) => {
+      const rank = { video: 0, image: 1, audio: 2, file: 3 };
+      const rankDiff = (rank[a.type] ?? 9) - (rank[b.type] ?? 9);
+      if (rankDiff) return rankDiff;
+      return vidSaveQualityNumber(b.label) - vidSaveQualityNumber(a.label) || Number(b.size || 0) - Number(a.size || 0);
+    });
+  if (!formats.length) {
+    throw new Error("Fallback encontrou o video, mas nao liberou links de download.");
+  }
+
+  const bestVideo = formats.find((format) => format.type === "video");
+  const bestDirectVideo = formats.find((format) => format.type === "video" && format.directUrl);
+  const bestAudio = formats.find((format) => format.type === "audio");
+  const title = safeText(data.title, classifier.kind);
+  const uploader = safeText(data.user_item?.nickname || data.author, "");
+  const duration = Number(data.duration || 0) || null;
+  const durationLabel = secondsToLabel(duration);
+  const thumbnail = isHttpUrl(data.thumbnail) ? data.thumbnail : null;
+  const preview = bestDirectVideo?.directUrl
+    ? { type: "video", url: bestDirectVideo.directUrl, label: bestDirectVideo.label, ext: bestDirectVideo.ext }
+    : thumbnail
+      ? { type: "image", url: thumbnail, label: "Imagem", ext: "jpg" }
+      : null;
+  const item = {
+    index: 0,
+    playlistIndex: 1,
+    id: safeText(data.id, "youtube"),
+    title,
+    source: classifier.source,
+    kind: classifier.kind,
+    accent: classifier.accent,
+    uploader,
+    duration,
+    durationLabel,
+    webpageUrl: inputUrl,
+    thumbnail,
+    preview,
+    formats: formats.slice(0, 18),
+    hasDownloads: true,
+    emptyReason: null,
+    primaryDownloadLabel: "MP4 melhor",
+    bestVideoDownloadUrl: bestVideo?.downloadUrl || null,
+    mp3DownloadUrl: bestAudio?.downloadUrl || null
+  };
+
+  return {
+    ok: true,
+    source: classifier.source,
+    kind: classifier.kind,
+    accent: classifier.accent,
+    title,
+    uploader,
+    duration,
+    durationLabel,
+    thumbnail,
+    webpageUrl: inputUrl,
+    items: [item]
+  };
+}
+
 function normalizeFormats(item, inputUrl, playlistIndex) {
   const seen = new Set();
   let rawFormats = Array.isArray(item.formats) ? item.formats : [];
@@ -717,8 +915,20 @@ async function handleAnalyze(req, res) {
     try {
       result = await runYtdlp(baseAnalyzeArgs(parsed.toString()), infoTimeout);
     } catch (error) {
-      if (!isImpersonateError(error)) throw error;
-      result = await runYtdlp(baseAnalyzeArgs(parsed.toString(), false), infoTimeout);
+      try {
+        if (!isImpersonateError(error)) throw error;
+        result = await runYtdlp(baseAnalyzeArgs(parsed.toString(), false), infoTimeout);
+      } catch (extractError) {
+        if (isYoutubeUrl(parsed.toString())) {
+          try {
+            sendJson(res, 200, await analyzeWithVidSave(parsed.toString(), classifier));
+            return;
+          } catch {
+            // Preserve the original extractor message when the external fallback is unavailable.
+          }
+        }
+        throw extractError;
+      }
     }
     const { stdout } = result;
     const info = JSON.parse(stdout);
@@ -741,6 +951,23 @@ async function handleAnalyze(req, res) {
 }
 
 async function handleDownload(requestUrl, res) {
+  if (requestUrl.searchParams.has("vidsave")) {
+    try {
+      const targetUrl = await prepareVidSaveDownload(decodeUrlParam(requestUrl.searchParams.get("vidsave")));
+      res.writeHead(302, {
+        "Location": targetUrl,
+        "Cache-Control": "no-store"
+      });
+      res.end();
+    } catch (error) {
+      sendJson(res, 400, {
+        ok: false,
+        error: String(error.message || "Nao foi possivel preparar esse download.")
+      });
+    }
+    return;
+  }
+
   const jobDir = path.join(tempRoot, crypto.randomUUID());
   fs.mkdirSync(jobDir, { recursive: true });
 

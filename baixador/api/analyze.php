@@ -14,8 +14,19 @@ try {
     try {
         $result = run_command(base_ytdlp_args($url), 70);
     } catch (Throwable $error) {
-        if (!is_impersonate_error($error)) throw $error;
-        $result = run_command(base_ytdlp_args($url, false), 70);
+        try {
+            if (!is_impersonate_error($error)) throw $error;
+            $result = run_command(base_ytdlp_args($url, false), 70);
+        } catch (Throwable $extractError) {
+            if (is_youtube_url($url)) {
+                try {
+                    json_response(vidsave_analyze($url, $classifier));
+                } catch (Throwable $fallbackError) {
+                    // Mantem a mensagem original do yt-dlp quando o fallback externo tambem falha.
+                }
+            }
+            throw $extractError;
+        }
     }
     $info = json_decode($result['stdout'], true);
 

@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 const BAIXANEXO_MAX_OUTPUT = 31457280;
 const BAIXANEXO_YOUTUBE_CLIENTS = 'web,mweb,android,web_safari,web_embedded';
+const BAIXANEXO_VIDSAVE_API = 'https://api.vidssave.com/api/contentsite_api';
+const BAIXANEXO_VIDSAVE_SSE = 'https://api.vidssave.com/sse/contentsite_api';
+const BAIXANEXO_VIDSAVE_AUTH = '20250901majwlqo';
+const BAIXANEXO_VIDSAVE_DOMAIN = 'api-ak.vidssave.com';
 
 if (!function_exists('str_starts_with')) {
     function str_starts_with(string $haystack, string $needle): bool
@@ -491,6 +495,260 @@ function format_quality(array $format): string
 function encoded_url(string $value): string
 {
     return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+}
+
+function vidsave_request_body(array $data): string
+{
+    return http_build_query(array_merge([
+        'auth' => BAIXANEXO_VIDSAVE_AUTH,
+        'domain' => BAIXANEXO_VIDSAVE_DOMAIN,
+    ], $data));
+}
+
+function vidsave_post(string $path, array $data, int $timeout = 35): array
+{
+    $url = BAIXANEXO_VIDSAVE_API . '/' . ltrim($path, '/');
+    $body = vidsave_request_body($data);
+    $headers = [
+        'Content-Type: application/x-www-form-urlencoded',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
+        'Accept: application/json, text/plain, */*',
+    ];
+
+    if (function_exists('curl_init')) {
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 12,
+        ]);
+        $raw = curl_exec($curl);
+        $error = curl_error($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        curl_close($curl);
+        if ($raw === false || $status >= 400) {
+            throw new RuntimeException($error ?: 'Fallback de YouTube indisponivel agora.');
+        }
+    } else {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => implode("\r\n", $headers),
+                'content' => $body,
+                'timeout' => $timeout,
+                'ignore_errors' => true,
+            ],
+        ]);
+        $raw = @file_get_contents($url, false, $context);
+        if ($raw === false) {
+            throw new RuntimeException('Fallback de YouTube indisponivel agora.');
+        }
+    }
+
+    $json = json_decode((string) $raw, true);
+    if (!is_array($json) || (int) ($json['status'] ?? 0) !== 1) {
+        throw new RuntimeException((string) ($json['message'] ?? $json['status_code'] ?? 'Fallback de YouTube indisponivel agora.'));
+    }
+
+    return is_array($json['data'] ?? null) ? $json['data'] : [];
+}
+
+function vidsave_wait_task(string $taskId, int $timeout = 90): string
+{
+    $url = BAIXANEXO_VIDSAVE_SSE . '/media/download_query?' . http_build_query([
+        'auth' => BAIXANEXO_VIDSAVE_AUTH,
+        'domain' => BAIXANEXO_VIDSAVE_DOMAIN,
+        'task_id' => $taskId,
+        'download_domain' => 'vidssave.com',
+        'origin' => 'content_site',
+    ]);
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => implode("\r\n", [
+                'Accept: text/event-stream',
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
+            ]),
+            'timeout' => $timeout,
+            'ignore_errors' => true,
+        ],
+    ]);
+    $stream = @fopen($url, 'r', false, $context);
+    if (!$stream) {
+        throw new RuntimeException('Nao foi possivel preparar esse download agora.');
+    }
+
+    stream_set_timeout($stream, $timeout);
+    $buffer = '';
+    $started = time();
+    while (!feof($stream) && (time() - $started) < $timeout) {
+        $line = fgets($stream);
+        if ($line === false) {
+            usleep(100000);
+            continue;
+        }
+        $buffer .= $line;
+        if (preg_match('/event:\s*failed/i', $buffer)) {
+            fclose($stream);
+            throw new RuntimeException('Nao foi possivel preparar esse download agora.');
+        }
+        if (preg_match('/data:\s*(\{[^\n]+\})/i', $buffer, $match)) {
+            $data = json_decode($match[1], true);
+            if (is_array($data) && !empty($data['download_link'])) {
+                fclose($stream);
+                return (string) $data['download_link'];
+            }
+        }
+    }
+
+    fclose($stream);
+    throw new RuntimeException('Tempo esgotado ao preparar esse download.');
+}
+
+function vidsave_prepare_download(string $request): string
+{
+    if (strlen($request) < 20 || strlen($request) > 20000) {
+        throw new InvalidArgumentException('Pedido de download invalido.');
+    }
+
+    $data = vidsave_post('media/download', [
+        'request' => $request,
+        'no_encrypt' => '1',
+    ], 35);
+    $taskId = safe_text($data['task_id'] ?? '');
+    if ($taskId === '') {
+        throw new RuntimeException('Download nao retornou tarefa.');
+    }
+
+    $url = vidsave_wait_task($taskId);
+    if (!is_http_url($url)) {
+        throw new RuntimeException('Link preparado invalido.');
+    }
+    return $url;
+}
+
+function vidsave_quality_number($value): int
+{
+    return preg_match('/(\d+)/', (string) $value, $match) ? (int) $match[1] : 0;
+}
+
+function vidsave_download_url(?string $directUrl, ?string $request): ?string
+{
+    if ($directUrl && is_http_url($directUrl)) return $directUrl;
+    if (!$request) return null;
+    return '/api/download?vidsave=' . encoded_url($request);
+}
+
+function vidsave_format(array $resource, int $index): ?array
+{
+    $rawType = strtolower(safe_text($resource['type'] ?? 'file'));
+    if (!in_array($rawType, ['video', 'audio', 'picture'], true)) return null;
+
+    $directUrl = is_http_url($resource['download_url'] ?? null) ? (string) $resource['download_url'] : null;
+    $request = !$directUrl && !empty($resource['resource_content']) ? (string) $resource['resource_content'] : null;
+    $downloadUrl = vidsave_download_url($directUrl, $request);
+    if (!$downloadUrl) return null;
+
+    $type = $rawType === 'audio' ? 'audio' : ($rawType === 'picture' ? 'image' : 'video');
+    $quality = strtoupper(safe_text($resource['quality'] ?? 'Original'));
+    $ext = strtolower(safe_text($resource['format'] ?? ($type === 'audio' ? 'mp3' : 'mp4')));
+    $size = (float) ($resource['size'] ?? 0);
+
+    return [
+        'id' => safe_text($resource['resource_id'] ?? null, 'vidsave-' . $index),
+        'label' => $quality,
+        'ext' => $ext,
+        'type' => $type,
+        'height' => $type === 'video' ? vidsave_quality_number($quality) : null,
+        'fps' => null,
+        'hasAudio' => $type === 'audio' || $type === 'video',
+        'hasVideo' => $type === 'video',
+        'size' => $size ?: null,
+        'sizeLabel' => bytes_to_label($size),
+        'directUrl' => $directUrl,
+        'downloadUrl' => $downloadUrl,
+    ];
+}
+
+function vidsave_analyze(string $url, array $classifier): array
+{
+    $data = vidsave_post('media/parse', [
+        'origin' => 'source',
+        'link' => $url,
+    ], 35);
+    $resources = is_array($data['resources'] ?? null) ? $data['resources'] : [];
+    $formats = [];
+    foreach ($resources as $index => $resource) {
+        if (is_array($resource)) {
+            $format = vidsave_format($resource, $index);
+            if ($format) $formats[] = $format;
+        }
+    }
+    usort($formats, function ($a, $b) {
+        $rank = ['video' => 0, 'image' => 1, 'audio' => 2, 'file' => 3];
+        $ra = $rank[$a['type']] ?? 9;
+        $rb = $rank[$b['type']] ?? 9;
+        if ($ra !== $rb) return $ra <=> $rb;
+        return (vidsave_quality_number($b['label'] ?? '') <=> vidsave_quality_number($a['label'] ?? '')) ?: ((float) ($b['size'] ?? 0) <=> (float) ($a['size'] ?? 0));
+    });
+    if (!$formats) {
+        throw new RuntimeException('Fallback encontrou o video, mas nao liberou links de download.');
+    }
+
+    $bestVideo = null;
+    $bestDirectVideo = null;
+    $bestAudio = null;
+    foreach ($formats as $format) {
+        if (!$bestVideo && $format['type'] === 'video') $bestVideo = $format;
+        if (!$bestDirectVideo && $format['type'] === 'video' && !empty($format['directUrl'])) $bestDirectVideo = $format;
+        if (!$bestAudio && $format['type'] === 'audio') $bestAudio = $format;
+    }
+
+    $title = safe_text($data['title'] ?? null, $classifier['kind']);
+    $uploader = safe_text($data['user_item']['nickname'] ?? $data['author'] ?? '');
+    $duration = (float) ($data['duration'] ?? 0);
+    $thumbnail = is_http_url($data['thumbnail'] ?? null) ? (string) $data['thumbnail'] : null;
+    $preview = $bestDirectVideo && !empty($bestDirectVideo['directUrl'])
+        ? ['type' => 'video', 'url' => $bestDirectVideo['directUrl'], 'label' => $bestDirectVideo['label'], 'ext' => $bestDirectVideo['ext']]
+        : ($thumbnail ? ['type' => 'image', 'url' => $thumbnail, 'label' => 'Imagem', 'ext' => 'jpg'] : null);
+    $item = [
+        'index' => 0,
+        'playlistIndex' => 1,
+        'id' => safe_text($data['id'] ?? null, 'youtube'),
+        'title' => $title,
+        'source' => $classifier['source'],
+        'kind' => $classifier['kind'],
+        'accent' => $classifier['accent'],
+        'uploader' => $uploader,
+        'duration' => $duration ?: null,
+        'durationLabel' => seconds_to_label($duration),
+        'webpageUrl' => $url,
+        'thumbnail' => $thumbnail,
+        'preview' => $preview,
+        'formats' => array_slice($formats, 0, 18),
+        'hasDownloads' => true,
+        'emptyReason' => null,
+        'primaryDownloadLabel' => 'MP4 melhor',
+        'bestVideoDownloadUrl' => $bestVideo['downloadUrl'] ?? null,
+        'mp3DownloadUrl' => $bestAudio['downloadUrl'] ?? null,
+    ];
+
+    return [
+        'ok' => true,
+        'source' => $classifier['source'],
+        'kind' => $classifier['kind'],
+        'accent' => $classifier['accent'],
+        'title' => $title,
+        'uploader' => $uploader,
+        'duration' => $duration ?: null,
+        'durationLabel' => seconds_to_label($duration),
+        'thumbnail' => $thumbnail,
+        'webpageUrl' => $url,
+        'items' => [$item],
+    ];
 }
 
 function pick_thumbnail(array $item): ?string

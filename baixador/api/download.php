@@ -18,6 +18,13 @@ try {
         json_response(['ok' => false, 'error' => 'Metodo nao permitido.'], 405);
     }
 
+    if (isset($_GET['vidsave'])) {
+        $targetUrl = vidsave_prepare_download(decode_url_param($_GET['vidsave']));
+        header('Location: ' . $targetUrl, true, 302);
+        header('Cache-Control: no-store');
+        exit;
+    }
+
     $url = validate_public_url(decode_url_param($_GET['u'] ?? ''));
     set_youtube_clients_override($_GET['yc'] ?? null);
     $mode = (string) ($_GET['mode'] ?? 'video');

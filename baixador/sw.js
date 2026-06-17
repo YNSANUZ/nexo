@@ -1,10 +1,10 @@
-const CACHE_NAME = "baixanexo-v20260616-3";
+const CACHE_NAME = "baixanexo-v20260617-1";
 const appRoot = new URL("./", self.location.href);
 const shellFiles = [
   "./",
   "./manifest.webmanifest",
   "./public/styles.css?v=20260616-2",
-  "./public/app.js?v=20260616-2",
+  "./public/app.js?v=20260617-1",
   "./public/cube.js?v=20260616-2",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
