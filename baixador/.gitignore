@@ -7,6 +7,7 @@ bin/*
 npm-debug.log*
 downloads/
 cookies/*.txt
+!cookies/README.txt
 *.cookies.txt
 tmp/
 tmp-test/
