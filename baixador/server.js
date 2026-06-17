@@ -454,6 +454,14 @@ function vidSaveBody(data) {
   });
 }
 
+function vidSaveSupportedUrl(url) {
+  return isYoutubeUrl(url) || isTiktokUrl(url) || isInstagramUrl(url);
+}
+
+function payloadHasDownloads(payload) {
+  return (payload.items || []).some((item) => item?.hasDownloads);
+}
+
 async function postVidSave(pathname, data, timeoutMs = 35000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -506,6 +514,11 @@ async function waitVidSaveTask(taskId, timeoutMs = 90000) {
       buffer += decoder.decode(value, { stream: true });
       if (/event:\s*failed/i.test(buffer)) {
         throw new Error("Nao foi possivel preparar esse download agora.");
+      }
+      const urlMatch = buffer.match(/"download_link"\s*:\s*"([^"]+)"/i);
+      if (urlMatch) {
+        const targetUrl = JSON.parse(`"${urlMatch[1]}"`);
+        if (isHttpUrl(targetUrl)) return targetUrl;
       }
       const match = buffer.match(/data:\s*(\{[^\n]+\})/i);
       if (match) {
@@ -919,7 +932,7 @@ async function handleAnalyze(req, res) {
         if (!isImpersonateError(error)) throw error;
         result = await runYtdlp(baseAnalyzeArgs(parsed.toString(), false), infoTimeout);
       } catch (extractError) {
-        if (isYoutubeUrl(parsed.toString())) {
+        if (vidSaveSupportedUrl(parsed.toString())) {
           try {
             sendJson(res, 200, await analyzeWithVidSave(parsed.toString(), classifier));
             return;
@@ -932,7 +945,16 @@ async function handleAnalyze(req, res) {
     }
     const { stdout } = result;
     const info = JSON.parse(stdout);
-    sendJson(res, 200, normalizeInfo(info, parsed.toString(), classifier));
+    const normalized = normalizeInfo(info, parsed.toString(), classifier);
+    if (!payloadHasDownloads(normalized) && vidSaveSupportedUrl(parsed.toString())) {
+      try {
+        sendJson(res, 200, await analyzeWithVidSave(parsed.toString(), classifier));
+        return;
+      } catch {
+        // Keep the primary extractor response when the fallback also finds nothing.
+      }
+    }
+    sendJson(res, 200, normalized);
   } catch (error) {
     const message = String(error.message || "Nao foi possivel analisar este link.");
     let errorMessage = message;

@@ -505,6 +505,19 @@ function vidsave_request_body(array $data): string
     ], $data));
 }
 
+function vidsave_supported_url(string $url): bool
+{
+    return is_youtube_url($url) || is_tiktok_url($url) || is_instagram_url($url);
+}
+
+function normalized_has_downloads(array $payload): bool
+{
+    foreach (($payload['items'] ?? []) as $item) {
+        if (is_array($item) && !empty($item['hasDownloads'])) return true;
+    }
+    return false;
+}
+
 function vidsave_post(string $path, array $data, int $timeout = 35): array
 {
     $url = BAIXANEXO_VIDSAVE_API . '/' . ltrim($path, '/');
@@ -594,6 +607,13 @@ function vidsave_wait_task(string $taskId, int $timeout = 90): string
         if (preg_match('/event:\s*failed/i', $buffer)) {
             fclose($stream);
             throw new RuntimeException('Nao foi possivel preparar esse download agora.');
+        }
+        if (preg_match('/"download_link"\s*:\s*"([^"]+)"/i', $buffer, $urlMatch)) {
+            $decodedUrl = json_decode('"' . $urlMatch[1] . '"', true);
+            if (is_string($decodedUrl) && is_http_url($decodedUrl)) {
+                fclose($stream);
+                return $decodedUrl;
+            }
         }
         if (preg_match('/data:\s*(\{[^\n]+\})/i', $buffer, $match)) {
             $data = json_decode($match[1], true);

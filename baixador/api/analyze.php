@@ -18,7 +18,7 @@ try {
             if (!is_impersonate_error($error)) throw $error;
             $result = run_command(base_ytdlp_args($url, false), 70);
         } catch (Throwable $extractError) {
-            if (is_youtube_url($url)) {
+            if (vidsave_supported_url($url)) {
                 try {
                     json_response(vidsave_analyze($url, $classifier));
                 } catch (Throwable $fallbackError) {
@@ -34,7 +34,16 @@ try {
         throw new RuntimeException('Resposta invalida do extrator.');
     }
 
-    json_response(normalize_info($info, $url, $classifier));
+    $normalized = normalize_info($info, $url, $classifier);
+    if (!normalized_has_downloads($normalized) && vidsave_supported_url($url)) {
+        try {
+            json_response(vidsave_analyze($url, $classifier));
+        } catch (Throwable $fallbackError) {
+            // Se o fallback nao liberar nada, conserva a resposta original do extrator principal.
+        }
+    }
+
+    json_response($normalized);
 } catch (Throwable $error) {
     $message = $error->getMessage();
     if (str_contains($message, 'Unsupported URL')) {
