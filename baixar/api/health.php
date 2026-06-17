@@ -9,8 +9,12 @@ json_response([
     'ok' => true,
     'php' => PHP_VERSION,
     'exec' => function_exists('proc_open'),
+    'tmp' => process_tmp_dir(),
+    'tmpWritable' => is_writable(process_tmp_dir()),
     'ytdlp' => $ytdlp,
     'ytdlpReady' => command_available($ytdlp),
+    'ytdlpProbe' => command_probe($ytdlp, ['--version']),
     'ffmpeg' => $ffmpeg,
     'ffmpegReady' => command_available($ffmpeg),
+    'ffmpegProbe' => command_probe($ffmpeg, ['-version']),
 ]);

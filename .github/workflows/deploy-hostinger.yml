@@ -66,6 +66,10 @@ jobs:
               Path("deploy-check.txt"),
               Path("contas/index.html"),
               Path("contas/sw.js"),
+              Path("baixador/api/common.php"),
+              Path("baixador/api/health.php"),
+              Path("baixar/api/common.php"),
+              Path("baixar/api/health.php"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
 
@@ -241,34 +245,21 @@ jobs:
               with urlopen(req, timeout=30) as res:
                   return res.read().decode("utf-8", "replace")
 
+          import json
+
           marker = get("https://primusdf.com.br/deploy-check.txt")
-          index = get("https://primusdf.com.br/card/index.html")
-          app = get("https://primusdf.com.br/card/app.js")
-          styles = get("https://primusdf.com.br/card/styles.css")
-          tutorial = get("https://primusdf.com.br/card/nexo-tutorial-popup.js")
+          baixador = get("https://primusdf.com.br/baixador/")
+          manifest = get("https://primusdf.com.br/baixador/manifest.webmanifest")
+          health = json.loads(get("https://primusdf.com.br/baixador/api/health"))
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
-              ("versao nova do index do card", "card-20260604-message-inbox" in index),
-              ("perfil vitrine no app", "profileDashboardNavHtml" in app),
-              ("caixa de mensagens no app", "startMessageRealtimeSync" in app and "profile-message-list" in index),
-              ("pins do mapa limpos", "pin-card-face\" aria-hidden=\"true" in app),
-              ("simbolos de missoes no css", "Profile dashboard and mission symbols" in styles),
-              ("perfil 9:16 premium no css", "Profile portrait 9:16 premium card" in styles),
-              ("mapa limpo sem bolha do presente", "Clean map overlay stack" in styles),
-              ("feedback do tutorial no index", "card-20260604-tutorial-feedback" in index),
-              ("premio do evento no index", "event-reward" in index),
-              ("botao de desafios no index", "challenge-gift-open" in index),
-              ("sistema de XP no app", "profileXpSummary" in app),
-              ("emblemas oficiais no app", "OFFICIAL_BADGES" in app),
-              ("botao Meu Card no index", "nav-my-card" in index),
-              ("busca de usuarios no index", "user-search-results" in index),
-              ("busca de usuarios no app", "renderUserSearchResults" in app),
-              ("remove album admin congelado", "completeAlbumMap" not in app),
-              ("tutorial usa Cloudinary", "https://res.cloudinary.com/dzcjew9ns/video/upload/v1780541095/NEXO_card_xyqefp.mp4?_s=public-apps" in tutorial),
-              ("feedback do tutorial no js", "nexoTutorialFeedback" in tutorial),
-              ("agradecimento do feedback", "Obrigado pelo feedback." in tutorial),
-              ("tutorial nao usa MP4 local", "assets/nexo-card-tutorial.mp4" not in tutorial),
+              ("baixador publicado", "BaixaNEXO" in baixador and "data-download-form" in baixador),
+              ("manifest do BaixaNEXO", "BaixaNEXO" in manifest and "/baixador/" in manifest),
+              ("health ok", health.get("ok") is True),
+              ("php pode executar processos", health.get("exec") is True),
+              ("yt-dlp pronto", health.get("ytdlpReady") is True),
+              ("ffmpeg pronto", health.get("ffmpegReady") is True),
           ]
 
           failed = [name for name, ok in checks if not ok]
@@ -278,5 +269,5 @@ jobs:
                   print("- " + name)
               sys.exit(1)
 
-          print("Dominio conferido com a versao nova do NEXO Card.")
+          print("Dominio conferido com BaixaNEXO publicado.")
           PY

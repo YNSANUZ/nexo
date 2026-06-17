@@ -189,6 +189,21 @@ function run_command(array $args, int $timeout = 60): array
     return ['stdout' => $stdout, 'stderr' => $stderr];
 }
 
+function command_probe(?string $command, array $args = [], int $timeout = 15): array
+{
+    if (!command_available($command)) {
+        return ['ok' => false, 'error' => 'Comando indisponivel.'];
+    }
+
+    try {
+        $result = run_command(array_merge([(string) $command], $args), $timeout);
+        $output = trim(preg_replace('/\s+/', ' ', $result['stdout'] ?: $result['stderr']));
+        return ['ok' => true, 'output' => substr($output, 0, 300)];
+    } catch (Throwable $error) {
+        return ['ok' => false, 'error' => substr($error->getMessage(), 0, 500)];
+    }
+}
+
 function is_private_ip(string $ip): bool
 {
     if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
