@@ -14,6 +14,7 @@ const port = Number(process.env.PORT || 3100);
 const maxFileSize = process.env.BAIXANEXO_MAX_FILESIZE || "1024M";
 const infoTimeout = Number(process.env.BAIXANEXO_YTDLP_TIMEOUT_MS || 60000);
 const downloadTimeout = Number(process.env.BAIXANEXO_DOWNLOAD_TIMEOUT_MS || 240000);
+const youtubeExtractorArgs = "youtube:player_client=web,mweb,android,web_safari,web_embedded";
 
 fs.mkdirSync(tempRoot, { recursive: true });
 
@@ -502,6 +503,8 @@ function baseAnalyzeArgs(url) {
     "--skip-download",
     "--socket-timeout", "20",
     "--no-check-certificates",
+    "-4",
+    "--extractor-args", youtubeExtractorArgs,
     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
     ...getFfmpegArgs(),
     url
@@ -517,6 +520,8 @@ function baseDownloadArgs(url, outputTemplate, playlistIndex) {
     "--no-mtime",
     "--max-filesize", maxFileSize,
     "--socket-timeout", "20",
+    "-4",
+    "--extractor-args", youtubeExtractorArgs,
     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
     ...getFfmpegArgs(),
     "-o", outputTemplate

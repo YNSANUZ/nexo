@@ -66,6 +66,9 @@ try {
         getenv('BAIXANEXO_MAX_FILESIZE') ?: '1024M',
         '--socket-timeout',
         '20',
+        '-4',
+        '--extractor-args',
+        'youtube:player_client=web,mweb,android,web_safari,web_embedded',
         '--user-agent',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36'
     );

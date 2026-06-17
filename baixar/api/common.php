@@ -563,6 +563,8 @@ function base_ytdlp_args(string $url): array
         '--skip-download',
         '--socket-timeout', '20',
         '--no-check-certificates',
+        '-4',
+        '--extractor-args', 'youtube:player_client=web,mweb,android,web_safari,web_embedded',
         '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
     ];
 
