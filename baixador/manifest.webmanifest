@@ -1,0 +1,27 @@
+{
+  "id": "/baixador/",
+  "name": "BaixaNEXO",
+  "short_name": "BaixaNEXO",
+  "description": "Baixador limpo para links publicos de video, audio e imagem.",
+  "start_url": "/baixador/",
+  "scope": "/baixador/",
+  "display": "standalone",
+  "background_color": "#087df4",
+  "theme_color": "#087df4",
+  "orientation": "portrait-primary",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

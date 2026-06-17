@@ -1,0 +1,12 @@
+node_modules/
+bin/*
+!bin/
+!bin/yt-dlp
+!bin/ffmpeg
+.env
+npm-debug.log*
+downloads/
+tmp/
+tmp-test/
+*.log
+baixanexo-*.png
