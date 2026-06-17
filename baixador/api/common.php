@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 const BAIXANEXO_MAX_OUTPUT = 31457280;
+const BAIXANEXO_YOUTUBE_CLIENTS = 'web,mweb,android,web_safari,web_embedded';
 
 if (!function_exists('str_starts_with')) {
     function str_starts_with(string $haystack, string $needle): bool
@@ -202,6 +203,11 @@ function command_probe(?string $command, array $args = [], int $timeout = 15): a
     } catch (Throwable $error) {
         return ['ok' => false, 'error' => substr($error->getMessage(), 0, 500)];
     }
+}
+
+function youtube_extractor_args(): array
+{
+    return ['-4', '--extractor-args', 'youtube:player_client=' . BAIXANEXO_YOUTUBE_CLIENTS];
 }
 
 function is_private_ip(string $ip): bool
@@ -563,8 +569,7 @@ function base_ytdlp_args(string $url): array
         '--skip-download',
         '--socket-timeout', '20',
         '--no-check-certificates',
-        '-4',
-        '--extractor-args', 'youtube:player_client=web,mweb,android,web_safari,web_embedded',
+        ...youtube_extractor_args(),
         '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
     ];
 
