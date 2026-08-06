@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: hostinger-production
+  group: hostinger-production-v2
   cancel-in-progress: true
 
 jobs:
