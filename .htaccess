@@ -1,5 +1,5 @@
 RewriteEngine On
-RedirectMatch 301 ^/baixa-nexo(?:/index\.html)?/?$ /nexo/
+RedirectMatch 301 ^/baixa-nexo(?:/index\.html)?/?$ /baixador/
 AddType application/manifest+json .webmanifest
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

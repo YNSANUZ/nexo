@@ -302,10 +302,16 @@ jobs:
               with urlopen(req, timeout=30) as res:
                   return res.read().decode("utf-8", "replace")
 
+          def get_with_final_url(url):
+              req = Request(url + "?v=" + stamp, headers={"Cache-Control": "no-cache", "Pragma": "no-cache"})
+              with urlopen(req, timeout=30) as res:
+                  return res.read().decode("utf-8", "replace"), res.geturl()
+
           import json
 
           marker = get("https://primusdf.com.br/deploy-check.txt")
           official = get("https://primusdf.com.br/baixador/")
+          legacy, legacy_url = get_with_final_url("https://primusdf.com.br/baixa-nexo")
           nexo = get("https://primusdf.com.br/nexo/")
           manifest = get("https://primusdf.com.br/baixador/manifest.webmanifest")
           instalar = get("https://primusdf.com.br/baixador/instalar/")
@@ -314,6 +320,7 @@ jobs:
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
               ("site branco oficial publicado", "Baixador NEXO" in official and "/baixador/_next/" in official),
+              ("baixa-nexo redireciona ao baixador oficial", "Baixador NEXO" in legacy and legacy_url.startswith("https://primusdf.com.br/baixador/")),
               ("portal NEXO publicado", "NEXO Apps" in nexo),
               ("manifest do Baixador oficial", '"id": "/baixador/"' in manifest and '"scope": "/baixador/"' in manifest),
               ("APK atual na pagina de instalacao", "Baixador-NEXO-Android-0.3.1.apk" in instalar),
