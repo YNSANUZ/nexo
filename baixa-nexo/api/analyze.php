@@ -14,6 +14,15 @@ try {
     if (instagram_story_profile_username($url) !== null) {
         json_response(vidsave_instagram_profile_stories($url, $classifier));
     }
+    if (is_tiktok_url($url)) {
+        try {
+            // TikTok costuma entregar URLs CDN temporarias pelo yt-dlp. O fluxo
+            // preparado evita os 403 e os resultados somente de audio.
+            json_response(vidsave_analyze($url, $classifier));
+        } catch (Throwable $preferredTikTokError) {
+            // Mantem o yt-dlp como segunda fonte quando o preparador estiver indisponivel.
+        }
+    }
     try {
         $result = run_command(base_ytdlp_args($url), 70);
     } catch (Throwable $error) {
@@ -56,8 +65,8 @@ try {
         $message = 'O Instagram nao liberou esse conteudo. Se for um Story, confirme que o link ainda esta ativo; Stories expiram em 24 horas.';
     } elseif ($source === 'YouTube' && (str_contains($message, 'Sign in to confirm') || str_contains($message, '--cookies'))) {
         $message = 'YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.';
-    } elseif (str_contains($message, '[TikTok]') && str_contains($message, 'Unexpected response')) {
-        $message = 'TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.';
+    } elseif ($source === 'TikTok' && (str_contains($message, 'Your IP address is blocked') || str_contains($message, 'Unexpected response') || str_contains($message, '--cookies'))) {
+        $message = 'O TikTok nao liberou esse video. Confirme que o link ainda esta publico ou tente novamente mais tarde.';
     }
     json_response(['ok' => false, 'error' => $message], 400);
 }

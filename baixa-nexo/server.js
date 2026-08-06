@@ -644,7 +644,7 @@ async function analyzeWithVidSave(inputUrl, classifier) {
     formats: formats.slice(0, 18),
     hasDownloads: true,
     emptyReason: null,
-    primaryDownloadLabel: "MP4 melhor",
+    primaryDownloadLabel: classifier.source === "TikTok" ? "MP4 sem marca d'agua" : "MP4 melhor",
     bestVideoDownloadUrl: bestVideo?.downloadUrl || null,
     bestVideoVidSaveRequest: bestVideo?.vidSaveRequest || null,
     mp3DownloadUrl: bestAudio?.downloadUrl || null,
@@ -1044,6 +1044,16 @@ async function handleAnalyze(req, res) {
       sendJson(res, 200, await analyzeInstagramProfileStories(parsed.toString(), classifier));
       return;
     }
+    if (isTiktokUrl(parsed.toString())) {
+      try {
+        // Prefer prepared downloads for TikTok: its direct CDN URLs frequently
+        // expire or answer 403 even when analysis itself succeeds.
+        sendJson(res, 200, await analyzeWithVidSave(parsed.toString(), classifier));
+        return;
+      } catch {
+        // Keep yt-dlp as the independent secondary extractor.
+      }
+    }
     let result;
     try {
       result = await runYtdlp(baseAnalyzeArgs(parsed.toString()), infoTimeout);
@@ -1082,8 +1092,8 @@ async function handleAnalyze(req, res) {
       errorMessage = "O Instagram nao liberou esse conteudo. Se for um Story, confirme que o link ainda esta ativo; Stories expiram em 24 horas.";
     } else if (classifier?.source === "YouTube" && (message.includes("Sign in to confirm") || message.includes("--cookies"))) {
       errorMessage = "YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.";
-    } else if (message.includes("[TikTok]") && message.includes("Unexpected response")) {
-      errorMessage = "TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.";
+    } else if (classifier?.source === "TikTok" && (/Your IP address is blocked|Unexpected response/i.test(message) || message.includes("--cookies"))) {
+      errorMessage = "O TikTok nao liberou esse video. Confirme que o link ainda esta publico ou tente novamente mais tarde.";
     } else if (message.includes("Unsupported URL")) {
       errorMessage = "Ainda nao consegui extrair midia desse link.";
     }

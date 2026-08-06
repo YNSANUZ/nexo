@@ -761,7 +761,7 @@ function vidsave_analyze(string $url, array $classifier): array
         'formats' => array_slice($formats, 0, 18),
         'hasDownloads' => true,
         'emptyReason' => null,
-        'primaryDownloadLabel' => 'MP4 melhor',
+        'primaryDownloadLabel' => $classifier['source'] === 'TikTok' ? 'MP4 sem marca d\'agua' : 'MP4 melhor',
         'bestVideoDownloadUrl' => $bestVideo['downloadUrl'] ?? null,
         'bestVideoVidSaveRequest' => $bestVideo['vidSaveRequest'] ?? null,
         'mp3DownloadUrl' => $bestAudio['downloadUrl'] ?? null,
