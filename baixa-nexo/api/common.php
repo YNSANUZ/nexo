@@ -659,6 +659,90 @@ function vidsave_prepare_download(string $request): string
     return $url;
 }
 
+function proxy_prepared_download(string $url): void
+{
+    $validated = validate_public_url($url);
+    if (!function_exists('curl_init')) {
+        header('Location: ' . $validated, true, 302);
+        header('Cache-Control: no-store');
+        exit;
+    }
+
+    $requestHeaders = [
+        'Accept: video/*,audio/*,image/*,application/octet-stream;q=0.9,*/*;q=0.8',
+        'Referer: https://vidssave.com/',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36',
+    ];
+    $range = trim((string) ($_SERVER['HTTP_RANGE'] ?? ''));
+    if ($range !== '' && preg_match('/^bytes=\d*-\d*$/', $range)) {
+        $requestHeaders[] = 'Range: ' . $range;
+    }
+
+    $status = 200;
+    $responseHeaders = [];
+    $headersSent = false;
+    $sendHeaders = static function () use (&$status, &$responseHeaders, &$headersSent): void {
+        if ($headersSent) return;
+        $headersSent = true;
+        http_response_code($status >= 200 && $status <= 599 ? $status : 200);
+        foreach (['content-type', 'content-length', 'content-range', 'accept-ranges', 'content-disposition'] as $name) {
+            if (!empty($responseHeaders[$name])) {
+                header($name . ': ' . $responseHeaders[$name]);
+            }
+        }
+        if (empty($responseHeaders['content-type'])) header('Content-Type: application/octet-stream');
+        if (empty($responseHeaders['content-disposition'])) header('Content-Disposition: attachment; filename="tiktok-video.mp4"');
+        header('Cache-Control: private, no-store');
+        header('X-Accel-Buffering: no');
+    };
+
+    $curl = curl_init($validated);
+    curl_setopt_array($curl, [
+        CURLOPT_HTTPHEADER => $requestHeaders,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 300,
+        CURLOPT_BUFFERSIZE => 65536,
+        CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$status, &$responseHeaders, &$headersSent, $sendHeaders): int {
+            $length = strlen($line);
+            $trimmed = trim($line);
+            if (preg_match('/^HTTP\/\S+\s+(\d{3})/', $trimmed, $match)) {
+                $status = (int) $match[1];
+                $responseHeaders = [];
+                return $length;
+            }
+            if ($trimmed === '') {
+                if ($status < 300 || $status >= 400) $sendHeaders();
+                return $length;
+            }
+            $separator = strpos($line, ':');
+            if ($separator !== false) {
+                $name = strtolower(trim(substr($line, 0, $separator)));
+                $responseHeaders[$name] = trim(substr($line, $separator + 1));
+            }
+            return $length;
+        },
+        CURLOPT_WRITEFUNCTION => static function ($handle, string $chunk) use ($sendHeaders): int {
+            $sendHeaders();
+            echo $chunk;
+            if (function_exists('fastcgi_finish_request')) {
+                // Do not finish here; only make the chunk available to the client.
+                @ob_flush();
+            }
+            flush();
+            return strlen($chunk);
+        },
+    ]);
+    $ok = curl_exec($curl);
+    $error = curl_error($curl);
+    curl_close($curl);
+    if ($ok === false && !$headersSent) {
+        throw new RuntimeException($error ?: 'Nao foi possivel transmitir esse download.');
+    }
+    exit;
+}
+
 function vidsave_quality_number($value): int
 {
     return preg_match('/(\d+)/', (string) $value, $match) ? (int) $match[1] : 0;

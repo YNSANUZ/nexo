@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const dns = require("dns").promises;
 const fs = require("fs");
 const http = require("http");
+const https = require("https");
 const net = require("net");
 const os = require("os");
 const path = require("path");
@@ -1104,16 +1105,55 @@ async function handleAnalyze(req, res) {
   }
 }
 
-async function handleDownload(requestUrl, res) {
+async function proxyPreparedDownload(targetUrl, req, res, redirectCount = 0) {
+  if (redirectCount > 5) throw new Error("O servidor de midia redirecionou muitas vezes.");
+  const parsed = await validatePublicUrl(targetUrl);
+  const client = parsed.protocol === "https:" ? https : http;
+  const headers = {
+    "Accept": "video/*,audio/*,image/*,application/octet-stream;q=0.9,*/*;q=0.8",
+    "Referer": "https://vidssave.com/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36"
+  };
+  if (/^bytes=\d*-\d*$/.test(String(req.headers.range || ""))) headers.Range = req.headers.range;
+
+  await new Promise((resolve, reject) => {
+    const upstreamRequest = client.get(parsed, { headers, timeout: 300000 }, (upstream) => {
+      const status = Number(upstream.statusCode || 502);
+      if (status >= 300 && status < 400 && upstream.headers.location) {
+        const nextUrl = new URL(upstream.headers.location, parsed).toString();
+        upstream.resume();
+        proxyPreparedDownload(nextUrl, req, res, redirectCount + 1).then(resolve, reject);
+        return;
+      }
+      const outputHeaders = {
+        "Content-Type": upstream.headers["content-type"] || "application/octet-stream",
+        "Content-Disposition": upstream.headers["content-disposition"] || 'attachment; filename="tiktok-video.mp4"',
+        "Cache-Control": "private, no-store",
+        "X-Accel-Buffering": "no"
+      };
+      for (const name of ["content-length", "content-range", "accept-ranges"]) {
+        if (upstream.headers[name]) outputHeaders[name] = upstream.headers[name];
+      }
+      res.writeHead(status, outputHeaders);
+      upstream.pipe(res);
+      upstream.on("end", resolve);
+      upstream.on("error", reject);
+    });
+    upstreamRequest.on("timeout", () => upstreamRequest.destroy(new Error("Tempo esgotado ao transmitir o download.")));
+    upstreamRequest.on("error", reject);
+  });
+}
+
+async function handleDownload(requestUrl, req, res) {
   if (requestUrl.searchParams.has("vidsave")) {
     try {
       const targetUrl = await prepareVidSaveDownload(decodeUrlParam(requestUrl.searchParams.get("vidsave")));
-      res.writeHead(302, {
-        "Location": targetUrl,
-        "Cache-Control": "no-store"
-      });
-      res.end();
+      await proxyPreparedDownload(targetUrl, req, res);
     } catch (error) {
+      if (res.headersSent) {
+        res.destroy(error);
+        return;
+      }
       sendJson(res, 400, {
         ok: false,
         error: String(error.message || "Nao foi possivel preparar esse download.")
@@ -1273,7 +1313,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && apiPathname === "/api/download") {
-      await handleDownload(requestUrl, res);
+      await handleDownload(requestUrl, req, res);
       return;
     }
 

@@ -20,9 +20,7 @@ try {
 
     if (isset($_GET['vidsave'])) {
         $targetUrl = vidsave_prepare_download(decode_url_param($_GET['vidsave']));
-        header('Location: ' . $targetUrl, true, 302);
-        header('Cache-Control: no-store');
-        exit;
+        proxy_prepared_download($targetUrl);
     }
 
     $url = validate_public_url(decode_url_param($_GET['u'] ?? ''));
