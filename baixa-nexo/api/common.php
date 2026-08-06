@@ -267,6 +267,15 @@ function is_instagram_url(string $url): bool
     return str_ends_with($host, 'instagram.com');
 }
 
+function instagram_story_profile_username(string $url): ?string
+{
+    if (!is_instagram_url($url)) return null;
+    $path = (string) (parse_url($url, PHP_URL_PATH) ?: '');
+    return preg_match('#^/stories/([A-Za-z0-9._]+)/?$#', $path, $match)
+        ? strtolower($match[1])
+        : null;
+}
+
 function is_tiktok_url(string $url): bool
 {
     $host = strtolower(preg_replace('/^www\./', '', parse_url($url, PHP_URL_HOST) ?: ''));
@@ -771,6 +780,126 @@ function vidsave_analyze(string $url, array $classifier): array
         'thumbnail' => $thumbnail,
         'webpageUrl' => $url,
         'items' => [$item],
+    ];
+}
+
+function vidsave_instagram_profile_stories(string $url, array $classifier): array
+{
+    $username = instagram_story_profile_username($url);
+    if (!$username) {
+        throw new InvalidArgumentException('Link de perfil de Stories invalido.');
+    }
+
+    $profile = vidsave_post('media/blogger_parse', [
+        'link' => 'https://www.instagram.com/' . $username . '/',
+    ], 35);
+    $uid = safe_text($profile['uid'] ?? '');
+    $siteName = safe_text($profile['site_name'] ?? 'ins', 'ins');
+    if ($uid === '') {
+        throw new RuntimeException('Nao foi possivel localizar esse perfil publico do Instagram.');
+    }
+
+    $storyFeed = vidsave_post('media/posts_parse', [
+        'site_name' => $siteName,
+        'uid' => $uid,
+        'cursor' => '',
+        'type' => 'stories',
+    ], 35);
+    $rawItems = is_array($storyFeed['items'] ?? null) ? $storyFeed['items'] : [];
+    $items = [];
+    $mediaIndex = 0;
+
+    foreach ($rawItems as $rawItem) {
+        if (!is_array($rawItem)) continue;
+        $postId = safe_text($rawItem['post_id'] ?? '');
+        $rawMedia = is_array($rawItem['media'] ?? null) ? $rawItem['media'] : [];
+
+        foreach ($rawMedia as $media) {
+            if (!is_array($media)) continue;
+            $resources = is_array($media['resources'] ?? null) ? $media['resources'] : [];
+            $formats = [];
+            foreach ($resources as $resourceIndex => $resource) {
+                if (!is_array($resource)) continue;
+                if (empty($resource['type']) && !empty($media['type'])) {
+                    $resource['type'] = $media['type'];
+                }
+                $format = vidsave_format($resource, ($mediaIndex * 20) + $resourceIndex);
+                if ($format) $formats[] = $format;
+            }
+            if (!$formats) continue;
+
+            usort($formats, function ($a, $b) {
+                $rank = ['video' => 0, 'image' => 1, 'audio' => 2, 'file' => 3];
+                $ra = $rank[$a['type']] ?? 9;
+                $rb = $rank[$b['type']] ?? 9;
+                if ($ra !== $rb) return $ra <=> $rb;
+                return (vidsave_quality_number($b['label'] ?? '') <=> vidsave_quality_number($a['label'] ?? ''))
+                    ?: ((float) ($b['size'] ?? 0) <=> (float) ($a['size'] ?? 0));
+            });
+
+            $primary = $formats[0];
+            $thumbnail = is_http_url($media['thumbnail'] ?? null)
+                ? (string) $media['thumbnail']
+                : (is_http_url($rawItem['thumbnail'] ?? null) ? (string) $rawItem['thumbnail'] : null);
+            $storyUrl = $postId !== ''
+                ? 'https://www.instagram.com/stories/' . $username . '/' . $postId . '/'
+                : $url;
+            $isImage = ($primary['type'] ?? '') === 'image';
+            $preview = !empty($primary['directUrl'])
+                ? [
+                    'type' => $isImage ? 'image' : 'video',
+                    'url' => $primary['directUrl'],
+                    'label' => $primary['label'],
+                    'ext' => $primary['ext'],
+                ]
+                : ($thumbnail ? ['type' => 'image', 'url' => $thumbnail, 'label' => 'Imagem', 'ext' => 'jpg'] : null);
+            $itemNumber = count($items) + 1;
+
+            $items[] = [
+                'index' => $itemNumber - 1,
+                'playlistIndex' => $itemNumber,
+                'id' => safe_text($media['media_id'] ?? null, $postId !== '' ? $postId : 'story-' . $itemNumber),
+                'title' => 'Story ' . $itemNumber . ' de @' . $username,
+                'source' => $classifier['source'],
+                'kind' => $classifier['kind'],
+                'accent' => $classifier['accent'],
+                'uploader' => '@' . $username,
+                'duration' => null,
+                'durationLabel' => null,
+                'webpageUrl' => $storyUrl,
+                'thumbnail' => $thumbnail,
+                'preview' => $preview,
+                'formats' => array_slice($formats, 0, 18),
+                'hasDownloads' => true,
+                'emptyReason' => null,
+                'primaryDownloadLabel' => $isImage ? 'Imagem original' : 'MP4 original',
+                'bestVideoDownloadUrl' => $primary['downloadUrl'] ?? null,
+                'bestVideoVidSaveRequest' => $primary['vidSaveRequest'] ?? null,
+                'mp3DownloadUrl' => null,
+                'mp3VidSaveRequest' => null,
+            ];
+            $mediaIndex++;
+            if (count($items) >= 20) break 2;
+        }
+    }
+
+    if (!$items) {
+        throw new RuntimeException('Nenhum Story publico ativo foi encontrado para @' . $username . '. Stories expiram em 24 horas.');
+    }
+
+    $first = $items[0];
+    return [
+        'ok' => true,
+        'source' => $classifier['source'],
+        'kind' => $classifier['kind'],
+        'accent' => $classifier['accent'],
+        'title' => 'Stories de @' . $username,
+        'uploader' => '@' . $username,
+        'duration' => null,
+        'durationLabel' => null,
+        'thumbnail' => $first['thumbnail'],
+        'webpageUrl' => $url,
+        'items' => $items,
     ];
 }
 

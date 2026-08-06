@@ -11,6 +11,9 @@ try {
     set_youtube_clients_override($body['youtubeClients'] ?? null);
     $url = validate_public_url((string) ($body['url'] ?? ''));
     $classifier = detect_source($url);
+    if (instagram_story_profile_username($url) !== null) {
+        json_response(vidsave_instagram_profile_stories($url, $classifier));
+    }
     try {
         $result = run_command(base_ytdlp_args($url), 70);
     } catch (Throwable $error) {
@@ -46,9 +49,12 @@ try {
     json_response($normalized);
 } catch (Throwable $error) {
     $message = $error->getMessage();
+    $source = $classifier['source'] ?? '';
     if (str_contains($message, 'Unsupported URL')) {
         $message = 'Ainda nao consegui extrair midia desse link.';
-    } elseif (str_contains($message, 'Sign in to confirm') || str_contains($message, '--cookies')) {
+    } elseif ($source === 'Instagram' && (str_contains($message, 'log in') || str_contains($message, 'login') || str_contains($message, '--cookies'))) {
+        $message = 'O Instagram nao liberou esse conteudo. Se for um Story, confirme que o link ainda esta ativo; Stories expiram em 24 horas.';
+    } elseif ($source === 'YouTube' && (str_contains($message, 'Sign in to confirm') || str_contains($message, '--cookies'))) {
         $message = 'YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.';
     } elseif (str_contains($message, '[TikTok]') && str_contains($message, 'Unexpected response')) {
         $message = 'TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.';

@@ -253,6 +253,16 @@ function isInstagramUrl(value) {
   }
 }
 
+function instagramStoryProfileUsername(value) {
+  try {
+    if (!isInstagramUrl(value)) return null;
+    const match = new URL(value).pathname.match(/^\/stories\/([A-Za-z0-9._]+)\/?$/);
+    return match ? match[1].toLowerCase() : null;
+  } catch {
+    return null;
+  }
+}
+
 function isTiktokUrl(value) {
   try {
     const host = cleanHostname(new URL(value).hostname);
@@ -656,6 +666,106 @@ async function analyzeWithVidSave(inputUrl, classifier) {
   };
 }
 
+async function analyzeInstagramProfileStories(inputUrl, classifier) {
+  const username = instagramStoryProfileUsername(inputUrl);
+  if (!username) throw new Error('Link de perfil de Stories invalido.');
+
+  const profile = await postVidSave("media/blogger_parse", {
+    link: `https://www.instagram.com/${username}/`
+  });
+  const uid = safeText(profile.uid, "");
+  const siteName = safeText(profile.site_name, "ins");
+  if (!uid) throw new Error("Nao foi possivel localizar esse perfil publico do Instagram.");
+
+  const storyFeed = await postVidSave("media/posts_parse", {
+    site_name: siteName,
+    uid,
+    cursor: "",
+    type: "stories"
+  });
+  const rawItems = Array.isArray(storyFeed.items) ? storyFeed.items : [];
+  const items = [];
+  let mediaIndex = 0;
+
+  for (const rawItem of rawItems) {
+    if (!rawItem || typeof rawItem !== "object") continue;
+    const postId = safeText(rawItem.post_id, "");
+    const rawMedia = Array.isArray(rawItem.media) ? rawItem.media : [];
+    for (const media of rawMedia) {
+      const formats = (Array.isArray(media?.resources) ? media.resources : [])
+        .map((resource, resourceIndex) => vidSaveFormat({
+          ...resource,
+          type: resource?.type || media?.type
+        }, (mediaIndex * 20) + resourceIndex))
+        .filter(Boolean)
+        .sort((a, b) => {
+          const rank = { video: 0, image: 1, audio: 2, file: 3 };
+          const rankDiff = (rank[a.type] ?? 9) - (rank[b.type] ?? 9);
+          return rankDiff || vidSaveQualityNumber(b.label) - vidSaveQualityNumber(a.label) || Number(b.size || 0) - Number(a.size || 0);
+        });
+      if (!formats.length) continue;
+
+      const primary = formats[0];
+      const thumbnail = isHttpUrl(media.thumbnail)
+        ? media.thumbnail
+        : isHttpUrl(rawItem.thumbnail) ? rawItem.thumbnail : null;
+      const storyUrl = postId
+        ? `https://www.instagram.com/stories/${username}/${postId}/`
+        : inputUrl;
+      const isImage = primary.type === "image";
+      const preview = primary.directUrl
+        ? { type: isImage ? "image" : "video", url: primary.directUrl, label: primary.label, ext: primary.ext }
+        : thumbnail ? { type: "image", url: thumbnail, label: "Imagem", ext: "jpg" } : null;
+      const itemNumber = items.length + 1;
+
+      items.push({
+        index: itemNumber - 1,
+        playlistIndex: itemNumber,
+        id: safeText(media.media_id, postId || `story-${itemNumber}`),
+        title: `Story ${itemNumber} de @${username}`,
+        source: classifier.source,
+        kind: classifier.kind,
+        accent: classifier.accent,
+        uploader: `@${username}`,
+        duration: null,
+        durationLabel: null,
+        webpageUrl: storyUrl,
+        thumbnail,
+        preview,
+        formats: formats.slice(0, 18),
+        hasDownloads: true,
+        emptyReason: null,
+        primaryDownloadLabel: isImage ? "Imagem original" : "MP4 original",
+        bestVideoDownloadUrl: primary.downloadUrl || null,
+        bestVideoVidSaveRequest: primary.vidSaveRequest || null,
+        mp3DownloadUrl: null,
+        mp3VidSaveRequest: null
+      });
+      mediaIndex += 1;
+      if (items.length >= 20) break;
+    }
+    if (items.length >= 20) break;
+  }
+
+  if (!items.length) {
+    throw new Error(`Nenhum Story publico ativo foi encontrado para @${username}. Stories expiram em 24 horas.`);
+  }
+
+  return {
+    ok: true,
+    source: classifier.source,
+    kind: classifier.kind,
+    accent: classifier.accent,
+    title: `Stories de @${username}`,
+    uploader: `@${username}`,
+    duration: null,
+    durationLabel: null,
+    thumbnail: items[0].thumbnail,
+    webpageUrl: inputUrl,
+    items
+  };
+}
+
 function normalizeFormats(item, inputUrl, playlistIndex) {
   const seen = new Set();
   let rawFormats = Array.isArray(item.formats) ? item.formats : [];
@@ -925,10 +1035,15 @@ function readJsonBody(req) {
 }
 
 async function handleAnalyze(req, res) {
+  let classifier = null;
   try {
     const body = await readJsonBody(req);
     const parsed = await validatePublicUrl(body.url);
-    const classifier = detectSource(parsed);
+    classifier = detectSource(parsed);
+    if (instagramStoryProfileUsername(parsed.toString())) {
+      sendJson(res, 200, await analyzeInstagramProfileStories(parsed.toString(), classifier));
+      return;
+    }
     let result;
     try {
       result = await runYtdlp(baseAnalyzeArgs(parsed.toString()), infoTimeout);
@@ -963,7 +1078,9 @@ async function handleAnalyze(req, res) {
   } catch (error) {
     const message = String(error.message || "Nao foi possivel analisar este link.");
     let errorMessage = message;
-    if (message.includes("Sign in to confirm") || message.includes("--cookies")) {
+    if (classifier?.source === "Instagram" && (/log\s*in|login/i.test(message) || message.includes("--cookies"))) {
+      errorMessage = "O Instagram nao liberou esse conteudo. Se for um Story, confirme que o link ainda esta ativo; Stories expiram em 24 horas.";
+    } else if (classifier?.source === "YouTube" && (message.includes("Sign in to confirm") || message.includes("--cookies"))) {
       errorMessage = "YouTube bloqueou o IP do servidor. O suporte a cookies ja esta pronto; coloque cookies/youtube.txt no servidor para liberar esses links.";
     } else if (message.includes("[TikTok]") && message.includes("Unexpected response")) {
       errorMessage = "TikTok bloqueou a resposta para este IP. O suporte a cookies ja esta pronto; coloque cookies/tiktok.txt no servidor ou tente novamente mais tarde.";

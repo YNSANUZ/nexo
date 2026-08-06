@@ -306,15 +306,17 @@ jobs:
 
           marker = get("https://primusdf.com.br/deploy-check.txt")
           official = get("https://primusdf.com.br/baixador/")
-          baixador = get("https://primusdf.com.br/baixa-nexo/")
-          manifest = get("https://primusdf.com.br/baixa-nexo/manifest.webmanifest")
+          nexo = get("https://primusdf.com.br/nexo/")
+          manifest = get("https://primusdf.com.br/baixador/manifest.webmanifest")
+          instalar = get("https://primusdf.com.br/baixador/instalar/")
           health = json.loads(get("https://primusdf.com.br/baixa-nexo/api/health"))
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
               ("site branco oficial publicado", "Baixador NEXO" in official and "/baixador/_next/" in official),
-              ("baixador publicado", "BaixaNEXO" in baixador and "data-download-form" in baixador),
-              ("manifest do BaixaNEXO", "BaixaNEXO" in manifest and "/baixa-nexo/" in manifest),
+              ("portal NEXO publicado", "NEXO Apps" in nexo),
+              ("manifest do Baixador oficial", '"id": "/baixador/"' in manifest and '"scope": "/baixador/"' in manifest),
+              ("APK atual na pagina de instalacao", "Baixador-NEXO-Android-0.3.1.apk" in instalar),
               ("health ok", health.get("ok") is True),
               ("php pode executar processos", health.get("exec") is True),
               ("yt-dlp pronto", health.get("ytdlpReady") is True),

@@ -1,7 +1,16 @@
 RewriteEngine On
+RedirectMatch 301 ^/baixa-nexo(?:/index\.html)?/?$ /nexo/
 AddType application/manifest+json .webmanifest
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^c/([A-Za-z0-9_-]+)/?$ /credencial/convite.php?evento=$1&convite=1 [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(cvt[A-Za-z0-9-]{2,60})/?$ /credencial/convite.php?slug=$1&convite=1 [L,QSA]
+RewriteRule ^nexo$ /nexo/ [R=301,L,NE,QSA]
+RewriteRule ^nexo/(.*)$ /NEXO/$1 [L,QSA]
+RewriteRule ^NEXO$ /NEXO/ [R=301,L,QSA]
 RewriteRule ^baixador$ /baixador/ [R=301,L,QSA]
-RewriteRule ^baixa-nexo$ /baixa-nexo/ [R=301,L,QSA]
 RewriteRule ^lembrete$ /lembrete/ [R=301,L,QSA]
 RewriteRule ^lembrete/$ /lembrete/index.html [L,QSA]
 RewriteRule ^card$ /card/ [R=301,L,QSA]
@@ -17,3 +26,4 @@ RewriteRule ^publicar%20copa/?(.*)$ /card/$1 [R=301,L,QSA]
 RewriteRule ^publicar\ copa/?(.*)$ /card/$1 [R=301,L,QSA]
 RewriteRule ^nexo-checkin/?(.*)$ /credencial/$1 [R=301,L,QSA]
 RewriteRule ^credenciamento/?(.*)$ /credencial/$1 [R=301,L,QSA]
+RewriteRule ^silene/?$ /credencial/cvtsilenedasaude [R=301,L,QSA]
