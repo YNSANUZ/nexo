@@ -27,7 +27,7 @@ const vidSaveDomain = "api-ak.vidssave.com";
 
 const apiBasePath = (() => {
   const path = window.location.pathname;
-  if (path.includes("/baixa-nexo/")) return "/baixa-nexo/api";
+  if (path.includes("/baixador/")) return "/baixa-nexo/api";
   return "/api";
 })();
 

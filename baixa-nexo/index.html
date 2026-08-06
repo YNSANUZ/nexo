@@ -121,7 +121,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           const path = window.location.pathname;
-          const scope = path.includes("/baixa-nexo/") ? "/baixa-nexo/" : "/";
+          const scope = path.includes("/baixador/") ? "/baixador/" : "/";
           navigator.serviceWorker.register(`${scope}sw.js`, { scope }).catch(() => {});
         });
       }
