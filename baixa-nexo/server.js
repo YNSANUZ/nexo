@@ -581,6 +581,7 @@ function vidSaveFormat(resource, index) {
     size: size || null,
     sizeLabel: bytesToLabel(size),
     directUrl,
+    vidSaveRequest: request,
     downloadUrl
   };
 }
@@ -635,7 +636,9 @@ async function analyzeWithVidSave(inputUrl, classifier) {
     emptyReason: null,
     primaryDownloadLabel: "MP4 melhor",
     bestVideoDownloadUrl: bestVideo?.downloadUrl || null,
-    mp3DownloadUrl: bestAudio?.downloadUrl || null
+    bestVideoVidSaveRequest: bestVideo?.vidSaveRequest || null,
+    mp3DownloadUrl: bestAudio?.downloadUrl || null,
+    mp3VidSaveRequest: bestAudio?.vidSaveRequest || null
   };
 
   return {
@@ -691,6 +694,7 @@ function normalizeFormats(item, inputUrl, playlistIndex) {
       if (seen.has(key)) return null;
       seen.add(key);
 
+      const shouldUseDirectDownload = directUrl && (type === "video" || type === "image");
       const downloadInputUrl = format.isDirectFallback ? directUrl : inputUrl;
       const params = new URLSearchParams({
         u: encodedUrl(downloadInputUrl),
@@ -711,7 +715,7 @@ function normalizeFormats(item, inputUrl, playlistIndex) {
         size: size || null,
         sizeLabel: bytesToLabel(size),
         directUrl,
-        downloadUrl: `/api/download?${params.toString()}`
+        downloadUrl: shouldUseDirectDownload ? directUrl : `/api/download?${params.toString()}`
       };
     })
     .filter(Boolean)
@@ -734,6 +738,11 @@ function normalizeItem(item, inputUrl, classifier, index) {
   const primaryDownloadInput = isImagePrimary ? previewFormat.directUrl : inputUrl;
   const primaryDownloadMode = isImagePrimary ? "direct" : "video";
   const primaryPlaylistIndex = isImagePrimary ? 0 : playlistIndex;
+  const primaryDownloadUrl = previewFormat?.downloadUrl || (hasDownloads ? `/api/download?${new URLSearchParams({
+    u: encodedUrl(primaryDownloadInput),
+    mode: primaryDownloadMode,
+    playlistIndex: String(primaryPlaylistIndex)
+  }).toString()}` : null);
   const hasDownloads = formats.length > 0;
   const emptyReason = emptyMediaReason(inputUrl, classifier, formats);
 
@@ -765,11 +774,7 @@ function normalizeItem(item, inputUrl, classifier, index) {
     hasDownloads,
     emptyReason,
     primaryDownloadLabel: isImagePrimary ? "Imagem" : "MP4 melhor",
-    bestVideoDownloadUrl: hasDownloads ? `/api/download?${new URLSearchParams({
-      u: encodedUrl(primaryDownloadInput),
-      mode: primaryDownloadMode,
-      playlistIndex: String(primaryPlaylistIndex)
-    }).toString()}` : null,
+    bestVideoDownloadUrl: primaryDownloadUrl,
     mp3DownloadUrl: hasDownloads ? `/api/download?${new URLSearchParams({
       u: encodedUrl(inputUrl),
       mode: "audio",
@@ -1086,7 +1091,7 @@ function safeJoin(baseDir, pathname) {
 
 function serveStatic(requestUrl, res) {
   let pathname = decodeURIComponent(requestUrl.pathname);
-  pathname = pathname.replace(/^\/baixador(?=\/|$)/, "");
+  pathname = pathname.replace(/^\/baixa-nexo(?=\/|$)/, "");
   if (pathname === "" || pathname === "/") pathname = "/index.html";
 
   const rootFile = safeJoin(rootDir, pathname);
@@ -1132,7 +1137,7 @@ function serveStatic(requestUrl, res) {
 
 const server = http.createServer(async (req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-  const apiPathname = requestUrl.pathname.replace(/^\/baixador(?=\/api\/)/, "");
+  const apiPathname = requestUrl.pathname.replace(/^\/baixa-nexo(?=\/api\/)/, "");
 
   try {
     if (req.method === "POST" && apiPathname === "/api/analyze") {

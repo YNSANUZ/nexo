@@ -27,7 +27,7 @@ const vidSaveDomain = "api-ak.vidssave.com";
 
 const apiBasePath = (() => {
   const path = window.location.pathname;
-  if (path.includes("/baixador/")) return "/baixador/api";
+  if (path.includes("/baixa-nexo/")) return "/baixa-nexo/api";
   return "/api";
 })();
 
@@ -339,8 +339,17 @@ function setVidSaveAnchor(anchor, request, title) {
 }
 
 function setRegularAnchor(anchor, href) {
-  anchor.href = routeApiUrl(href);
+  const resolvedHref = routeApiUrl(href);
+  const isExternal = /^https?:\/\//i.test(String(resolvedHref));
+  anchor.href = resolvedHref;
   anchor.setAttribute("download", "");
+  if (isExternal) {
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+  } else {
+    anchor.removeAttribute("target");
+    anchor.removeAttribute("rel");
+  }
   delete anchor.dataset.vidsaveToken;
 }
 
@@ -568,12 +577,14 @@ function renderFormats(item) {
     const direct = format.directUrl
       ? `<a class="mini-link" href="${escapeHtml(format.directUrl)}" target="_blank" rel="noopener noreferrer">Abrir</a>`
       : "";
+    const routedDownloadUrl = routeApiUrl(format.downloadUrl);
+    const downloadIsExternal = /^https?:\/\//i.test(String(routedDownloadUrl));
     const downloadLink = format.vidSaveRequest
       ? (() => {
           const token = storeVidSaveTask({ request: format.vidSaveRequest, title: `${item.title} ${format.label}` });
           return `<a class="mini-link primary" href="#" data-vidsave-token="${escapeHtml(token)}">Baixar</a>`;
         })()
-      : `<a class="mini-link primary" href="${escapeHtml(routeApiUrl(format.downloadUrl))}" download>Baixar</a>`;
+      : `<a class="mini-link primary" href="${escapeHtml(routedDownloadUrl)}" ${downloadIsExternal ? 'target="_blank" rel="noopener noreferrer"' : ""} download>Baixar</a>`;
 
     return `
       <div class="format-row">

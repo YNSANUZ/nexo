@@ -1,10 +1,10 @@
 {
-  "id": "/baixador/",
+  "id": "/baixa-nexo/",
   "name": "BaixaNEXO",
   "short_name": "BaixaNEXO",
   "description": "Baixador limpo para links publicos de video, audio e imagem.",
-  "start_url": "/baixador/",
-  "scope": "/baixador/",
+  "start_url": "/baixa-nexo/",
+  "scope": "/baixa-nexo/",
   "display": "standalone",
   "background_color": "#087df4",
   "theme_color": "#087df4",

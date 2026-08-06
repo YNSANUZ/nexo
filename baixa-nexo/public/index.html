@@ -114,13 +114,13 @@
       </section>
     </main>
 
-    <script src="./app.js?v=20260617-1"></script>
+    <script src="./app.js?v=20260619-1"></script>
     <script type="module" src="./cube.js?v=20260616-2"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           const path = window.location.pathname;
-          const scope = path.includes("/baixador/") ? "/baixador/" : "/";
+          const scope = path.includes("/baixa-nexo/") ? "/baixa-nexo/" : "/";
           navigator.serviceWorker.register(`${scope}sw.js`, { scope }).catch(() => {});
         });
       }

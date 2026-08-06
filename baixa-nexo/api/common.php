@@ -689,6 +689,7 @@ function vidsave_format(array $resource, int $index): ?array
         'size' => $size ?: null,
         'sizeLabel' => bytes_to_label($size),
         'directUrl' => $directUrl,
+        'vidSaveRequest' => $request,
         'downloadUrl' => $downloadUrl,
     ];
 }
@@ -753,7 +754,9 @@ function vidsave_analyze(string $url, array $classifier): array
         'emptyReason' => null,
         'primaryDownloadLabel' => 'MP4 melhor',
         'bestVideoDownloadUrl' => $bestVideo['downloadUrl'] ?? null,
+        'bestVideoVidSaveRequest' => $bestVideo['vidSaveRequest'] ?? null,
         'mp3DownloadUrl' => $bestAudio['downloadUrl'] ?? null,
+        'mp3VidSaveRequest' => $bestAudio['vidSaveRequest'] ?? null,
     ];
 
     return [
@@ -818,6 +821,7 @@ function normalize_formats(array $item, string $inputUrl, int $playlistIndex): a
         if (isset($seen[$key])) continue;
         $seen[$key] = true;
 
+        $shouldUseDirectDownload = $directUrl && in_array($type, ['video', 'image'], true);
         $downloadInputUrl = !empty($format['isDirectFallback']) ? (string) $directUrl : $inputUrl;
         $params = http_build_query(with_youtube_client_param([
             'u' => encoded_url($downloadInputUrl),
@@ -838,7 +842,7 @@ function normalize_formats(array $item, string $inputUrl, int $playlistIndex): a
             'size' => $size ?: null,
             'sizeLabel' => bytes_to_label($size),
             'directUrl' => $directUrl,
-            'downloadUrl' => '/api/download?' . $params,
+            'downloadUrl' => $shouldUseDirectDownload ? $directUrl : '/api/download?' . $params,
         ];
     }
 
@@ -880,8 +884,16 @@ function normalize_item(array $item, string $inputUrl, array $classifier, int $i
     $title = safe_text($item['title'] ?? $item['fulltitle'] ?? $item['alt_title'] ?? null, $classifier['kind']);
     $isImagePrimary = ($previewFormat['type'] ?? '') === 'image';
     $primaryDownloadInput = $isImagePrimary ? (string) $previewFormat['directUrl'] : $inputUrl;
+    $primaryDownloadUrl = $previewFormat['downloadUrl'] ?? null;
     $emptyReason = empty_media_reason($inputUrl, $classifier, $formats);
     $hasDownloads = count($formats) > 0;
+    if (!$primaryDownloadUrl && $hasDownloads) {
+        $primaryDownloadUrl = '/api/download?' . http_build_query(with_youtube_client_param([
+            'u' => encoded_url($primaryDownloadInput),
+            'mode' => $isImagePrimary ? 'direct' : 'video',
+            'playlistIndex' => $isImagePrimary ? '0' : (string) $playlistIndex,
+        ], $primaryDownloadInput));
+    }
 
     return [
         'index' => $index,
@@ -906,11 +918,7 @@ function normalize_item(array $item, string $inputUrl, array $classifier, int $i
         'hasDownloads' => $hasDownloads,
         'emptyReason' => $emptyReason,
         'primaryDownloadLabel' => $isImagePrimary ? 'Imagem' : 'MP4 melhor',
-        'bestVideoDownloadUrl' => $hasDownloads ? '/api/download?' . http_build_query(with_youtube_client_param([
-            'u' => encoded_url($primaryDownloadInput),
-            'mode' => $isImagePrimary ? 'direct' : 'video',
-            'playlistIndex' => $isImagePrimary ? '0' : (string) $playlistIndex,
-        ], $primaryDownloadInput)) : null,
+        'bestVideoDownloadUrl' => $primaryDownloadUrl,
         'mp3DownloadUrl' => $hasDownloads ? '/api/download?' . http_build_query(with_youtube_client_param([
             'u' => encoded_url($inputUrl),
             'mode' => 'audio',

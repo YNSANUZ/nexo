@@ -67,16 +67,16 @@ jobs:
               Path("deploy-check.txt"),
               Path("contas/index.html"),
               Path("contas/sw.js"),
-              Path("baixador/api/analyze.php"),
-              Path("baixador/api/common.php"),
-              Path("baixador/api/download.php"),
-              Path("baixador/api/health.php"),
-              Path("baixador/cookies/.htaccess"),
-              Path("baixador/cookies/README.txt"),
-              Path("baixador/index.html"),
-              Path("baixador/public/app.js"),
-              Path("baixador/public/index.html"),
-              Path("baixador/server.js"),
+              Path("baixa-nexo/api/analyze.php"),
+              Path("baixa-nexo/api/common.php"),
+              Path("baixa-nexo/api/download.php"),
+              Path("baixa-nexo/api/health.php"),
+              Path("baixa-nexo/cookies/.htaccess"),
+              Path("baixa-nexo/cookies/README.txt"),
+              Path("baixa-nexo/index.html"),
+              Path("baixa-nexo/public/app.js"),
+              Path("baixa-nexo/public/index.html"),
+              Path("baixa-nexo/server.js"),
           }
           obsolete_files = {"card/assets/nexo-card-tutorial.mp4"}
           obsolete_dirs = {"baixar"}
@@ -219,6 +219,9 @@ jobs:
           for rel_path in sorted(delete_paths, key=lambda item: item.as_posix()):
               if should_skip(rel_path):
                   continue
+              if rel_path.parts and rel_path.parts[0] == "baixador":
+                  print(f"preserve official app {rel_path.as_posix()}")
+                  continue
               obsolete_file = rel_path.as_posix()
               try:
                   ftp.cwd(remote_root)
@@ -302,14 +305,16 @@ jobs:
           import json
 
           marker = get("https://primusdf.com.br/deploy-check.txt")
-          baixador = get("https://primusdf.com.br/baixador/")
-          manifest = get("https://primusdf.com.br/baixador/manifest.webmanifest")
-          health = json.loads(get("https://primusdf.com.br/baixador/api/health"))
+          official = get("https://primusdf.com.br/baixador/")
+          baixador = get("https://primusdf.com.br/baixa-nexo/")
+          manifest = get("https://primusdf.com.br/baixa-nexo/manifest.webmanifest")
+          health = json.loads(get("https://primusdf.com.br/baixa-nexo/api/health"))
 
           checks = [
               ("marcador de deploy", "deploy-check-publicar-20260604-0029" in marker),
+              ("site branco oficial publicado", "Baixador NEXO" in official and "/baixador/_next/" in official),
               ("baixador publicado", "BaixaNEXO" in baixador and "data-download-form" in baixador),
-              ("manifest do BaixaNEXO", "BaixaNEXO" in manifest and "/baixador/" in manifest),
+              ("manifest do BaixaNEXO", "BaixaNEXO" in manifest and "/baixa-nexo/" in manifest),
               ("health ok", health.get("ok") is True),
               ("php pode executar processos", health.get("exec") is True),
               ("yt-dlp pronto", health.get("ytdlpReady") is True),
