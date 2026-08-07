@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Últimas notícias do Distrito Federal no NEXO Notícias." />
+    <title>Notícias | NEXO Notícias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="nexo.css?v=1" />
+  </head>
+  <body class="news-index-page">
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <header class="site-header">
+      <div class="header-main">
+        <div class="site-shell header-main__inner">
+          <a class="icon-button" href="index.html" aria-label="Voltar para a página inicial"><i data-lucide="arrow-left"></i></a>
+          <a class="brand" href="index.html" aria-label="NEXO Notícias — página inicial"><span class="brand__main">NEXO</span><span class="brand__sub">NOTÍCIAS</span></a>
+          <div class="header-actions">
+            <button class="icon-button" id="searchButton" type="button" aria-label="Buscar"><i data-lucide="search"></i></button>
+            <a class="profile-button" href="app/admin.html#noticias" aria-label="Acessar conta"><i data-lucide="user-round"></i></a>
+          </div>
+        </div>
+      </div>
+      <nav class="topic-nav" aria-label="Editorias">
+        <div class="site-shell topic-nav__track">
+          <a class="topic-nav__link" href="index.html">Início</a>
+          <a class="topic-nav__link is-active" href="noticias.html" aria-current="page">Notícias</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=politica">Política</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=empregos">Empregos</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=economia">Economia</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=eventos">Eventos</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=esportes">Esportes</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="conteudo" class="site-shell news-index-main">
+      <header class="news-index-hero">
+        <div><span>NEXO NOTÍCIAS</span><h1 id="newsIndexTitle">Últimas Notícias</h1><p id="newsIndexDescription">Informação confiável e organizada sobre o que acontece no Distrito Federal.</p></div>
+        <form class="news-index-search" action="noticias.html" method="get"><label class="sr-only" for="archiveSearch">Buscar notícias</label><i data-lucide="search"></i><input id="archiveSearch" name="q" type="search" placeholder="Buscar notícias" /><button type="submit">Buscar</button></form>
+      </header>
+
+      <nav class="filter-chips" aria-label="Filtrar por categoria">
+        <a class="is-active" href="noticias.html">Todas</a>
+        <a href="noticias.html?categoria=politica">Política</a>
+        <a href="noticias.html?categoria=empregos">Empregos</a>
+        <a href="noticias.html?categoria=economia">Economia</a>
+        <a href="noticias.html?categoria=eventos">Eventos</a>
+        <a href="noticias.html?categoria=esportes">Esportes</a>
+        <a href="noticias.html?categoria=cidades">Cidades</a>
+        <a href="noticias.html?categoria=clima">Clima</a>
+      </nav>
+
+      <div class="news-index-layout">
+        <section class="news-list" id="newsList" aria-label="Lista de notícias">
+          <article class="expanded-card" data-category="esportes" data-search="obras gdf ceilândia esporte cidade">
+            <a class="expanded-card__image" href="noticia.html?slug=obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia"><img src="assets/noticias/obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia.jpg" alt="Área esportiva pública em Ceilândia" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=esportes">ESPORTES</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Ceilândia, DF</span><h2><a href="noticia.html?slug=obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia">Obras do GDF na Sua Porta transformam a rotina de moradores de Ceilândia</a></h2><p>Intervenções recuperam espaços públicos e ampliam as opções de esporte e convivência para a comunidade.</p><time datetime="2026-06-21T17:56:00-03:00">21 de junho de 2026</time></div>
+          </article>
+          <article class="expanded-card" data-category="esportes" data-search="rua lazer gama esporte convivência evento">
+            <a class="expanded-card__image" href="noticia.html?slug=primeira-edicao-da-rua-do-lazer-no-gama-proporciona-um-domingo-de-esporte-e-convivencia"><img src="assets/noticias/primeira-edicao-da-rua-do-lazer-no-gama-proporciona-um-domingo-de-esporte-e-convivencia.jpg" alt="Rua do Lazer no Gama" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=esportes">ESPORTES</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Gama, DF</span><h2><a href="noticia.html?slug=primeira-edicao-da-rua-do-lazer-no-gama-proporciona-um-domingo-de-esporte-e-convivencia">Rua do Lazer proporciona domingo de esporte e convivência no Gama</a></h2><p>Famílias participaram de atividades gratuitas e ocuparam a área urbana com esporte, cultura e lazer.</p><time datetime="2026-06-08T15:47:00-03:00">8 de junho de 2026</time></div>
+          </article>
+          <article class="expanded-card" data-category="esportes" data-search="lei incentivo esporte projetos calendário 2026">
+            <a class="expanded-card__image" href="noticia.html?slug=lei-de-incentivo-ao-esporte-comissao-define-calendario-para-2026-e-abre-prazo-para-novos-projetos"><img src="assets/noticias/lei-de-incentivo-ao-esporte-comissao-define-calendario-para-2026-e-abre-prazo-para-novos-projetos.jpg" alt="Atividade esportiva no Lago Paranoá" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=esportes">ESPORTES</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Brasília, DF</span><h2><a href="noticia.html?slug=lei-de-incentivo-ao-esporte-comissao-define-calendario-para-2026-e-abre-prazo-para-novos-projetos">Lei de Incentivo ao Esporte abre prazo para novos projetos</a></h2><p>Calendário organiza a apresentação e a análise de propostas esportivas previstas para 2026.</p><time datetime="2026-01-19T13:47:00-03:00">19 de janeiro de 2026</time></div>
+          </article>
+          <article class="expanded-card" data-category="clima" data-search="chuva intensa inmet alerta distrito federal clima">
+            <a class="expanded-card__image" href="noticia.html"><img src="assets/park-bg-lite.jpg" alt="Área verde em período chuvoso" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=clima">CLIMA</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Distrito Federal</span><h2><a href="noticia.html">Inmet emite alerta de chuva intensa para o Distrito Federal</a></h2><p>Órgãos orientam moradores a acompanhar os canais oficiais e evitar áreas com risco de alagamento.</p><time datetime="PT18M">Há 18 minutos</time></div>
+          </article>
+          <article class="expanded-card" data-category="eventos" data-search="festival inverno evento parque cidade brasilia">
+            <a class="expanded-card__image" href="noticia.html"><img src="assets/evento-lago-lite.jpg" alt="Atividade durante evento em Brasília" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=eventos">EVENTOS</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Brasília, DF</span><h2><a href="noticia.html">Festival de Inverno movimenta o fim de semana na capital</a></h2><p>Programação reúne atrações culturais, atividades esportivas e experiências para toda a família.</p><time datetime="PT3H">Há 3 horas</time></div>
+          </article>
+          <article class="expanded-card" data-category="empregos" data-search="vagas emprego empresas distrito federal trabalho">
+            <a class="expanded-card__image" href="noticia.html"><img src="assets/atividade-corrida-lite.jpg" alt="Profissional em atividade no Distrito Federal" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=empregos">EMPREGOS</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Distrito Federal</span><h2><a href="noticia.html">Empresas do DF anunciam novas oportunidades de emprego</a></h2><p>Vagas contemplam diferentes níveis de experiência e regiões administrativas.</p><time datetime="PT2H">Há 2 horas</time></div>
+          </article>
+          <article class="expanded-card" data-category="politica" data-search="politica camara legislativa projeto distrito federal">
+            <a class="expanded-card__image" href="noticia.html"><img src="assets/noticias/obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia.jpg" alt="Equipamento público no Distrito Federal" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=politica">POLÍTICA</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Brasília, DF</span><h2><a href="noticia.html">Câmara Legislativa apresenta agenda de projetos da semana</a></h2><p>Propostas serão analisadas pelas comissões antes de seguirem para votação.</p><time datetime="PT4H">Há 4 horas</time></div>
+          </article>
+          <article class="expanded-card" data-category="economia" data-search="economia empresas comercio distrito federal crescimento">
+            <a class="expanded-card__image" href="noticia.html"><img src="assets/park-bg-lite.jpg" alt="Área urbana e ambiental do Distrito Federal" /></a>
+            <div><a class="expanded-card__category" href="noticias.html?categoria=economia">ECONOMIA</a><span class="expanded-card__place"><i data-lucide="map-pin"></i> Distrito Federal</span><h2><a href="noticia.html">Pequenos negócios ampliam presença nas regiões administrativas</a></h2><p>Empreendedores apostam em serviços locais e novas formas de atendimento à comunidade.</p><time datetime="PT5H">Há 5 horas</time></div>
+          </article>
+          <div class="news-list-empty" id="newsListEmpty" hidden><i data-lucide="search-x"></i><strong>Nenhuma notícia encontrada</strong><p>Tente outra categoria ou termo de busca.</p></div>
+        </section>
+
+        <aside class="news-index-sidebar">
+          <section><h2>Mais Lidas</h2><ol><li><span>1</span><a href="noticia.html">Programa de qualificação profissional abre inscrições</a></li><li><span>2</span><a href="noticia.html">Câmara Legislativa publica novos editais</a></li><li><span>3</span><a href="noticia.html">Obras de mobilidade entram na fase final</a></li></ol></section>
+          <section class="sidebar-newsletter"><i data-lucide="mail"></i><h2>Receba o NEXO</h2><p>Um resumo das principais notícias do DF no seu email.</p><form><label class="sr-only" for="newsletterEmail">Seu email</label><input id="newsletterEmail" type="email" placeholder="Seu email" /><button type="button">Quero receber</button></form><small>Cadastro demonstrativo. Nenhum dado será enviado nesta fase.</small></section>
+        </aside>
+      </div>
+    </main>
+
+    <div class="search-panel" id="searchPanel" role="dialog" aria-modal="true" aria-labelledby="searchTitle" hidden><div class="search-panel__card"><div class="search-panel__heading"><h2 id="searchTitle">Buscar no NEXO</h2><button class="icon-button" id="closeSearchButton" type="button" aria-label="Fechar busca"><i data-lucide="x"></i></button></div><form action="noticias.html" method="get"><label for="searchInput">Notícias, eventos, vagas e serviços</label><div class="search-panel__field"><i data-lucide="search"></i><input id="searchInput" name="q" type="search" placeholder="O que você procura?" /><button type="submit">Buscar</button></div></form></div></div>
+
+    <nav class="bottom-nav" aria-label="Atalhos principais"><a href="index.html"><i data-lucide="house"></i><span>Início</span></a><a href="hoje.html"><i data-lucide="radio-tower"></i><span>Ao Vivo</span></a><a class="is-active" href="noticias.html"><i data-lucide="newspaper"></i><span>Notícias</span></a><a href="noticias.html?categoria=eventos"><i data-lucide="calendar-days"></i><span>Eventos</span></a><a href="noticias.html?categoria=empregos"><i data-lucide="briefcase-business"></i><span>Vagas</span></a><a href="index.html"><i data-lucide="menu"></i><span>Menu</span></a></nav>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="nexo-page.js"></script>
+    <script src="nexo-list.js"></script>
+  </body>
+</html>

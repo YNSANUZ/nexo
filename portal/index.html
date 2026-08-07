@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="NEXO Notícias — informação confiável, serviços e participação para o Distrito Federal."
+    />
+    <title>NEXO Notícias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="nexo.css?v=1" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+    <header class="site-header">
+      <div class="header-main">
+        <div class="site-shell header-main__inner">
+          <button class="icon-button" id="menuButton" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <i data-lucide="menu" aria-hidden="true"></i>
+          </button>
+
+          <a class="brand" href="index.html" aria-label="NEXO Notícias — página inicial">
+            <span class="brand__main">NEXO</span>
+            <span class="brand__sub">NOTÍCIAS</span>
+          </a>
+
+          <div class="header-actions">
+            <button class="icon-button" type="button" aria-label="Notificações">
+              <i data-lucide="bell" aria-hidden="true"></i>
+            </button>
+            <button class="icon-button" id="searchButton" type="button" aria-label="Buscar">
+              <i data-lucide="search" aria-hidden="true"></i>
+            </button>
+            <a class="profile-button" href="app/admin.html#noticias" aria-label="Acessar conta">
+              <i data-lucide="user-round" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <nav class="topic-nav" aria-label="Editorias">
+        <div class="site-shell topic-nav__track">
+          <a class="topic-nav__link is-active" href="index.html" aria-current="page">Início</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=politica">Política</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=empregos">Empregos</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=economia">Economia</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=eventos">Eventos</a>
+          <a class="topic-nav__link" href="noticias.html?categoria=esportes">Esportes</a>
+          <a class="topic-nav__link topic-nav__more" href="noticias.html">
+            Mais <i data-lucide="chevron-down" aria-hidden="true"></i>
+          </a>
+        </div>
+      </nav>
+
+      <div class="breaking-strip" aria-label="Última notícia">
+        <div class="site-shell breaking-strip__inner">
+          <span class="breaking-strip__label">ÚLTIMAS</span>
+          <a href="noticia.html" class="breaking-strip__headline">Chuvas fortes causam alagamentos em várias regiões do DF</a>
+          <span class="breaking-strip__dot" aria-hidden="true">•</span>
+          <time datetime="PT5M">Há 5 min</time>
+        </div>
+      </div>
+    </header>
+
+    <main id="conteudo" class="site-shell page-content">
+      <section class="hero" aria-label="Manchetes em destaque">
+        <img
+          class="hero__image"
+          id="heroImage"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Congresso_Nacional.jpg/1280px-Congresso_Nacional.jpg"
+          alt="Congresso Nacional iluminado à noite, em Brasília"
+        />
+        <div class="hero__shade" aria-hidden="true"></div>
+        <article class="hero__content">
+          <span class="hero__tag" id="heroTag">NOTÍCIAS</span>
+          <h1 id="heroTitle">Câmara aprova projeto que amplia isenção do Imposto de Renda</h1>
+          <p id="heroSummary">Proposta segue agora para análise do Senado. Mudança deve beneficiar mais de 15 milhões de brasileiros.</p>
+          <div class="hero__meta">
+            <time id="heroTime" datetime="PT25M">Há 25 minutos</time>
+            <span aria-hidden="true">|</span>
+            <a id="heroCategory" href="noticias.html?categoria=politica">Política</a>
+          </div>
+        </article>
+        <div class="hero__credit" id="heroCredit">Foto: Rob Sinclair/Wikimedia Commons — CC BY-SA 2.0</div>
+        <div class="hero__dots" id="heroDots" aria-label="Selecionar manchete"></div>
+      </section>
+
+      <section class="content-section" aria-labelledby="latestTitle">
+        <div class="section-heading">
+          <h2 id="latestTitle">Últimas Notícias</h2>
+          <a href="noticias.html">Ver todas <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="card-rail news-grid" aria-label="Últimas notícias">
+          <article class="news-card category-blue">
+            <a class="news-card__image" href="noticia.html">
+              <img src="assets/noticias/primeira-edicao-da-rua-do-lazer-no-gama-proporciona-um-domingo-de-esporte-e-convivencia.jpg" alt="Movimento em via urbana do Distrito Federal" />
+            </a>
+            <div class="news-card__body">
+              <a class="news-card__category" href="noticias.html?categoria=transito">TRÂNSITO</a>
+              <time datetime="PT12M">Há 12 min</time>
+              <h3><a href="noticia.html">Acidente na EPTG causa lentidão no sentido Plano Piloto</a></h3>
+            </div>
+          </article>
+
+          <article class="news-card category-green">
+            <a class="news-card__image" href="noticia.html">
+              <img src="assets/park-bg-lite.jpg" alt="Área arborizada durante período de chuva" />
+            </a>
+            <div class="news-card__body">
+              <a class="news-card__category" href="noticias.html?categoria=clima">CLIMA</a>
+              <time datetime="PT18M">Há 18 min</time>
+              <h3><a href="noticia.html">Inmet emite alerta de chuva intensa para o DF</a></h3>
+            </div>
+          </article>
+
+          <article class="news-card category-orange">
+            <a class="news-card__image" href="noticia.html">
+              <img src="assets/noticias/obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia.jpg" alt="Equipamento público no Distrito Federal" />
+            </a>
+            <div class="news-card__body">
+              <a class="news-card__category" href="noticias.html?categoria=transporte">TRANSPORTE</a>
+              <time datetime="PT30M">Há 30 min</time>
+              <h3><a href="noticia.html">GDF anuncia reforço na frota de ônibus no Entorno</a></h3>
+            </div>
+          </article>
+
+          <article class="news-card category-red">
+            <a class="news-card__image" href="noticia.html">
+              <img src="assets/evento-lago-lite.jpg" alt="Registro fotográfico de atividade no Distrito Federal" />
+            </a>
+            <div class="news-card__body">
+              <a class="news-card__category" href="noticias.html?categoria=seguranca">SEGURANÇA</a>
+              <time datetime="PT40M">Há 40 min</time>
+              <h3><a href="noticia.html">Polícia prende grupo suspeito de furtos na Asa Norte</a></h3>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section category-section" aria-labelledby="categoryTitle">
+        <div class="section-heading">
+          <h2 id="categoryTitle">Notícias por Categoria</h2>
+          <a href="noticias.html">Ver todas <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="card-rail category-grid">
+          <a class="category-card category-blue" href="noticias.html?categoria=politica">
+            <i data-lucide="landmark" aria-hidden="true"></i><span>Política</span>
+          </a>
+          <a class="category-card category-green" href="noticias.html?categoria=empregos">
+            <i data-lucide="briefcase-business" aria-hidden="true"></i><span>Empregos</span>
+          </a>
+          <a class="category-card category-orange" href="noticias.html?categoria=economia">
+            <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i><span>Economia</span>
+          </a>
+          <a class="category-card category-purple" href="noticias.html?categoria=eventos">
+            <i data-lucide="calendar-days" aria-hidden="true"></i><span>Eventos</span>
+          </a>
+          <a class="category-card category-sky" href="noticias.html?categoria=esportes">
+            <i data-lucide="circle-dot" aria-hidden="true"></i><span>Esportes</span>
+          </a>
+          <a class="category-card category-gray" href="noticias.html">
+            <i data-lucide="layout-grid" aria-hidden="true"></i><span>Mais</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="content-section" aria-labelledby="featuredTitle">
+        <div class="section-heading section-heading--plain">
+          <h2 id="featuredTitle">Destaques</h2>
+        </div>
+        <div class="card-rail featured-grid">
+          <article class="feature-card category-sky">
+            <a href="noticia.html"><img src="assets/noticias/obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia.jpg" alt="Área esportiva pública do Distrito Federal" /></a>
+            <div class="feature-card__body">
+              <a class="feature-card__category" href="noticias.html?categoria=esportes">ESPORTES</a>
+              <time datetime="PT1H">Há 1 hora</time>
+              <h3><a href="noticia.html">DF recebe etapa nacional de corrida de rua no domingo</a></h3>
+            </div>
+          </article>
+          <article class="feature-card category-green">
+            <a class="jobs-visual" href="noticia.html" aria-label="Mais de 500 vagas abertas em empresas do DF">
+              <strong>VAGAS DE<br />EMPREGO</strong>
+              <i data-lucide="briefcase-business" aria-hidden="true"></i>
+            </a>
+            <div class="feature-card__body">
+              <a class="feature-card__category" href="noticias.html?categoria=empregos">EMPREGOS</a>
+              <time datetime="PT2H">Há 2 horas</time>
+              <h3><a href="noticia.html">Mais de 500 vagas abertas em empresas do DF nesta semana</a></h3>
+            </div>
+          </article>
+          <article class="feature-card category-purple">
+            <a href="noticia.html"><img src="assets/noticias/primeira-edicao-da-rua-do-lazer-no-gama-proporciona-um-domingo-de-esporte-e-convivencia.jpg" alt="Participantes reunidos em evento comunitário" /></a>
+            <div class="feature-card__body">
+              <a class="feature-card__category" href="noticias.html?categoria=eventos">EVENTOS</a>
+              <time datetime="PT3H">Há 3 horas</time>
+              <h3><a href="noticia.html">Festival de Inverno agita o fim de semana no Parque da Cidade</a></h3>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section most-read-section" aria-labelledby="mostReadTitle">
+        <div class="section-heading section-heading--plain">
+          <h2 id="mostReadTitle">Mais Lidas</h2>
+        </div>
+        <div class="most-read-layout">
+          <ol class="ranking-list">
+            <li>
+              <span class="ranking-list__number">1</span>
+              <a href="noticia.html">GDF lança programa de qualificação profissional para jovens</a>
+              <time datetime="PT2H">Há 2 horas</time>
+              <img src="assets/evento-lago-lite.jpg" alt="" />
+            </li>
+            <li>
+              <span class="ranking-list__number">2</span>
+              <a href="noticia.html">Concurso da Câmara Legislativa tem editais publicados</a>
+              <time datetime="PT4H">Há 4 horas</time>
+              <img src="assets/noticias/obras-do-gdf-na-sua-porta-transformam-a-rotina-de-moradores-de-ceilandia.jpg" alt="" />
+            </li>
+            <li>
+              <span class="ranking-list__number">3</span>
+              <a href="noticia.html">Obras no Viaduto do Riacho Fundo entram na fase final</a>
+              <time datetime="PT5H">Há 5 horas</time>
+              <img src="assets/atividade-corrida-lite.jpg" alt="" />
+            </li>
+          </ol>
+
+          <aside class="event-promo" aria-label="Divulgue seu evento no NEXO">
+            <div class="event-promo__copy">
+              <strong>NEXO<br />EVENTOS</strong>
+              <p>Divulgue e venda seu evento de forma fácil e segura!</p>
+              <a href="noticias.html?categoria=eventos">Criar evento</a>
+            </div>
+            <div class="event-promo__phone" aria-hidden="true">
+              <span>NEXO</span><small>EVENTOS</small>
+              <i data-lucide="calendar-days"></i>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <aside class="side-drawer" id="sideDrawer" aria-hidden="true" aria-label="Menu">
+      <div class="side-drawer__top">
+        <span class="brand brand--small"><span class="brand__main">NEXO</span><span class="brand__sub">NOTÍCIAS</span></span>
+        <button class="icon-button" id="closeMenuButton" type="button" aria-label="Fechar menu"><i data-lucide="x"></i></button>
+      </div>
+      <nav>
+        <a href="index.html"><i data-lucide="house"></i>Início</a>
+        <a href="noticias.html"><i data-lucide="newspaper"></i>Notícias</a>
+        <a href="noticias.html?categoria=eventos"><i data-lucide="calendar-days"></i>Eventos</a>
+        <a href="noticias.html?categoria=empregos"><i data-lucide="briefcase-business"></i>Vagas</a>
+        <a href="app/admin.html#noticias"><i data-lucide="user-round"></i>Entrar</a>
+      </nav>
+    </aside>
+    <button class="drawer-backdrop" id="drawerBackdrop" type="button" aria-label="Fechar menu" hidden></button>
+
+    <div class="search-panel" id="searchPanel" role="dialog" aria-modal="true" aria-labelledby="searchTitle" hidden>
+      <div class="search-panel__card">
+        <div class="search-panel__heading">
+          <h2 id="searchTitle">Buscar no NEXO</h2>
+          <button class="icon-button" id="closeSearchButton" type="button" aria-label="Fechar busca"><i data-lucide="x"></i></button>
+        </div>
+        <form id="searchForm" action="noticias.html" method="get">
+          <label for="searchInput">Notícias, eventos, vagas e serviços</label>
+          <div class="search-panel__field">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input id="searchInput" name="q" type="search" autocomplete="off" placeholder="O que você procura?" />
+            <button type="submit">Buscar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Atalhos principais">
+      <a class="is-active" href="index.html" aria-current="page"><i data-lucide="house"></i><span>Início</span></a>
+      <a href="hoje.html"><i data-lucide="radio-tower"></i><span>Ao Vivo</span></a>
+      <a href="noticias.html"><i data-lucide="newspaper"></i><span>Notícias</span></a>
+      <a href="noticias.html?categoria=eventos"><i data-lucide="calendar-days"></i><span>Eventos</span></a>
+      <a href="noticias.html?categoria=empregos"><i data-lucide="briefcase-business"></i><span>Vagas</span></a>
+      <button id="bottomMenuButton" type="button"><i data-lucide="menu"></i><span>Menu</span></button>
+    </nav>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="nexo.js?v=1"></script>
+  </body>
+</html>

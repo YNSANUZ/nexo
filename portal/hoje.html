@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Transmissões e atualizações ao vivo do NEXO Notícias." />
+    <title>Ao Vivo | NEXO Notícias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="nexo.css?v=1" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <header class="site-header">
+      <div class="header-main"><div class="site-shell header-main__inner"><a class="icon-button" href="index.html" aria-label="Voltar para a página inicial"><i data-lucide="arrow-left"></i></a><a class="brand" href="index.html" aria-label="NEXO Notícias — página inicial"><span class="brand__main">NEXO</span><span class="brand__sub">NOTÍCIAS</span></a><div class="header-actions"><button class="icon-button" id="searchButton" type="button" aria-label="Buscar"><i data-lucide="search"></i></button><a class="profile-button" href="app/admin.html#noticias" aria-label="Acessar conta"><i data-lucide="user-round"></i></a></div></div></div>
+      <nav class="topic-nav" aria-label="Editorias"><div class="site-shell topic-nav__track"><a class="topic-nav__link" href="index.html">Início</a><a class="topic-nav__link is-active" href="hoje.html" aria-current="page">Ao Vivo</a><a class="topic-nav__link" href="noticias.html">Notícias</a><a class="topic-nav__link" href="noticias.html?categoria=politica">Política</a><a class="topic-nav__link" href="noticias.html?categoria=eventos">Eventos</a><a class="topic-nav__link" href="noticias.html?categoria=esportes">Esportes</a></div></nav>
+    </header>
+
+    <main id="conteudo" class="site-shell live-main">
+      <section class="live-hero">
+        <div class="live-hero__signal"><span></span> AO VIVO</div>
+        <h1>O que está acontecendo agora no Distrito Federal</h1>
+        <p>Transmissões, coletivas, sessões públicas e atualizações verificadas em tempo real.</p>
+        <div class="live-placeholder"><i data-lucide="radio-tower"></i><strong>Nenhuma transmissão ativa neste momento</strong><span>A próxima cobertura aparecerá aqui assim que for iniciada pela redação.</span></div>
+      </section>
+
+      <section class="content-section" aria-labelledby="liveAgendaTitle">
+        <div class="section-heading section-heading--plain"><h2 id="liveAgendaTitle">Próximas coberturas</h2></div>
+        <div class="live-schedule">
+          <article><time datetime="09:00">09:00</time><div><span>POLÍTICA</span><h2>Sessão da Câmara Legislativa do Distrito Federal</h2><p>Programação sujeita à confirmação do órgão responsável.</p></div></article>
+          <article><time datetime="14:30">14:30</time><div><span>CIDADES</span><h2>Coletiva sobre ações para o período de chuvas</h2><p>Informações e links oficiais serão adicionados após confirmação.</p></div></article>
+          <article><time datetime="19:00">19:00</time><div><span>ESPORTES</span><h2>Boletim esportivo do Distrito Federal</h2><p>Resumo dos resultados e da agenda local.</p></div></article>
+        </div>
+      </section>
+    </main>
+
+    <div class="search-panel" id="searchPanel" role="dialog" aria-modal="true" aria-labelledby="searchTitle" hidden><div class="search-panel__card"><div class="search-panel__heading"><h2 id="searchTitle">Buscar no NEXO</h2><button class="icon-button" id="closeSearchButton" type="button" aria-label="Fechar busca"><i data-lucide="x"></i></button></div><form action="noticias.html" method="get"><label for="searchInput">Notícias, eventos, vagas e serviços</label><div class="search-panel__field"><i data-lucide="search"></i><input id="searchInput" name="q" type="search" placeholder="O que você procura?" /><button type="submit">Buscar</button></div></form></div></div>
+    <nav class="bottom-nav" aria-label="Atalhos principais"><a href="index.html"><i data-lucide="house"></i><span>Início</span></a><a class="is-active" href="hoje.html"><i data-lucide="radio-tower"></i><span>Ao Vivo</span></a><a href="noticias.html"><i data-lucide="newspaper"></i><span>Notícias</span></a><a href="noticias.html?categoria=eventos"><i data-lucide="calendar-days"></i><span>Eventos</span></a><a href="noticias.html?categoria=empregos"><i data-lucide="briefcase-business"></i><span>Vagas</span></a><a href="index.html"><i data-lucide="menu"></i><span>Menu</span></a></nav>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script><script src="nexo-page.js"></script>
+  </body>
+</html>

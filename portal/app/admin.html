@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0b4da2">
+  <title>Painel Editorial | NEXO Notícias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./nexo-admin.css?v=1">
+</head>
+<body>
+  <section class="login-gate" id="loginGate" aria-labelledby="loginTitle">
+    <div class="login-card">
+      <a class="brand brand--login" href="../index.html" aria-label="NEXO Notícias">
+        <strong>NEXO</strong><span>NOTÍCIAS</span>
+      </a>
+      <span class="eyebrow">Ambiente protegido</span>
+      <h1 id="loginTitle">Painel Editorial</h1>
+      <p>Entre com uma conta autorizada para produzir, revisar e publicar as notícias do portal.</p>
+      <button class="button button--primary button--wide" id="loginButton" type="button">
+        <span class="google-mark">G</span> Entrar com Google
+      </button>
+      <p class="login-status" id="loginStatus" role="status">Aguardando autenticação segura.</p>
+      <a class="back-link" href="../index.html">← Voltar ao site</a>
+    </div>
+  </section>
+
+  <div class="admin-shell" id="adminShell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="../index.html" aria-label="NEXO Notícias">
+        <strong>NEXO</strong><span>NOTÍCIAS</span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Painel editorial">
+        <button class="nav-item is-active" type="button" data-view="editorial">
+          <i data-lucide="newspaper"></i><span>Notícias</span>
+        </button>
+        <button class="nav-item" type="button" data-view="audit">
+          <i data-lucide="history"></i><span>Histórico</span>
+        </button>
+        <a class="nav-item" href="../index.html" target="_blank" rel="noopener">
+          <i data-lucide="external-link"></i><span>Ver portal</span>
+        </a>
+      </nav>
+
+      <div class="workflow-card">
+        <span class="eyebrow">Fluxo editorial</span>
+        <ol>
+          <li><b>1</b> Produção</li>
+          <li><b>2</b> Revisão</li>
+          <li><b>3</b> Aprovação</li>
+          <li><b>4</b> Publicação</li>
+        </ol>
+      </div>
+
+      <div class="sidebar-user">
+        <span class="avatar" id="userAvatar">N</span>
+        <span><strong id="userName">Equipe NEXO</strong><small id="userRole">Carregando perfil</small></span>
+        <button class="icon-button" id="logoutButton" type="button" title="Sair" aria-label="Sair"><i data-lucide="log-out"></i></button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">NEXO Notícias</span>
+          <h1 id="viewTitle">Redação</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="connection" id="connectionStatus"><i data-lucide="cloud"></i> Conectando</span>
+          <button class="button button--primary" id="newArticleButton" type="button"><i data-lucide="plus"></i> Nova notícia</button>
+        </div>
+      </header>
+
+      <section class="view is-active" id="editorialView" data-panel="editorial">
+        <div class="metrics" aria-label="Resumo editorial">
+          <article><span>Rascunhos</span><strong id="draftCount">0</strong></article>
+          <article><span>Aguardando validação</span><strong id="reviewCount">0</strong></article>
+          <article><span>Agendadas</span><strong id="scheduledCount">0</strong></article>
+          <article><span>Publicadas</span><strong id="publishedCount">0</strong></article>
+        </div>
+
+        <div class="editorial-layout">
+          <section class="panel news-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Acervo</span><h2>Notícias</h2></div>
+              <strong id="articleCount">0 notícias</strong>
+            </div>
+            <div class="filters">
+              <label class="search-field"><i data-lucide="search"></i><input id="articleSearch" type="search" placeholder="Buscar por título, categoria ou fonte"></label>
+              <select id="statusFilter" aria-label="Filtrar por status">
+                <option value="">Todos os status</option>
+                <option value="submitted">Recebidas</option>
+                <option value="draft">Rascunhos</option>
+                <option value="awaiting_validation">Aguardando validação</option>
+                <option value="in_review">Em revisão</option>
+                <option value="approved">Aprovadas</option>
+                <option value="scheduled">Agendadas</option>
+                <option value="published">Publicadas</option>
+                <option value="rejected">Rejeitadas</option>
+                <option value="archived">Arquivadas</option>
+              </select>
+            </div>
+            <div class="news-list" id="newsList" aria-live="polite"></div>
+            <button class="button button--secondary refresh-button" id="refreshAgencyButton" type="button"><i data-lucide="refresh-cw"></i> Importar da Agência Brasília</button>
+          </section>
+
+          <section class="panel editor-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Edição</span><h2 id="editorTitle">Selecione uma notícia</h2></div>
+              <span class="status-chip" id="editorStatusChip">Rascunho</span>
+            </div>
+            <form id="articleForm">
+              <input id="articleId" type="hidden">
+              <section class="automation-review" id="automationReview" aria-live="polite">
+                <div>
+                  <span class="risk-badge" id="riskBadge">Não classificada</span>
+                  <strong id="automationDecision">Aguardando análise editorial</strong>
+                </div>
+                <ul id="riskReasons"><li>A classificação aparece após o primeiro salvamento.</li></ul>
+              </section>
+              <div class="form-grid">
+                <label class="field field--wide"><span>Título</span><input id="articleTitle" maxlength="220" required></label>
+                <label class="field field--wide"><span>Resumo</span><textarea id="articleSummary" rows="3" maxlength="520"></textarea></label>
+                <label class="field field--wide"><span>Texto da notícia</span><textarea id="articleBody" rows="12"></textarea></label>
+                <label class="field"><span>Categoria</span>
+                  <select id="articleCategory">
+                    <option>Política</option><option>Empregos</option><option>Economia</option><option>Eventos</option><option>Esportes</option><option>Trânsito</option><option>Clima</option><option>Transporte</option><option>Segurança</option><option>Geral</option>
+                  </select>
+                </label>
+                <label class="field"><span>Status</span><select id="articleStatus"></select></label>
+                <label class="field"><span>Autor</span><input id="articleAuthor" maxlength="160"></label>
+                <label class="field"><span>Data e hora</span><input id="articlePublishedAt" type="datetime-local"></label>
+                <label class="field"><span>Tipo da fonte</span>
+                  <select id="articleSourceType"><option value="manual">Produção própria</option><option value="agencia">Agência pública</option><option value="ai">IA com revisão</option></select>
+                </label>
+                <label class="field"><span>Nome da fonte</span><input id="articleSourceName" maxlength="120"></label>
+                <label class="field field--wide"><span>URL da fonte</span><input id="articleSourceUrl" type="url"></label>
+                <label class="field field--wide"><span>URL da imagem</span><input id="articleImage" type="url"></label>
+                <label class="field field--wide"><span>Crédito da imagem</span><input id="articleImageCredit" maxlength="180"></label>
+                <label class="featured-field field--wide"><input id="articleFeatured" type="checkbox"><span>Usar como destaque principal do portal</span></label>
+              </div>
+              <figure class="image-preview" id="imagePreview"><span>Prévia da imagem</span></figure>
+              <div class="form-actions">
+                <button class="button button--danger" id="deleteArticleButton" type="button"><i data-lucide="trash-2"></i> Excluir</button>
+                <span class="save-status" id="saveStatus">Nenhuma alteração pendente</span>
+                <button class="button button--primary" type="submit"><i data-lucide="save"></i> Salvar notícia</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="auditView" data-panel="audit" hidden>
+        <div class="panel audit-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">Rastreabilidade</span><h2>Histórico editorial</h2></div>
+            <button class="button button--secondary" id="reloadAuditButton" type="button"><i data-lucide="refresh-cw"></i> Atualizar</button>
+          </div>
+          <div class="audit-list" id="auditList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="../vendor/firebase/10.12.5/firebase-app-compat.js"></script>
+  <script src="../vendor/firebase/10.12.5/firebase-auth-compat.js"></script>
+  <script src="./nexo-admin.js?v=1"></script>
+</body>
+</html>

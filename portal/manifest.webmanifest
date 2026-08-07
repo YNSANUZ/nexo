@@ -1,0 +1,11 @@
+{
+  "name": "NEXO Notícias",
+  "short_name": "NEXO",
+  "description": "Notícias, serviços e participação para o Distrito Federal.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
