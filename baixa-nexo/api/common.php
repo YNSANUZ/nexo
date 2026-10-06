@@ -5,7 +5,7 @@ const BAIXANEXO_MAX_OUTPUT = 31457280;
 const BAIXANEXO_YOUTUBE_CLIENTS = 'web,mweb,android,web_safari,web_embedded';
 const BAIXANEXO_VIDSAVE_API = 'https://api.vidssave.com/api/contentsite_api';
 const BAIXANEXO_VIDSAVE_SSE = 'https://api.vidssave.com/sse/contentsite_api';
-const BAIXANEXO_VIDSAVE_AUTH = '20250901majwlqo';
+const BAIXANEXO_VIDSAVE_AUTH = '';
 const BAIXANEXO_VIDSAVE_DOMAIN = 'api-ak.vidssave.com';
 
 if (!function_exists('str_starts_with')) {

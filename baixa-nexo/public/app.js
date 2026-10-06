@@ -22,7 +22,7 @@ const formatCount = document.querySelector("[data-format-count]");
 const supportedTypes = document.querySelector("[data-supported-types]");
 const vidSaveApiBase = "https://api.vidssave.com/api/contentsite_api";
 const vidSaveSseBase = "https://api.vidssave.com/sse/contentsite_api";
-const vidSaveAuth = "20250901majwlqo";
+const vidSaveAuth = "";
 const vidSaveDomain = "api-ak.vidssave.com";
 
 const apiBasePath = (() => {

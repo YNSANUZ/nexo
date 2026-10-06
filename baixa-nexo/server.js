@@ -18,7 +18,7 @@ const downloadTimeout = Number(process.env.BAIXANEXO_DOWNLOAD_TIMEOUT_MS || 2400
 const youtubeExtractorArgs = "youtube:player_client=web,mweb,android,web_safari,web_embedded";
 const vidSaveApiBase = "https://api.vidssave.com/api/contentsite_api";
 const vidSaveSseBase = "https://api.vidssave.com/sse/contentsite_api";
-const vidSaveAuth = "20250901majwlqo";
+const vidSaveAuth = process.env.BAIXANEXO_VIDSAVE_AUTH || "";
 const vidSaveDomain = "api-ak.vidssave.com";
 
 fs.mkdirSync(tempRoot, { recursive: true });
@@ -1009,7 +1009,8 @@ function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Content-Length": Buffer.byteLength(body),
-    "Cache-Control": "no-store"
+    "Cache-Control": "no-store",
+    "Access-Control-Allow-Origin": "*"
   });
   res.end(body);
 }
@@ -1305,6 +1306,17 @@ function serveStatic(requestUrl, res) {
 const server = http.createServer(async (req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const apiPathname = requestUrl.pathname.replace(/^\/baixa-nexo(?=\/api\/)/, "");
+
+  if (req.method === "OPTIONS" && apiPathname.startsWith("/api/")) {
+    res.writeHead(204, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400"
+    });
+    res.end();
+    return;
+  }
 
   try {
     if (req.method === "POST" && apiPathname === "/api/analyze") {

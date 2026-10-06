@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: baixanexo-api
+    runtime: node
+    plan: free
+    rootDir: baixa-nexo
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: 20
